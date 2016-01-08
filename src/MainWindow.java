@@ -64,7 +64,9 @@ public class MainWindow {
 		frmUchanVkbot.setBounds(100, 100, 897, 598);
 		frmUchanVkbot.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-
+		client = new VKClient();
+	
+		
 	}
 	
 	public String gen()

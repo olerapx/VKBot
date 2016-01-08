@@ -151,4 +151,31 @@ public class UserWorker extends Worker
 		
 		return obj.getInt("response");
 	}
+	
+	//only with your account
+	public void setStatus (String status) throws ClientProtocolException, IOException
+	{
+		executeCommand("https://api.vk.com/method/"+
+				"status.set?"+
+				"text="+status+
+				"&access_token="+token);
+	}
+	
+	public String getStatus () throws ClientProtocolException, IOException, JSONException //TODO:GroupID
+	{
+		return getStatus(null);
+	}
+	
+	public String getStatus (User user) throws ClientProtocolException, IOException, JSONException
+	{
+		String command = "https://api.vk.com/method/"+
+				"status.get?";
+		if (user!=null) command+="&user_id="+user.id();
+		command+="&access_token="+token;
+		
+		InputStream stream = executeCommand(command);
+
+		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		return obj.getJSONObject("response").getString("text");
+	}
 }
