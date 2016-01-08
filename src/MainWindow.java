@@ -2,9 +2,15 @@ import java.awt.AWTException;
 import java.awt.EventQueue;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.text.BadLocationException;
+
+import message.Message;
+import message.MessageWorker;
+import user.User;
+import user.UserWorker;
 
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -58,8 +64,20 @@ public class MainWindow {
 		frmUchanVkbot.setBounds(100, 100, 897, 598);
 		frmUchanVkbot.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		client = new VKClient();
-		
+
+	}
+	
+	public String gen()
+	{
+        String arrNoVowel ="אבגדהו¸זחטיךכלםמןנסעףפץצקרשüûת‎‏ÿ";
+        int numberLetters=10;
+ 
+        Random rand = new Random();
+        String out = new String();
+        for(int i = 0; i < numberLetters; i++) {
+           out+=""+arrNoVowel.charAt(rand.nextInt( arrNoVowel.length() ));
+        }
+        return out;
 	}
 
 }

@@ -20,11 +20,16 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.json.JSONException;
+
+import user.User;
+import user.UserWorker;
 
 public class VKClient 
 {
 	public CloseableHttpClient httpClient;
 	public String token="";
+	public User me;
 	
 	public VKClient()
 	{
@@ -35,7 +40,7 @@ public class VKClient
 		 httpClient = HttpClients.custom().setDefaultRequestConfig(globalConfig).setDefaultCookieStore(cookieStore).build();	
 	}	
 
-	public void connect(String email, String pass) throws IOException, URISyntaxException, BadLocationException 
+	public void connect(String email, String pass) throws IOException, URISyntaxException, BadLocationException, UnsupportedOperationException, JSONException 
 	{	
 		String id = "4977827";
 		String scope="friends,photos,audio,video,docs,status,wall,messages,offline";
@@ -111,6 +116,8 @@ public class VKClient
 		HeaderLocation = response.getFirstHeader("location").getValue();
 
 		token = HeaderLocation.split("#")[1].split("&")[0].split("=")[1];	
+		UserWorker uw = new UserWorker(httpClient, token);
+		me = uw.getMe();		
 	}
 
 }

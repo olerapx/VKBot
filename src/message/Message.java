@@ -1,3 +1,5 @@
+package message;
+
 /**
  * 
  * @class Message

@@ -1,9 +1,11 @@
+package message;
 import java.io.IOException;
 import java.net.URLEncoder;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
+
+import worker.Worker;
 
 public class MessageWorker extends Worker
 {
@@ -41,9 +43,7 @@ public class MessageWorker extends Worker
 			}			
 		}			
 				
-		HttpPost post = new HttpPost(url);
-		httpClient.execute(post);
-		post.abort();
+		executeCommand(url);
 	}	
 
 	public void sendMessage (Message msg, int receiverId) throws ClientProtocolException, IOException
