@@ -19,9 +19,9 @@ public class MessageWorker extends Worker
 				"messages.send?"+
 				"user_id="+msg.userId+
 				"&access_token="+this.token;
-		
+			
 		if (msg.body!=null)
-			url+="&message="+URLEncoder.encode(msg.body, "UTF-8");
+			url+="&message="+URLEncoder.encode(msg.body, "UTF-8".replace(".", "&#046;"));
 		
 		if (msg.attachments!=null)
 		{
@@ -42,7 +42,7 @@ public class MessageWorker extends Worker
 				if (i<msg.fwds.length-1) url+=",";
 			}			
 		}			
-				
+		System.out.println(url);	
 		executeCommand(url);
 	}	
 

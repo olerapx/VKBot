@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import media.AudioWorker;
 import worker.Worker;
 
 public class UserWorker extends Worker 
@@ -81,7 +82,7 @@ public class UserWorker extends Worker
 		try{ 
 			user.photoId= data.getInt("photo_id");
 		} catch (JSONException ex){
-			user.photoId=null;
+			user.photoId=-1;
 		}
 		
 		try{ 
@@ -161,13 +162,14 @@ public class UserWorker extends Worker
 				"&access_token="+token);
 	}
 	
-	public String getStatus () throws ClientProtocolException, IOException, JSONException //TODO:GroupID
+	public Status getStatus () throws ClientProtocolException, IOException, JSONException //TODO:GroupID
 	{
 		return getStatus(null);
 	}
 	
-	public String getStatus (User user) throws ClientProtocolException, IOException, JSONException
+	public Status getStatus (User user) throws ClientProtocolException, IOException, JSONException
 	{
+		Status status = new Status();
 		String command = "https://api.vk.com/method/"+
 				"status.get?";
 		if (user!=null) command+="&user_id="+user.id();
@@ -176,6 +178,17 @@ public class UserWorker extends Worker
 		InputStream stream = executeCommand(command);
 
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
-		return obj.getJSONObject("response").getString("text");
+		JSONObject data =  obj.getJSONObject("response");
+		status.text =  data.getString("text");
+		
+		try{		
+		data = data.getJSONObject("audio");
+		status.audio = new AudioWorker(httpClient, token).getById(data.getInt("owner_id"), data.getInt("aid"));
+		}catch(JSONException ex){
+			status.audio=null;
+		}
+		
+		return status;
 	}
+	
 }

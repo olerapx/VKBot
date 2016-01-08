@@ -7,6 +7,8 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.text.BadLocationException;
 
+import media.AudioWorker;
+import message.Attachment;
 import message.Message;
 import message.MessageWorker;
 import user.User;
@@ -65,8 +67,17 @@ public class MainWindow {
 		frmUchanVkbot.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		client = new VKClient();
-	
+
 		
+	/*	MessageWorker mw = new MessageWorker(client.httpClient, client.token);
+		int i=0;
+		while(true)
+		{
+			Thread.sleep(25000);
+			mw.sendMessage(new Message(323086251, "&#127814;  #"+i));
+			i++;
+		}
+		*/
 	}
 	
 	public String gen()

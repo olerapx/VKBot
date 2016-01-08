@@ -20,15 +20,15 @@ public class User
 	boolean isFriend;
 	boolean canAddToFriends;
 	boolean hasPhoto;
-	Integer photoId;
+	int photoId;
 	String photoURL;
 	
-	Integer sex;
+	int sex;
 	String birthDate;
 	
 	boolean isOnline; //TODO: mobile/app
 	
-	Integer followersCount, commonCount;
+	int followersCount, commonCount;
 
 	int timeZone;
 	
@@ -47,11 +47,11 @@ public class User
 	public boolean isFriend() {return this.isFriend;}
 	public boolean canAddToFriends () {return this.canAddToFriends;}
 	public boolean hasPhoto () {return this.hasPhoto;}
-	public Integer photoId() {return this.photoId==null? 0: this.photoId;}
+	public int photoId() {return this.photoId;}
 	public String photoURL () {return this.photoURL==null? "" : this.photoURL;}
-	public Integer sex() {return this.sex;}
+	public int sex() {return this.sex;}
 	public String birthDate() {return this.birthDate==null? "" : this.birthDate;}
 	public boolean isOnline() {return this.isOnline;}
-	public Integer followersCount(){return this.followersCount;}
-	public Integer commonCount() {return this.commonCount;}
+	public int followersCount(){return this.followersCount;}
+	public int commonCount() {return this.commonCount;}
 }

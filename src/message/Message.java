@@ -18,6 +18,7 @@ public class Message
 	public Integer [] fwds;
 	public boolean emoji;
 	
+	//TODO: user in constructor
 	public Message(int receiverId, String message, Attachment[]attachments, Integer[] fwds, boolean isOut, String title, Long date, boolean hasEmoji)
 	{
 		this.messageId=null;

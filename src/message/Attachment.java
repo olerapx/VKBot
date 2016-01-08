@@ -2,6 +2,9 @@ package message;
 import java.util.HashMap;
 import java.util.Set;
 
+import media.Audio;
+import media.Media;
+
 /**
  * 
  * @class Attachment
@@ -46,6 +49,29 @@ public class Attachment
 	
 	public Attachment(String attachment)
 	{
+		this.fromString(attachment);
+	}
+	
+	public Attachment(Media media)
+	{
+		String attachment="";
+		if (media instanceof Audio)
+			 attachment= "audio";	
+		//else if other types
+		
+		attachment+= media.ownerId()+"_"+ media.id();
+		this.fromString(attachment);
+	}
+	
+	public String toString()
+	{
+		String result=types.get(type);
+		result+=ownerId+"_"+attachId;		
+		return result;
+	}
+	
+	private void fromString(String attachment)
+	{
 		this.attachId = new Integer(attachment.split("_")[1]);	
 		
 		String typeWithOwner = attachment.split("_")[0];
@@ -65,12 +91,5 @@ public class Attachment
 		       this.type = pair.getKey();
 		    }
 		}
-	}
-	
-	public String toString()
-	{
-		String result=types.get(type);
-		result+=ownerId+"_"+attachId;		
-		return result;
 	}
 }
