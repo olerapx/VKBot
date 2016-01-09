@@ -1,13 +1,12 @@
-import java.awt.AWTException;
 import java.awt.EventQueue;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Random;
 
 import javax.swing.JFrame;
-import javax.swing.text.BadLocationException;
+
+import org.json.JSONException;
 
 import media.AudioWorker;
+import media.PhotoWorker;
 import message.Attachment;
 import message.Message;
 import message.MessageWorker;
@@ -22,13 +21,17 @@ import java.awt.BorderLayout;
 public class MainWindow {
 
 	private JFrame frmUchanVkbot;
-	private VKClient client;
 	private JTextField textField;
+	
+	private static VKClient client;
 
 	/**
 	 * Launch the application.
+	 * @throws Exception 
+	 * @throws JSONException 
+	 * @throws UnsupportedOperationException 
 	 */
-	public static void main(String[] args) throws AWTException, IOException, URISyntaxException, BadLocationException  {
+	public static void main(String[] args) throws Exception  {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -39,6 +42,7 @@ public class MainWindow {
 				}
 			}
 		});
+		test();
 	}
 	
 	/**
@@ -53,7 +57,7 @@ public class MainWindow {
 	 * Initialize the contents of the frame.
 	 * @throws Exception 
 	 */
-	private void initialize() throws Exception
+	private void initialize()
 	{
 		frmUchanVkbot = new JFrame();
 		frmUchanVkbot.setIconImage(Toolkit.getDefaultToolkit().getImage(MainWindow.class.getResource("/resources/logo.jpg")));
@@ -65,19 +69,18 @@ public class MainWindow {
 		frmUchanVkbot.setTitle("Uchan VKBot");
 		frmUchanVkbot.setBounds(100, 100, 897, 598);
 		frmUchanVkbot.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+	}
+	
+	public static void test() throws Exception
+	{
 		
 		client = new VKClient();
-
 		
-	/*	MessageWorker mw = new MessageWorker(client.httpClient, client.token);
-		int i=0;
-		while(true)
-		{
-			Thread.sleep(25000);
-			mw.sendMessage(new Message(323086251, "&#127814;  #"+i));
-			i++;
-		}
-		*/
+		UserWorker sw = new UserWorker(client.httpClient, client.token);
+		MessageWorker mw = new MessageWorker(client.httpClient, client.token);
+		AudioWorker aw = new AudioWorker(client.httpClient, client.token);
+		PhotoWorker pw = new PhotoWorker(client.httpClient, client.token);		
 	}
 	
 	public String gen()
