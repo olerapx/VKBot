@@ -5,17 +5,16 @@ import java.io.InputStream;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
+
+import client.VKClient;
 
 public class Worker 
 {
-	protected CloseableHttpClient httpClient;
-	protected String token;
+	protected VKClient client;
 	
-	public Worker (CloseableHttpClient client, String access_token)
+	public Worker (VKClient client)
 	{
-		this.httpClient=client;
-		this.token=access_token;
+		this.client=client;
 	}
 	
 	protected InputStream executeCommand(String command) throws ClientProtocolException, IOException
@@ -23,7 +22,7 @@ public class Worker
 		HttpPost post = new HttpPost(command);
 		
 		CloseableHttpResponse response;
-		response = httpClient.execute(post);
+		response = client.httpClient.execute(post);
 		post.abort();		
 		InputStream stream = response.getEntity().getContent();
 		

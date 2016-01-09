@@ -41,15 +41,15 @@ public class Attachment
 	};
 	
 	public Type type;
-	public int ownerId;
-	public int attachId;
+	public int ownerID;
+	public int attachID;
 	
 	
-	public Attachment(Type type, int ownerId, int attachId)
+	public Attachment(Type type, int ownerID, int attachID)
 	{
 		this.type=type;
-		this.ownerId=ownerId;
-		this.attachId=attachId;
+		this.ownerID=ownerID;
+		this.attachID=attachID;
 	}
 	
 	public Attachment(String attachment)
@@ -73,20 +73,20 @@ public class Attachment
 		else if (media instanceof WallPostReply)
 			attachment="wall_reply";
 		
-		attachment+= media.ownerId()+"_"+ media.id();
+		attachment+= media.ownerID()+"_"+ media.ID();
 		this.fromString(attachment);
 	}
 	
 	public String toString()
 	{
 		String result=types.get(type);
-		result+=ownerId+"_"+attachId;		
+		result+=ownerID+"_"+attachID;		
 		return result;
 	}
 	
 	private void fromString(String attachment)
 	{
-		this.attachId = new Integer(attachment.split("_")[1]);	
+		this.attachID = new Integer(attachment.split("_")[1]);	
 		
 		String typeWithOwner = attachment.split("_")[0];
 		
@@ -96,7 +96,7 @@ public class Attachment
 		firstDigitPos-=1;
 		
 		String type = typeWithOwner.substring(0, firstDigitPos);
-		this.ownerId = new Integer(typeWithOwner.substring(firstDigitPos));
+		this.ownerID = new Integer(typeWithOwner.substring(firstDigitPos));
 		
 		Set<HashMap.Entry<Attachment.Type,String>> entrySet=types.entrySet();
 

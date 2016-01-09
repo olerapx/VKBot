@@ -7,33 +7,37 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import client.VKClient;
 import media.AudioWorker;
 import worker.Worker;
 
 public class UserWorker extends Worker 
 {
-	public UserWorker(CloseableHttpClient client, String access_token) {
-		super(client, access_token);
+	public UserWorker(VKClient client) {
+		super(client);
 	}
 	private User get(String ids) throws JSONException, UnsupportedOperationException, IOException
 	{
-		if (ids==null) ids="";
-		HttpPost post = new HttpPost("https://api.vk.com/method/"+
-				"users.get?"+
-				"&user_ids="+ids+
-				"&fields=domain,nickname,maiden_name,wall_comments,"
+		String command="https://api.vk.com/method/"+
+				"users.get?";
+		if (ids!=null)
+			command+="&user_ids="+ids;
+		
+		command+="&fields=domain,nickname,maiden_name,wall_comments,"
 				+ "can_post,can_see_all_posts,can_see_audio,can_write_private_message,"
 				+ "is_friend,can_send_friend_request,has_photo,photo_id,"
 				+ "photo_max_orig,sex,bdate,online,followers_count,common_count"+
-				"&access_token="+token);
+				"&v=5.42"+
+				"&access_token="+client.token;
+				
+		HttpPost post = new HttpPost(command);
 				
 		CloseableHttpResponse response;
-		response = httpClient.execute(post);
+		response = client.httpClient.execute(post);
 		post.abort();
 		
 		InputStream stream = response.getEntity().getContent();
@@ -42,7 +46,7 @@ public class UserWorker extends Worker
 		User user = new User();
 		JSONObject data= obj.getJSONArray("response").getJSONObject(0);
 		
-		user.id = data.getInt("uid");
+		user.ID = data.getInt("id");
 		try{ 
 			user.domain= data.getString("domain");
 		} catch (JSONException ex){
@@ -101,9 +105,9 @@ public class UserWorker extends Worker
 	}
 
 	
-	public User getById(Integer id) throws ClientProtocolException, IOException, JSONException
+	public User getByID(Integer ID) throws ClientProtocolException, IOException, JSONException
 	{
-		return this.get(id.toString());
+		return this.get(ID.toString());
 	}
 	
 	public User getMe() throws UnsupportedOperationException, JSONException, IOException
@@ -116,18 +120,20 @@ public class UserWorker extends Worker
 	{		
 		InputStream stream = executeCommand("https://api.vk.com/method/"+
 				"friends.get?"+
-				"&user_id="+user.id+
+				"&user_id="+user.ID+
 				"&order=hints"+
-				"&access_token="+token);
+				"&v=5.42"+
+				"&access_token="+client.token);
 		
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
-		JSONArray data= obj.getJSONArray("response");
+		JSONObject data= obj.getJSONObject("response");
+		JSONArray array = data.getJSONArray("items");
 		
-		int count = data.length();
+		int count = data.getInt("count");
 
 		User[] friends = new User[count];
-		for (int i=0;i<count;i++)
-			friends[i] = getById(data.getInt(i));
+		for (int i=0;i<10;i++)
+			friends[i] = getByID(array.getInt(i));
 		
 		return friends;
 	}
@@ -138,11 +144,12 @@ public class UserWorker extends Worker
 		
 		InputStream stream = executeCommand("https://api.vk.com/method/"+
 				"friends.add?"+
-				"&user_id="+user.id+
+				"&user_id="+user.ID+
 				"&text"+URLEncoder.encode(text, "UTF-8")+
 				"&follow=0"+
-				"&access_token="+token);
-		
+				"&v=5.42"+
+				"&access_token="+client.token);
+				
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
 		
 		return obj.getInt("response");
@@ -153,8 +160,9 @@ public class UserWorker extends Worker
 	{
 		executeCommand("https://api.vk.com/method/"+
 				"status.set?"+
-				"text="+status+
-				"&access_token="+token);
+				"text="+URLEncoder.encode(status,"UTF-8".replace(".", "&#046;"))+
+				"&v=5.42"+
+				"&access_token="+client.token);
 	}
 	
 	public Status getStatus () throws ClientProtocolException, IOException, JSONException //TODO:GroupID
@@ -167,9 +175,10 @@ public class UserWorker extends Worker
 		Status status = new Status();
 		String command = "https://api.vk.com/method/"+
 				"status.get?";
-		if (user!=null) command+="&user_id="+user.id();
-		command+="&access_token="+token;
-		
+		if (user!=null) command+="&user_id="+user.ID();
+		command+="&v=5.42";
+		command+="&access_token="+client.token;
+				
 		InputStream stream = executeCommand(command);
 
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
@@ -178,7 +187,7 @@ public class UserWorker extends Worker
 		
 		try{		
 		data = data.getJSONObject("audio");
-		status.audio = new AudioWorker(httpClient, token).getById(data.getInt("owner_id"), data.getInt("aid"));
+		status.audio = new AudioWorker(client).getByID(data.getInt("owner_id"), data.getInt("id"));
 		}catch(JSONException ex){
 			status.audio=null;
 		}

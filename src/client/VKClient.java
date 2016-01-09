@@ -1,3 +1,4 @@
+package client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +31,7 @@ public class VKClient
 	public String token="";
 	public User me;
 	
-	String id = "4977827";
+	String ID = "4977827";
 	String scope="friends,photos,audio,video,docs,status,wall,messages,offline";
 	String redirectUri = "https://oauth.vk.com/blank.html";
 	String display = "popup";
@@ -48,22 +49,24 @@ public class VKClient
 	
 	CloseableHttpResponse response;
 	
-	public VKClient()
+	public VKClient(String email, String pass) throws Exception
 	{
 		 RequestConfig globalConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
 		 CookieStore cookieStore = new BasicCookieStore();
 		 HttpClientContext context = HttpClientContext.create();
 		 context.setCookieStore(cookieStore);
 		 httpClient = HttpClients.custom().setDefaultRequestConfig(globalConfig).setDefaultCookieStore(cookieStore).build();	
-	}	
-
-	public void connect(String email, String pass) throws Exception
-	{		
+		 
 		this.email=email;
 		this.pass=pass;
+		connect();
+	}	
+
+	public void connect() throws Exception
+	{	
 		//post to get code		 
 		HttpPost post = new HttpPost("https://oauth.vk.com/authorize?" +
-				"client_id="+id+
+				"client_id="+ID+
 				"&redirect_uri="+redirectUri+
 				"&display="+display+
 				"&scope="+scope+	
@@ -134,7 +137,7 @@ public class VKClient
 		HeaderLocation = response.getFirstHeader("location").getValue();
 
 		token = HeaderLocation.split("#")[1].split("&")[0].split("=")[1];	
-		UserWorker uw = new UserWorker(httpClient, token);
+		UserWorker uw = new UserWorker(this);
 		me = uw.getMe();		
 	}
 	

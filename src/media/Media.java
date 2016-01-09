@@ -8,16 +8,16 @@ package media;
  */
 public class Media {
 	
-	int id, ownerId; //TODO: write getFromGroup in all child classes
+	int ID, ownerID; //TODO: write getFromGroup in all child classes
 	public Media()
 	{	
 	}
 	
-	public int id(){return this.id;}
-	public int ownerId(){ return this.ownerId;}
+	public int ID(){return this.ID;}
+	public int ownerID(){ return this.ownerID;}
 	
 	public boolean doesBelongToGroup()
 	{
-		return (this.ownerId<0? true: false);
+		return (this.ownerID<0? true: false);
 	}
 }

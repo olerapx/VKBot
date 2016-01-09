@@ -7,7 +7,7 @@ package user;
  */
 public class User 
 {
-	int id;
+	int ID;
 	String domain;
 	String firstName, lastName, nickname, maidenName;
 	
@@ -31,7 +31,7 @@ public class User
 
 	int timeZone;
 	
-	public int id(){return this.id;}
+	public int ID(){return this.ID;}
 	public String domain(){return this.domain==null?"" : this.domain;}
 	public String firstName() {return this.firstName;}
 	public String lastName() {return this.lastName;}

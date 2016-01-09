@@ -3,22 +3,23 @@ import java.io.IOException;
 import java.net.URLEncoder;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.impl.client.CloseableHttpClient;
 
+import client.VKClient;
 import worker.Worker;
 
 public class MessageWorker extends Worker
 {
-	public MessageWorker(CloseableHttpClient client, String access_token) {
-		super(client, access_token);
+	public MessageWorker(VKClient client) {
+		super(client);
 	}
 
 	public void sendMessage (Message msg) throws ClientProtocolException, IOException
 	{ 
 		String url = "https://api.vk.com/method/"+
 				"messages.send?"+
-				"user_id="+msg.userId+
-				"&access_token="+this.token;
+				"user_id="+msg.userID+
+				"&v=5.42"+
+				"&access_token="+this.client.token;
 			
 		if (msg.body!=null)
 			url+="&message="+URLEncoder.encode(msg.body, "UTF-8".replace(".", "&#046;"));
@@ -45,9 +46,9 @@ public class MessageWorker extends Worker
 		executeCommand(url);
 	}	
 
-	public void sendMessage (Message msg, int receiverId) throws ClientProtocolException, IOException
+	public void sendMessage (Message msg, int receiverID) throws ClientProtocolException, IOException
 	{
-		msg.userId=receiverId;
+		msg.userID=receiverID;
 		sendMessage(msg);
 	}
 	

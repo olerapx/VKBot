@@ -5,8 +5,11 @@ import javax.swing.JFrame;
 
 import org.json.JSONException;
 
+import client.VKClient;
+import media.Audio;
 import media.AudioWorker;
 import media.PhotoWorker;
+import media.VideoWorker;
 import message.Attachment;
 import message.Message;
 import message.MessageWorker;
@@ -74,16 +77,17 @@ public class MainWindow {
 	
 	public static void test() throws Exception
 	{
+		client = new VKClient(xxx);
 		
-		client = new VKClient();
+		UserWorker uw = new UserWorker(client);
 		
-		UserWorker sw = new UserWorker(client.httpClient, client.token);
-		MessageWorker mw = new MessageWorker(client.httpClient, client.token);
-		AudioWorker aw = new AudioWorker(client.httpClient, client.token);
-		PhotoWorker pw = new PhotoWorker(client.httpClient, client.token);		
+		MessageWorker mw = new MessageWorker(client);
+		AudioWorker aw = new AudioWorker(client);
+		PhotoWorker pw = new PhotoWorker(client);
+		VideoWorker vw = new VideoWorker(client);
 	}
 	
-	public String gen()
+	public static String gen()
 	{
         String arrNoVowel ="אבגדהו¸זחטיךכלםמןנסעףפץצקרשüûת‎‏ÿ";
         int numberLetters=10;
