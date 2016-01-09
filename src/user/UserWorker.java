@@ -132,7 +132,7 @@ public class UserWorker extends Worker
 		int count = data.getInt("count");
 
 		User[] friends = new User[count];
-		for (int i=0;i<10;i++)
+		for (int i=0;i<count;i++)
 			friends[i] = getByID(array.getInt(i));
 		
 		return friends;
