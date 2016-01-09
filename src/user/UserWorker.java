@@ -31,7 +31,7 @@ public class UserWorker extends Worker
 				+ "is_friend,can_send_friend_request,has_photo,photo_id,"
 				+ "photo_max_orig,sex,bdate,online,followers_count,common_count"+
 				"&access_token="+token);
-		
+				
 		CloseableHttpResponse response;
 		response = httpClient.execute(post);
 		post.abort();
@@ -80,16 +80,11 @@ public class UserWorker extends Worker
 		user.hasPhoto = (data.getInt("has_photo")!=0);
 				
 		try{ 
-			user.photoId= data.getInt("photo_id");
+			user.photoId =Integer.parseInt(data.getString("photo_id").split("_")[1]);
 		} catch (JSONException ex){
-			user.photoId=-1;
+			user.photoId=0;
 		}
 		
-		try{ 
-			user.photoURL= data.getString("photo_max_orig");
-		} catch (JSONException ex){
-			user.photoURL=null;
-		}
 		
 		user.sex = data.getInt("sex");
 		try{

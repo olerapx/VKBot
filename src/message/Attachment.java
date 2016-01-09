@@ -3,7 +3,12 @@ import java.util.HashMap;
 import java.util.Set;
 
 import media.Audio;
+import media.Doc;
 import media.Media;
+import media.Photo;
+import media.Video;
+import media.WallPost;
+import media.WallPostReply;
 
 /**
  * 
@@ -57,7 +62,16 @@ public class Attachment
 		String attachment="";
 		if (media instanceof Audio)
 			 attachment= "audio";	
-		//else if other types
+		else if (media instanceof Photo)
+			attachment="photo";
+		else if (media instanceof Video)
+			attachment="video";
+		else if (media instanceof Doc)
+			attachment = "doc";
+		else if (media instanceof WallPost)
+			attachment="wall";
+		else if (media instanceof WallPostReply)
+			attachment="wall_reply";
 		
 		attachment+= media.ownerId()+"_"+ media.id();
 		this.fromString(attachment);

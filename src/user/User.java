@@ -21,7 +21,6 @@ public class User
 	boolean canAddToFriends;
 	boolean hasPhoto;
 	int photoId;
-	String photoURL;
 	
 	int sex;
 	String birthDate;
@@ -48,7 +47,6 @@ public class User
 	public boolean canAddToFriends () {return this.canAddToFriends;}
 	public boolean hasPhoto () {return this.hasPhoto;}
 	public int photoId() {return this.photoId;}
-	public String photoURL () {return this.photoURL==null? "" : this.photoURL;}
 	public int sex() {return this.sex;}
 	public String birthDate() {return this.birthDate==null? "" : this.birthDate;}
 	public boolean isOnline() {return this.isOnline;}

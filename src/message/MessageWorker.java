@@ -42,7 +42,6 @@ public class MessageWorker extends Worker
 				if (i<msg.fwds.length-1) url+=",";
 			}			
 		}			
-		System.out.println(url);	
 		executeCommand(url);
 	}	
 

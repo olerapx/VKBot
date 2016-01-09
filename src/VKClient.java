@@ -1,8 +1,8 @@
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URISyntaxException;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -20,7 +20,6 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.json.JSONException;
 
 import user.User;
 import user.UserWorker;
@@ -31,6 +30,24 @@ public class VKClient
 	public String token="";
 	public User me;
 	
+	String id = "4977827";
+	String scope="friends,photos,audio,video,docs,status,wall,messages,offline";
+	String redirectUri = "https://oauth.vk.com/blank.html";
+	String display = "popup";
+	String responseType = "token";
+	String email="";
+	String pass="";
+
+	String ip_h="";
+	String lg_h="";
+	String to="";
+	
+	String captchaSid="";
+	String captchaKey="";
+	String captchaURL="";
+	
+	CloseableHttpResponse response;
+	
 	public VKClient()
 	{
 		 RequestConfig globalConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
@@ -40,14 +57,10 @@ public class VKClient
 		 httpClient = HttpClients.custom().setDefaultRequestConfig(globalConfig).setDefaultCookieStore(cookieStore).build();	
 	}	
 
-	public void connect(String email, String pass) throws IOException, URISyntaxException, BadLocationException, UnsupportedOperationException, JSONException 
-	{	
-		String id = "4977827";
-		String scope="friends,photos,audio,video,docs,status,wall,messages,offline";
-		String redirectUri = "https://oauth.vk.com/blank.html";
-		String display = "popup";
-		String responseType = "token";
-		
+	public void connect(String email, String pass) throws Exception
+	{		
+		this.email=email;
+		this.pass=pass;
 		//post to get code		 
 		HttpPost post = new HttpPost("https://oauth.vk.com/authorize?" +
 				"client_id="+id+
@@ -55,23 +68,17 @@ public class VKClient
 				"&display="+display+
 				"&scope="+scope+	
 				"&response_type="+responseType);
-		CloseableHttpResponse response;
 		response = httpClient.execute(post);
-		post.abort();
+		//post.abort();
 		
-		InputStream stream = response.getEntity().getContent();
-		
-		HTMLEditorKit kit = new HTMLEditorKit(); 
-		HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument(); 
-		doc.putProperty("IgnoreCharsetDirective", Boolean.TRUE);
-		Reader HTMLReader = new InputStreamReader(stream); 
-		kit.read(HTMLReader, doc, 0); 
+		InputStream stream = response.getEntity().getContent();	
+
+		HTMLDocument doc = streamToHtml(stream);
+		stream.close();
 		
 	    ElementIterator it = new ElementIterator(doc); 
 	    Element elem; 
-	    
-	    String ip_h="", lg_h="", to="";
-	    	    
+	    	    	    	    
 	    while((elem=it.next()) != null)
 	    { 
 	      if(elem.getName().equals("input"))
@@ -93,25 +100,36 @@ public class VKClient
 				"&q=1"+
 				"&ip_h="+ip_h+
 				"&lg_h="+lg_h+
-				"&_origin=oauth.vk.com"+
+				"&_origin=https://oauth.vk.com"+
 				"&to="+to+
 				"&expire=0"+
 				"&email="+email+
 				"&pass="+pass);
 		response = httpClient.execute(post);
-		post.abort();
-				
+		//post.abort();
+	
 		//application rights
 		String HeaderLocation = response.getFirstHeader("location").getValue();
 		post = new HttpPost(HeaderLocation);
 		response = httpClient.execute(post);
-		post.abort();
 		
-		// get that token
+		System.out.println(HeaderLocation);
+		
+		while(response.containsHeader("location")==false)
+		{
+			handleCaptcha();
+			
+			HeaderLocation = response.getFirstHeader("location").getValue();
+			post = new HttpPost(HeaderLocation);
+			response = httpClient.execute(post);
+			//post.abort();
+		}
+			
+		// get that token    
 		HeaderLocation = response.getFirstHeader("location").getValue();
 		post = new HttpPost(HeaderLocation);
 		response = httpClient.execute(post);
-		post.abort();
+	//	post.abort();
 
 		HeaderLocation = response.getFirstHeader("location").getValue();
 
@@ -119,5 +137,63 @@ public class VKClient
 		UserWorker uw = new UserWorker(httpClient, token);
 		me = uw.getMe();		
 	}
-
+	
+	private void handleCaptcha() throws UnsupportedOperationException, IOException, BadLocationException //TODO: Make that shit work
+	{
+		InputStream stream = response.getEntity().getContent(); 
+		HTMLDocument doc = streamToHtml(stream);
+		stream.close();
+		
+	    ElementIterator it = new ElementIterator(doc); 
+	    Element elem; 
+	   		    	    
+	    while((elem=it.next()) != null)
+	    { 
+	      if(elem.getName().equals("img"))
+	    	  captchaURL= (String)elem.getAttributes().getAttribute(HTML.Attribute.SRC);	
+	      
+	      else if (elem.getName().equals("input"))
+	      {
+	    	  String name = (String)elem.getAttributes().getAttribute(HTML.Attribute.NAME);
+	    	  if (name==null) continue;
+    	  	    	  
+	    	  if (name.equals("captcha_sid"))
+	    		  captchaSid = (String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);
+	    	  else if (name.equals("lg_h"))
+	    	  {
+	    		  lg_h=(String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);
+	    	  }
+	      }
+	    }
+	    
+		System.out.println("Captcha image:\n"+ captchaURL+"\n Input captcha:\n");
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        captchaKey= input.readLine();
+        
+		HttpPost post = new HttpPost("https://login.vk.com/?act=login&soft=1"+
+				"&q=1"+
+				"&ip_h="+ip_h+
+				"&lg_h="+lg_h+
+				"&_origin=https://oauth.vk.com"+
+				"&to="+to+
+				"&expire=0"+
+				"&email="+email+
+				"&pass="+pass+
+				"&captcha_sid="+captchaSid+
+				"&captcha_key="+captchaKey);
+		
+		response = httpClient.execute(post);
+		
+		//post.abort();
+	}
+	
+	private HTMLDocument streamToHtml (InputStream stream) throws IOException, BadLocationException
+	{
+		HTMLEditorKit kit = new HTMLEditorKit(); 
+		HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument(); 
+		doc.putProperty("IgnoreCharsetDirective", Boolean.TRUE);
+		Reader HTMLReader = new InputStreamReader(stream); 
+		kit.read(HTMLReader, doc, 0); 
+		return doc;
+	}
 }
