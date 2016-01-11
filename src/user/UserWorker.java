@@ -47,32 +47,25 @@ public class UserWorker extends Worker
 		JSONObject data= obj.getJSONArray("response").getJSONObject(0);
 		
 		user.ID = data.getInt("id");
-		try{ 
+		
+		if (data.has("domain"))
 			user.domain= data.getString("domain");
-		} catch (JSONException ex){
-			user.domain=null;
-		}
+		else user.domain="";
 		
 		user.firstName = data.getString("first_name");
 		user.lastName=data.getString("last_name");
 
-		try{ 
+		if (data.has("nickname"))
 			user.nickname= data.getString("nickname");
-		} catch (JSONException ex){
-			user.nickname=null;
-		}
+		else user.nickname="";
 		
-		try{ 
+		if (data.has("maiden_name")) 
 			user.maidenName= data.getString("maiden_name");
-		} catch (JSONException ex){
-			user.maidenName=null;
-		}
+		else user.maidenName="";
 		
-		try{ 
+		if (data.has("deactivated"))
 			user.isDeactivated= data.getBoolean("deactivated");
-		} catch (JSONException ex){
-			user.isDeactivated=false;
-		}
+		else user.isDeactivated=false;
 		
 		user.canComment =(data.getInt("wall_comments")!=0);
 		user.canPost = (data.getInt("can_post")!=0);
@@ -83,19 +76,15 @@ public class UserWorker extends Worker
 		user.canAddToFriends =(data.getInt("can_send_friend_request")!=0);
 		user.hasPhoto = (data.getInt("has_photo")!=0);
 				
-		try{ 
-			user.photoId =Integer.parseInt(data.getString("photo_id").split("_")[1]);
-		} catch (JSONException ex){
-			user.photoId=0;
-		}
-		
+		if (data.has("photo_id"))
+			user.photoID =Integer.parseInt(data.getString("photo_id").split("_")[1]);
+		else user.photoID=0;
 		
 		user.sex = data.getInt("sex");
-		try{
-		user.birthDate = data.getString("bdate");
-		} catch (JSONException ex){
-			user.birthDate=null;
-		}
+		
+		if (data.has("bdate"))
+			user.birthDate = data.getString("bdate");
+		else user.birthDate="";
 		
 		user.isOnline = (data.getInt("online")!=0);
 		user.followersCount = data.getInt("followers_count");

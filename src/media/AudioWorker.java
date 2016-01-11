@@ -36,31 +36,26 @@ public class AudioWorker extends Worker
 		audio.artist = data.getString("artist");
 		audio.title = data.getString("title");
 		audio.duration = data.getLong("duration");
-		try{
+		
+		if(data.has("lyrics_id"))
 			audio.lyricsID = data.getInt("lyrics_id");
-		} catch (JSONException ex){
-			audio.lyricsID = 0;
-		}
+		else audio.lyricsID = 0;
+
 		
-		try{
+		if (data.has("album_id"))
 			audio.albumID = data.getInt("album_id");
-		} catch (JSONException ex){
-			audio.albumID=0;
-		}
+		else audio.albumID=0;
+
 		
-		try{
+		if (data.has("genre_id"))
 			audio.genreID = data.getInt("genre_id");
-		} catch (JSONException ex){
-			audio.genreID=0;
-		}	
+		else audio.genreID=0;
 		
-		try{
+		if(data.has("date"))
 			audio.date = data.getInt("date");
-		}catch (JSONException ex){
-				audio.date=0;
-		}	
+		else audio.date=0;
 		
-		if (audio.lyricsID==0) 
+		if (audio.lyricsID == 0) 
 		{
 			audio.lyrics="";
 			return audio;

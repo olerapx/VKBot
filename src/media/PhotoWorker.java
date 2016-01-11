@@ -33,42 +33,21 @@ public class PhotoWorker extends Worker {
 		photo.ID = data.getInt("id");
 		photo.albumID = data.getInt("album_id");
 		photo.ownerID = data.getInt("owner_id");
-		
-		//forgive me..
-		try{
-		photo.url=data.getString("photo_2560");
-		}catch (JSONException ex){
-			try{
-				photo.url=data.getString("photo_1280");
-			}catch (JSONException ex1){
-					try{
-						photo.url=data.getString("photo_807");
-					}catch(JSONException ex2){
-							try{
-								photo.url=data.getString("photo_604");
-					        }catch(JSONException ex3){
-								try{
-									photo.url=data.getString("photo_130");
-								}catch(JSONException ex4){
-									try{
-											photo.url=data.getString("photo_75");
-										}catch(JSONException ex5){
-												photo.url=null;
-										}
-																 }
-														 }
-					}
-				}
-		}
+
+		if (data.has("photo_2560")) photo.URL = data.getString("photo_2560");
+		else if (data.has("photo_1280")) photo.URL = data.getString("photo_1280");
+		else if (data.has("photo_807")) photo.URL = data.getString("photo_807");
+		else if (data.has("photo_604")) photo.URL = data.getString("photo_604");
+		else if (data.has("photo_130")) photo.URL = data.getString("photo_130");
+		else if (data.has("photo_75")) photo.URL = data.getString("photo_75");
+		else photo.URL = "";
 		
 		photo.text = data.getString("text");
 		photo.date = data.getLong("date");
 		
-		try{
+		if (data.has("user_id"))
 			photo.userID = data.getInt("user_id");
-		} catch(JSONException ex){
-			photo.userID=0;
-		}
+		else photo.userID=0;
 		
 		return photo;
 	}

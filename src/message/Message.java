@@ -8,8 +8,8 @@ package message;
  */
 public class Message 
 {
-	public Integer messageID;
-	public Integer userID, fromID;
+	public int messageID;
+	public int userID, fromID;
 	public boolean out;
 	public Long date;
 	public String title;
@@ -21,16 +21,16 @@ public class Message
 	//TODO: user in constructor
 	public Message(int receiverID, String message, Attachment[]attachments, Integer[] fwds, boolean isOut, String title, Long date, boolean hasEmoji)
 	{
-		this.messageID=null;
-		this.userID=null;
-		this.fromID=null;
+		this.messageID=0;
+		this.userID=receiverID;
+		this.fromID=0;
+		
 		this.date=System.currentTimeMillis()/1000L;
 		this.title=null;
 		this.body=null;
 		this.attachments=null;
 		this.fwds=null;
 		
-		this.userID=receiverID;
 		this.body=message;
 		if (attachments!=null)
 			this.attachments=attachments;
@@ -50,9 +50,10 @@ public class Message
 	
 	public Message (int receiverID, String message)
 	{
-		this.messageID=null;
+		this.messageID=0;
 		this.userID=receiverID;
-		this.fromID=null;
+		this.fromID=0;
+		
 		this.date=System.currentTimeMillis()/1000L;
 		this.title=null;
 		this.body=message;

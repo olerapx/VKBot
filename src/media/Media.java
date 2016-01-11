@@ -9,9 +9,8 @@ package media;
 public class Media {
 	
 	int ID, ownerID; //TODO: write getFromGroup in all child classes
-	public Media()
-	{	
-	}
+	
+	public Media() {}
 	
 	public int ID(){return this.ID;}
 	public int ownerID(){ return this.ownerID;}
