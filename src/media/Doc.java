@@ -1,5 +1,6 @@
 package media;
 
-public class Doc extends Media {
+public class Doc extends Media 
+{
 
 }

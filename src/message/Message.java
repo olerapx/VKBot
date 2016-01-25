@@ -1,5 +1,7 @@
 package message;
 
+import user.User;
+
 /**
  * 
  * @class Message
@@ -18,14 +20,12 @@ public class Message
 	public Integer [] fwds;
 	public boolean emoji;
 	
-	//TODO: user in constructor
-	public Message(int receiverID, String message, Attachment[]attachments, Integer[] fwds, boolean isOut, String title, Long date, boolean hasEmoji)
+	private void construct (int receiverID, String message, Attachment[]attachments, Integer[] fwds, boolean isOut, String title, Long date, boolean hasEmoji)
 	{
 		this.messageID=0;
 		this.userID=receiverID;
 		this.fromID=0;
 		
-		this.date=System.currentTimeMillis()/1000L;
 		this.title=null;
 		this.body=null;
 		this.attachments=null;
@@ -36,30 +36,45 @@ public class Message
 			this.attachments=attachments;
 			
 		if (fwds!=null)
-			this.fwds=fwds;
-		this.out=isOut;
+			this.fwds=fwds;	
+		
+		this.out = isOut;
 		
 		if (title!=null)
 			this.title=title;
 		
-		if (date!=null)
-			this.date=date;
+		this.date=date;
 		
 		this.emoji=hasEmoji;
 	}
 	
+	public Message(int receiverID, String message, Attachment[]attachments, Integer[] fwds, String title)
+	{
+		this.construct(receiverID, message, attachments, fwds, true, title, null, true);
+	}
+	
+	public Message (User user, String message, Attachment[]attachments, Integer[] fwds, String title)
+	{
+		this.construct(user.ID(), message, attachments, fwds, true, title, null, true);
+	}
+	
+	public Message (int receiverID, String message, Attachment[]attachments, Integer[] fwds)
+	{
+		this.construct(receiverID, message, attachments, fwds, true, null, null, true);
+	}
+	
+	public Message (User user, String message, Attachment[]attachments, Integer[] fwds)
+	{
+		this.construct(user.ID(), message, attachments, fwds, true, null, null, true);
+	}
+		
 	public Message (int receiverID, String message)
 	{
-		this.messageID=0;
-		this.userID=receiverID;
-		this.fromID=0;
-		
-		this.date=System.currentTimeMillis()/1000L;
-		this.title=null;
-		this.body=message;
-		this.attachments=null;
-		this.fwds=null;
-		this.out=true;
-		this.emoji=true;
+		construct (receiverID, message, null, null, true, null, null, true);
+	}
+	
+	public Message (User user, String message)
+	{
+		construct (user.ID(), message, null, null, true, null, null, true);
 	}
 }

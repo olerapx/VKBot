@@ -44,6 +44,7 @@ public class MessageWorker extends Worker
 			}			
 		}			
 		executeCommand(url);
+		msg.date=System.currentTimeMillis()/1000L;
 	}	
 
 	public void sendMessage (Message msg, int receiverID) throws ClientProtocolException, IOException

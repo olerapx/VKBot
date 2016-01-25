@@ -21,10 +21,10 @@ public class PhotoWorker extends Worker {
 	{
 		String pid = ""+ownerID+"_"+photoID;
 		InputStream stream = executeCommand("https://api.vk.com/method/"+
-				"photos.getById?"+
-				"&photos="+pid+
-				"&v=5.42"+
-				"&access_token="+client.token);
+					"photos.getById?"+
+					"&photos="+pid+
+					"&v=5.42"+
+					"&access_token="+client.token);
 				
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
 		JSONObject data = obj.getJSONArray("response").getJSONObject(0);
