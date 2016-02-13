@@ -25,7 +25,7 @@ public class AudioWorker extends Worker
 		InputStream stream = executeCommand("https://api.vk.com/method/"+
 				"audio.getById?"+
 				"&audios="+aid+
-				"&v=5.42"+
+				"&v=5.45"+
 				"&access_token="+client.token);
 				
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
@@ -64,7 +64,7 @@ public class AudioWorker extends Worker
 		stream = executeCommand("https://api.vk.com/method/"+
 				"audio.getLyrics?"+
 				"&lyrics_id="+audio.lyricsID+
-				"&v=5.42"+
+				"&v=5.45"+
 				"&access_token="+client.token);
 		obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
 		obj = obj.getJSONObject("response");

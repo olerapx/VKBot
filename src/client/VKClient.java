@@ -51,11 +51,11 @@ public class VKClient
 	
 	public VKClient(String email, String pass) throws Exception
 	{
-		 RequestConfig globalConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
-		 CookieStore cookieStore = new BasicCookieStore();
-		 HttpClientContext context = HttpClientContext.create();
-		 context.setCookieStore(cookieStore);
-		 httpClient = HttpClients.custom().setDefaultRequestConfig(globalConfig).setDefaultCookieStore(cookieStore).build();	
+		RequestConfig globalConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
+		CookieStore cookieStore = new BasicCookieStore();
+		HttpClientContext context = HttpClientContext.create();
+		context.setCookieStore(cookieStore);
+		httpClient = HttpClients.custom().setDefaultRequestConfig(globalConfig).setDefaultCookieStore(cookieStore).build();	
 		 
 		this.email=email;
 		this.pass=pass;

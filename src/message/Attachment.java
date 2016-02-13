@@ -4,6 +4,7 @@ import java.util.Set;
 
 import media.Audio;
 import media.Doc;
+import media.Link;
 import media.Media;
 import media.Photo;
 import media.Video;
@@ -17,7 +18,7 @@ import media.WallPostReply;
  *
  */
 
-public class Attachment 
+public class Attachment
 {
 	public enum Type
 	{
@@ -25,7 +26,9 @@ public class Attachment
 		ATTACH_VIDEO,
 		ATTACH_AUDIO,
 		ATTACH_DOC,
-		ATTACH_WALL
+		ATTACH_WALL,
+		ATTACH_REPLY,
+		ATTACH_LINK
 	}
 	
 	private HashMap <Type, String> types= new HashMap <Type, String>()
@@ -37,6 +40,8 @@ public class Attachment
 			put(Type.ATTACH_AUDIO,"audio");
 			put(Type.ATTACH_DOC,"doc");
 			put(Type.ATTACH_WALL,"wall");
+			put(Type.ATTACH_REPLY, "wall");
+			put (Type.ATTACH_LINK, "link");
 		}
 	};
 	
@@ -71,7 +76,9 @@ public class Attachment
 		else if (media instanceof WallPost)
 			attachment="wall";
 		else if (media instanceof WallPostReply)
-			attachment="wall_reply";
+			attachment="wall";
+		else if (media instanceof Link)
+			attachment="link";
 		
 		attachment+= media.ownerID()+"_"+ media.ID();
 		this.fromString(attachment);
@@ -80,7 +87,7 @@ public class Attachment
 	public String toString()
 	{
 		String result=types.get(type);
-		result+=ownerID+"_"+attachID;		
+		result+=""+ownerID+"_"+attachID;		
 		return result;
 	}
 	
@@ -91,10 +98,8 @@ public class Attachment
 		String typeWithOwner = attachment.split("_")[0];
 		
 		int firstDigitPos=0;
-		while (!Character.isDigit(typeWithOwner.charAt(firstDigitPos++)));
-		
-		firstDigitPos-=1;
-		
+		while (!Character.isDigit(typeWithOwner.charAt(firstDigitPos)) && typeWithOwner.charAt(firstDigitPos)!='-') firstDigitPos++;
+				
 		String type = typeWithOwner.substring(0, firstDigitPos);
 		this.ownerID = new Integer(typeWithOwner.substring(firstDigitPos));
 		

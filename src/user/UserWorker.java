@@ -31,7 +31,7 @@ public class UserWorker extends Worker
 				+ "can_post,can_see_all_posts,can_see_audio,can_write_private_message,"
 				+ "is_friend,can_send_friend_request,has_photo,photo_id,"
 				+ "photo_max_orig,sex,bdate,online,followers_count,common_count"+
-				"&v=5.42"+
+				"&v=5.45"+
 				"&access_token="+client.token;
 				
 		HttpPost post = new HttpPost(command);
@@ -111,7 +111,7 @@ public class UserWorker extends Worker
 				"friends.get?"+
 				"&user_id="+user.ID+
 				"&order=hints"+
-				"&v=5.42"+
+				"&v=5.45"+
 				"&access_token="+client.token);
 		
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
@@ -136,7 +136,7 @@ public class UserWorker extends Worker
 				"&user_id="+user.ID+
 				"&text"+URLEncoder.encode(text, "UTF-8")+
 				"&follow=0"+
-				"&v=5.42"+
+				"&v=5.45"+
 				"&access_token="+client.token);
 				
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
@@ -150,7 +150,7 @@ public class UserWorker extends Worker
 		executeCommand("https://api.vk.com/method/"+
 				"status.set?"+
 				"text="+URLEncoder.encode(status,"UTF-8".replace(".", "&#046;"))+
-				"&v=5.42"+
+				"&v=5.45"+
 				"&access_token="+client.token);
 	}
 	
@@ -165,7 +165,7 @@ public class UserWorker extends Worker
 		String command = "https://api.vk.com/method/"+
 				"status.get?";
 		if (user!=null) command+="&user_id="+user.ID();
-		command+="&v=5.42";
+		command+="&v=5.45";
 		command+="&access_token="+client.token;
 				
 		InputStream stream = executeCommand(command);

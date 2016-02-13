@@ -18,7 +18,7 @@ public class MessageWorker extends Worker
 		String url = "https://api.vk.com/method/"+
 				"messages.send?"+
 				"user_id="+msg.userID+
-				"&v=5.42"+
+				"&v=5.45"+
 				"&access_token="+this.client.token;
 			
 		if (msg.body!=null)

@@ -8,9 +8,17 @@ import org.json.JSONException;
 import client.VKClient;
 import media.Audio;
 import media.AudioWorker;
+import media.Photo;
 import media.PhotoWorker;
+import media.Video;
 import media.VideoWorker;
+import media.WallPost;
+import media.WallPostReply;
+import media.WallPostWorker;
+import media.Doc;
+import media.DocWorker;
 import message.Attachment;
+import message.Attachment.Type;
 import message.Message;
 import message.MessageWorker;
 import user.User;
@@ -72,12 +80,11 @@ public class MainWindow {
 		frmUchanVkbot.setTitle("Uchan VKBot");
 		frmUchanVkbot.setBounds(100, 100, 897, 598);
 		frmUchanVkbot.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 	}
 	
 	public static void test() throws Exception
 	{
-		client = new VKClient(xxx);
+		client = new VKClient("xxxxxx", "xxxxxx");
 		
 		UserWorker uw = new UserWorker(client);
 		
@@ -85,6 +92,10 @@ public class MainWindow {
 		AudioWorker aw = new AudioWorker(client);
 		PhotoWorker pw = new PhotoWorker(client);
 		VideoWorker vw = new VideoWorker(client);
+		DocWorker dw = new DocWorker(client);
+		WallPostWorker ww = new WallPostWorker(client);
+				
+		System.out.println(client.token);
 	}
 	
 	public static String gen()

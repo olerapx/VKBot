@@ -24,7 +24,7 @@ public class VideoWorker extends Worker
 		InputStream stream = executeCommand("https://api.vk.com/method/"+
 				"video.get?"+
 				"&videos="+vid+
-				"&v=5.42"+
+				"&v=5.45"+
 				"&access_token="+client.token);
 				
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
@@ -34,8 +34,7 @@ public class VideoWorker extends Worker
 		if (array.length()==0) return null; //not found or don't have key
 		
 		data = array.getJSONObject(0);
-		
-		
+				
 		Video video = new Video();
 		video.ID = data.getInt("id");
 		video.ownerID = data.getInt("owner_id");
@@ -58,6 +57,7 @@ public class VideoWorker extends Worker
 		
 		video.viewsNumber = data.getInt("views");
 		video.commentsNumber = data.getInt("comments");
+		
 		if (data.has("player"))
 			video.playURL = data.getString("player");
 		else video.playURL = "";

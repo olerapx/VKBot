@@ -23,7 +23,7 @@ public class PhotoWorker extends Worker {
 		InputStream stream = executeCommand("https://api.vk.com/method/"+
 					"photos.getById?"+
 					"&photos="+pid+
-					"&v=5.42"+
+					"&v=5.45"+
 					"&access_token="+client.token);
 				
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
