@@ -17,7 +17,8 @@ import worker.Worker;
 
 public class UserWorker extends Worker 
 {
-	public UserWorker(VKClient client) {
+	public UserWorker(VKClient client) 
+	{
 		super(client);
 	}
 	private User get(String ids) throws JSONException, UnsupportedOperationException, IOException

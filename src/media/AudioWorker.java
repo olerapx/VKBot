@@ -13,8 +13,8 @@ import worker.Worker;
 
 public class AudioWorker extends Worker 
 {
-
-	public AudioWorker(VKClient client) {
+	public AudioWorker(VKClient client) 
+	{
 		super(client);
 		// TODO Auto-generated constructor stub
 	}

@@ -13,8 +13,8 @@ import worker.Worker;
 
 public class DocWorker extends Worker 
 {
-
-	public DocWorker(VKClient client) {
+	public DocWorker(VKClient client) 
+	{
 		super(client);
 	}
 	

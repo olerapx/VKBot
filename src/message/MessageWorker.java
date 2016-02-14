@@ -12,12 +12,12 @@ public class MessageWorker extends Worker
 	public MessageWorker(VKClient client) {
 		super(client);
 	}
-
-	public void sendMessage (Message msg) throws ClientProtocolException, IOException
-	{ 
+	
+	private void sendMessageTo (Message msg, String dest) throws ClientProtocolException, IOException
+	{
 		String url = "https://api.vk.com/method/"+
 				"messages.send?"+
-				"user_id="+msg.userID+
+				 dest+
 				"&v=5.45"+
 				"&access_token="+this.client.token;
 			
@@ -45,12 +45,23 @@ public class MessageWorker extends Worker
 		}			
 		executeCommand(url);
 		msg.date=System.currentTimeMillis()/1000L;
-	}	
+	}
 
-	public void sendMessage (Message msg, int receiverID) throws ClientProtocolException, IOException
+	public void sendMessageToUser (Message msg, int receiverID) throws ClientProtocolException, IOException
 	{
-		msg.userID=receiverID;
-		sendMessage(msg);
+		String dest = "user_id="+receiverID;
+		sendMessageTo(msg,dest);
 	}
 	
+	public void sendMessageToConference (Message msg, int receiverID) throws ClientProtocolException, IOException
+	{
+		String dest = "peer_id="+(2000000000+receiverID);
+		sendMessageTo(msg,dest);
+	}
+	
+	public void sendMessageToGroup (Message msg, int receiverID) throws ClientProtocolException, IOException
+	{
+		String dest = "peer_id="+(-receiverID);
+		sendMessageTo(msg,dest);
+	}
 }

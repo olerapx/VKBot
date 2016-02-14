@@ -15,8 +15,8 @@ import worker.Worker;
 
 public class WallPostWorker extends Worker 
 {
-
-	public WallPostWorker(VKClient client) {
+	public WallPostWorker(VKClient client) 
+	{
 		super(client);
 	}
 	

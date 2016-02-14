@@ -14,7 +14,8 @@ import worker.Worker;
 
 public class VideoWorker extends Worker 
 {
-	public VideoWorker(VKClient client) {
+	public VideoWorker(VKClient client) 
+	{
 		super(client);
 	}
 	

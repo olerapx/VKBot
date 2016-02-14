@@ -1,7 +1,5 @@
 package message;
 
-import user.User;
-
 /**
  * 
  * @class Message
@@ -20,10 +18,10 @@ public class Message
 	public Integer [] fwds;
 	public boolean emoji;
 	
-	private void construct (int receiverID, String message, Attachment[]attachments, Integer[] fwds, boolean isOut, String title, Long date, boolean hasEmoji)
+	private void construct (String message, Attachment[]attachments, Integer[] fwds, boolean isOut, String title, Long date, boolean hasEmoji)
 	{
 		this.messageID=0;
-		this.userID=receiverID;
+		this.userID = 0;
 		this.fromID=0;
 		
 		this.title=null;
@@ -48,33 +46,18 @@ public class Message
 		this.emoji=hasEmoji;
 	}
 	
-	public Message(int receiverID, String message, Attachment[]attachments, Integer[] fwds, String title)
+	public Message(String message, Attachment[]attachments, Integer[] fwds, String title)
 	{
-		this.construct(receiverID, message, attachments, fwds, true, title, null, true);
-	}
-	
-	public Message (User user, String message, Attachment[]attachments, Integer[] fwds, String title)
-	{
-		this.construct(user.ID(), message, attachments, fwds, true, title, null, true);
-	}
-	
-	public Message (int receiverID, String message, Attachment[]attachments, Integer[] fwds)
-	{
-		this.construct(receiverID, message, attachments, fwds, true, null, null, true);
-	}
-	
-	public Message (User user, String message, Attachment[]attachments, Integer[] fwds)
-	{
-		this.construct(user.ID(), message, attachments, fwds, true, null, null, true);
+		this.construct(message, attachments, fwds, true, title, null, true);
 	}
 		
-	public Message (int receiverID, String message)
+	public Message (String message, Attachment[]attachments, Integer[] fwds)
 	{
-		construct (receiverID, message, null, null, true, null, null, true);
+		this.construct( message, attachments, fwds, true, null, null, true);
 	}
-	
-	public Message (User user, String message)
+		
+	public Message (String message)
 	{
-		construct (user.ID(), message, null, null, true, null, null, true);
+		construct (message, null, null, true, null, null, true);
 	}
 }

@@ -11,9 +11,10 @@ import org.json.JSONObject;
 import client.VKClient;
 import worker.Worker;
 
-public class PhotoWorker extends Worker {
-
-	public PhotoWorker(VKClient client) {
+public class PhotoWorker extends Worker 
+{
+	public PhotoWorker(VKClient client) 
+	{
 		super(client);
 	}
 
