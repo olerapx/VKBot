@@ -1,4 +1,4 @@
-package message;
+package dialog;
 
 /**
  * 
@@ -9,7 +9,7 @@ package message;
 public class Message 
 {
 	public int messageID;
-	public int userID, fromID;
+	public int userID;
 	public boolean out;
 	public Long date;
 	public String title;
@@ -22,7 +22,6 @@ public class Message
 	{
 		this.messageID=0;
 		this.userID = 0;
-		this.fromID=0;
 		
 		this.title=null;
 		this.body=null;

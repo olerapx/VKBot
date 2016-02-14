@@ -1,6 +1,6 @@
 package media;
 
-import message.Attachment;
+import dialog.Attachment;
 
 public class WallPostReply extends Media
 {

@@ -21,7 +21,7 @@ public class UserWorker extends Worker
 	{
 		super(client);
 	}
-	private User get(String ids) throws JSONException, UnsupportedOperationException, IOException
+	private User[] get(String ids) throws JSONException, UnsupportedOperationException, IOException
 	{
 		String command="https://api.vk.com/method/"+
 				"users.get?";
@@ -34,75 +34,122 @@ public class UserWorker extends Worker
 				+ "photo_max_orig,sex,bdate,online,followers_count,common_count"+
 				"&v=5.45"+
 				"&access_token="+client.token;
-				
+						
 		HttpPost post = new HttpPost(command);
 				
 		CloseableHttpResponse response;
-		response = client.httpClient.execute(post);
-		post.abort();
-		
+		response = client.httpClient.execute(post);				
 		InputStream stream = response.getEntity().getContent();
+		
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
 		
-		User user = new User();
-		JSONObject data= obj.getJSONArray("response").getJSONObject(0);
+		int count = obj.getJSONArray("response").length();
 		
-		user.ID = data.getInt("id");
+		User[] users = new User[count];
 		
-		if (data.has("domain"))
-			user.domain= data.getString("domain");
-		else user.domain="";
+		for(int i=0;i<count;i++)
+		{
+			User user = new User();
+			JSONObject data= obj.getJSONArray("response").getJSONObject(i);
+			
+			user.ID = data.getInt("id");
+			
+			if (data.has("domain"))
+				user.domain= data.getString("domain");
+			else user.domain="";
+			
+			user.firstName = data.getString("first_name");
+			user.lastName=data.getString("last_name");
+	
+			if (data.has("nickname"))
+				user.nickname= data.getString("nickname");
+			else user.nickname="";
+			
+			if (data.has("maiden_name")) 
+				user.maidenName= data.getString("maiden_name");
+			else user.maidenName="";
+			
+			if (data.has("deactivated"))
+				user.isDeactivated= true;
+			else user.isDeactivated=false;
+						
+			if (data.has("wall_comments"))
+				user.canComment =(data.getInt("wall_comments")!=0);
+			else user.canComment = false;
+			
+			user.canPost = (data.getInt("can_post")!=0);
+			
+			if (data.has("can_see_all_posts"))
+				user.canSeeAllPosts= (data.getInt("can_see_all_posts")!=0);
+			else user.canSeeAllPosts=false;
+			
+			if(data.has("can_see_audio"))
+				user.canSeeAudio= (data.getInt("can_see_audio")!=0);
+			else user.canSeeAudio=false;
+			
+			user.canWriteMessage= (data.getInt("can_write_private_message")!=0);
+			
+			if (data.has("is_friend"))
+				user.isFriend = (data.getInt("is_friend")!=0);
+			else user.isFriend=false;
+			
+			if (data.has("can_send_friend_request"))
+				user.canAddToFriends =(data.getInt("can_send_friend_request")!=0);
+			else user.canAddToFriends=false;
+			
+			user.hasPhoto = (data.getInt("has_photo")!=0);
+					
+			if (data.has("photo_id"))
+				user.photoID =Integer.parseInt(data.getString("photo_id").split("_")[1]);
+			else user.photoID=0;
+			
+			user.sex = data.getInt("sex");
+			
+			if (data.has("bdate"))
+				user.birthDate = data.getString("bdate");
+			else user.birthDate="";
+			
+			user.isOnline = (data.getInt("online")!=0);
+			
+			if (data.has("followers_count"))
+				user.followersCount = data.getInt("followers_count");
+			else user.followersCount=0;
+			
+			if (data.has("common_count"))
+				user.commonCount = data.getInt("common_count");
+			else user.commonCount=0;
+			
+			users[i] = user;
+		}
+		post.abort();
 		
-		user.firstName = data.getString("first_name");
-		user.lastName=data.getString("last_name");
-
-		if (data.has("nickname"))
-			user.nickname= data.getString("nickname");
-		else user.nickname="";
-		
-		if (data.has("maiden_name")) 
-			user.maidenName= data.getString("maiden_name");
-		else user.maidenName="";
-		
-		if (data.has("deactivated"))
-			user.isDeactivated= data.getBoolean("deactivated");
-		else user.isDeactivated=false;
-		
-		user.canComment =(data.getInt("wall_comments")!=0);
-		user.canPost = (data.getInt("can_post")!=0);
-		user.canSeeAllPosts= (data.getInt("can_see_all_posts")!=0);
-		user.canSeeAudio= (data.getInt("can_see_audio")!=0);
-		user.canWriteMessage= (data.getInt("can_write_private_message")!=0);
-		user.isFriend = (data.getInt("is_friend")!=0);
-		user.canAddToFriends =(data.getInt("can_send_friend_request")!=0);
-		user.hasPhoto = (data.getInt("has_photo")!=0);
-				
-		if (data.has("photo_id"))
-			user.photoID =Integer.parseInt(data.getString("photo_id").split("_")[1]);
-		else user.photoID=0;
-		
-		user.sex = data.getInt("sex");
-		
-		if (data.has("bdate"))
-			user.birthDate = data.getString("bdate");
-		else user.birthDate="";
-		
-		user.isOnline = (data.getInt("online")!=0);
-		user.followersCount = data.getInt("followers_count");
-		user.commonCount = data.getInt("common_count");
-		
-		return user;
+		return users;
 	}
 
 	
 	public User getByID(Integer ID) throws ClientProtocolException, IOException, JSONException
 	{
-		return this.get(ID.toString());
+		return this.get(ID.toString())[0];
 	}
 	
+	public User[] getByIDs(Integer[] IDs) throws ClientProtocolException, IOException, JSONException
+	{
+		String ids="";
+		if (IDs.length>0)
+		{
+			for (int i=0;i<IDs.length-1;i++)
+				ids+=IDs[i].toString()+",";
+			ids+=IDs[IDs.length-1].toString();
+			
+			return this.get(ids);
+		}
+		User[] user = new User[0];
+		return user;
+	}
+		
 	public User getMe() throws UnsupportedOperationException, JSONException, IOException
 	{
-		return this.get(null);
+		return this.get(null)[0];
 	}
 	
 	public User[] getFriends(User user) throws ClientProtocolException, IOException //TODO:sort
@@ -120,11 +167,15 @@ public class UserWorker extends Worker
 		JSONArray array = data.getJSONArray("items");
 		
 		int count = data.getInt("count");
-
-		User[] friends = new User[count];
-		for (int i=0;i<count;i++)
-			friends[i] = getByID(array.getInt(i));
 		
+		String ids="";
+		
+		for (int i=0;i<count-1;i++)
+			ids+=""+array.getInt(i)+",";
+		
+		ids+=""+array.getInt(count-1);
+		
+		User[] friends =this.get(ids);
 		return friends;
 	}
 	

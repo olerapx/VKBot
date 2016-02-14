@@ -1,4 +1,4 @@
-package message;
+package dialog;
 import java.util.HashMap;
 import java.util.Set;
 
