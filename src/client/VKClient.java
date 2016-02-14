@@ -72,7 +72,7 @@ public class VKClient
 				"&scope="+scope+	
 				"&response_type="+responseType);
 		response = httpClient.execute(post);
-		//post.abort();
+		post.reset();
 		
 		InputStream stream = response.getEntity().getContent();	
 
@@ -109,7 +109,7 @@ public class VKClient
 				"&email="+email+
 				"&pass="+pass);
 		response = httpClient.execute(post);
-		//post.abort();
+		post.reset();
 	
 		//application rights
 		String HeaderLocation = response.getFirstHeader("location").getValue();
@@ -125,14 +125,14 @@ public class VKClient
 			HeaderLocation = response.getFirstHeader("location").getValue();
 			post = new HttpPost(HeaderLocation);
 			response = httpClient.execute(post);
-			//post.abort();
+			post.reset();
 		}
 			
 		// get that token    
 		HeaderLocation = response.getFirstHeader("location").getValue();
 		post = new HttpPost(HeaderLocation);
 		response = httpClient.execute(post);
-	//	post.abort();
+		post.reset();
 
 		HeaderLocation = response.getFirstHeader("location").getValue();
 
@@ -187,7 +187,7 @@ public class VKClient
 		
 		response = httpClient.execute(post);
 		
-		//post.abort();
+		post.reset();
 	}
 	
 	private HTMLDocument streamToHtml (InputStream stream) throws IOException, BadLocationException

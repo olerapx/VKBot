@@ -38,7 +38,8 @@ public class UserWorker extends Worker
 		HttpPost post = new HttpPost(command);
 				
 		CloseableHttpResponse response;
-		response = client.httpClient.execute(post);				
+		response = client.httpClient.execute(post);		
+		post.reset();
 		InputStream stream = response.getEntity().getContent();
 		
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
