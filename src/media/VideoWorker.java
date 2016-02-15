@@ -67,6 +67,8 @@ public class VideoWorker extends Worker
 			video.isLive = true;
 		else video.isLive = false;
 		
+		video.accessKey="";
+		
 		return video;		
 	}
 }

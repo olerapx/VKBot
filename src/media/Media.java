@@ -2,18 +2,17 @@ package media;
 
 /**
  * 
- * @class Media
- * @brief Base class for all objects which can be attach to a message
+ * Base class for all objects which can be attach to a message.
  *
  */
-public class Media {
-	
+public abstract class Media 
+{
 	int ID, ownerID; //TODO: write getFromGroup in all child classes
 	
 	public Media() {}
 	
-	public int ID(){return this.ID;}
-	public int ownerID(){ return this.ownerID;}
+	public int ID() {return this.ID;}
+	public int ownerID() { return this.ownerID;}
 	
 	public boolean doesBelongToGroup()
 	{

@@ -1,5 +1,6 @@
 package media;
 
-public class Link extends Media {
+public class Link extends Media 
+{
 
 }

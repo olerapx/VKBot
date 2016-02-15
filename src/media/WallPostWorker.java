@@ -148,7 +148,7 @@ public class WallPostWorker extends Worker
 	Like getLike (JSONObject like) throws JSONException
 	{
 		Like likes = new Like();
-		likes.count = like.getInt("count");
+		likes.number = like.getInt("count");
 		likes.canLike = like.getInt("can_like")!=0;
 		likes.isLiked = like.getInt("user_likes")!=0;
 		likes.canRepost = true;

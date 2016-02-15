@@ -1,5 +1,10 @@
 package dialog;
 
+/**
+ * 
+ * Dialog with a single user.
+ * 
+ */
 import user.User;
 
 public class PrivateDialog extends Dialog 

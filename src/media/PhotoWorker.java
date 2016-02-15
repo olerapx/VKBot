@@ -50,6 +50,8 @@ public class PhotoWorker extends Worker
 			photo.userID = data.getInt("user_id");
 		else photo.userID=0;
 		
+		photo.accessKey = "";
+		
 		return photo;
 	}
 }

@@ -21,7 +21,7 @@ public class MessageWorker extends Worker
 		super(client);
 	}
 	
-	private void sendMessageTo (Message msg, String dest) throws ClientProtocolException, IOException
+	private void sendMessageTo (Message msg, String dest) throws ClientProtocolException, IOException, JSONException
 	{
 		String url = "https://api.vk.com/method/"+
 				"messages.send?"+
@@ -29,8 +29,8 @@ public class MessageWorker extends Worker
 				"&v=5.45"+
 				"&access_token="+this.client.token;
 			
-		if (msg.body!=null)
-			url+="&message="+URLEncoder.encode(msg.body, "UTF-8".replace(".", "&#046;"));
+		if (msg.text!=null)
+			url+="&message="+URLEncoder.encode(msg.text, "UTF-8".replace(".", "&#046;"));
 		
 		if (msg.attachments!=null)
 		{
@@ -51,35 +51,45 @@ public class MessageWorker extends Worker
 				if (i<msg.fwds.length-1) url+=",";
 			}			
 		}			
-		executeCommand(url);
+		InputStream stream = executeCommand(url);
+		updateMessage(stream, msg);
+	}
+	
+	private void updateMessage (InputStream stream, Message msg) throws JSONException, IOException
+	{		
+		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		msg.messageID = obj.getInt("response");
+		msg.userID = client.me.ID();
+		msg.isOut = true;
+		msg.hasEmoji = true;
 		msg.date=System.currentTimeMillis()/1000L;
 	}
 
-	public void sendMessageToUser (Message msg, int receiverID) throws ClientProtocolException, IOException
+	public void sendMessageToUser (Message msg, int receiverID) throws ClientProtocolException, IOException, JSONException
 	{
 		String dest = "user_id="+receiverID;
 		sendMessageTo(msg, dest);
 	}
 	
-	public void sendMessageToUser (Message msg, String domain) throws ClientProtocolException, IOException
+	public void sendMessageToUser (Message msg, String domain) throws ClientProtocolException, IOException, JSONException
 	{
 		String dest = "domain="+domain;
 		sendMessageTo(msg, dest);
 	}
 	
-	public void sendMessageToConference (Message msg, int receiverID) throws ClientProtocolException, IOException
+	public void sendMessageToConference (Message msg, int receiverID) throws ClientProtocolException, IOException, JSONException
 	{
 		String dest = "peer_id="+(2000000000+receiverID);
 		sendMessageTo(msg, dest);
 	}
 	
-	public void sendMessageToGroup (Message msg, int receiverID) throws ClientProtocolException, IOException
+	public void sendMessageToGroup (Message msg, int receiverID) throws ClientProtocolException, IOException, JSONException
 	{
 		String dest = "peer_id="+(-receiverID);
 		sendMessageTo(msg, dest);
 	}
 	
-	public void sendMessageToChat (Message msg, Dialog chat) throws ClientProtocolException, IOException
+	public void sendMessageToChat (Message msg, Dialog chat) throws ClientProtocolException, IOException, JSONException
 	{
 		String dest;
 		
@@ -95,17 +105,17 @@ public class MessageWorker extends Worker
 	
 	private Message getFromResponse(JSONObject item) throws JSONException
 	{	
-		Message msg = new Message("bla");
+		Message msg = new Message("");
 		
 		msg.messageID = item.getInt("id");
 		msg.userID = item.getInt("user_id");
-		msg.out = item.getInt("out") !=0;
+		msg.isOut = item.getInt("out") !=0;
 		msg.date = item.getLong("date");
 	    msg.title = item.getString("title");
-	    msg.body = item.getString("body");
+	    msg.text = item.getString("body");
 	    
 	    if (item.has("emoji"))
-	    	msg.emoji = item.getInt("emoji")!=0;
+	    	msg.hasEmoji = item.getInt("emoji")!=0;
 	    
 	    if (item.has("attachments"))
 	    {
@@ -114,7 +124,7 @@ public class MessageWorker extends Worker
 	    }
 	    else msg.attachments = null;
 	    
-	    msg.fwds = null;
+	    msg.fwds = null; 
 				
 		return msg;
 	}
@@ -133,6 +143,31 @@ public class MessageWorker extends Worker
 		return getFromResponse(data.getJSONArray("items").getJSONObject(0));
 	}
 	
+	public Message[] getByIDs(Integer[] IDs) throws ClientProtocolException, IOException, JSONException
+	{
+		String ids = "";
+		for (int i=0;i<IDs.length-1;i++)
+			ids+=IDs[i].toString()+",";
+		ids+=IDs[IDs.length-1].toString();
+		
+		InputStream stream = executeCommand("https://api.vk.com/method/"+
+				"messages.getById?"+
+				"&message_ids="+ids+
+				"&v=5.45"+
+				"&access_token="+client.token);
+			
+		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		JSONArray data = obj.getJSONObject("response").getJSONArray("items");
+		
+		int count = data.length();
+		
+		Message[] msgs = new Message[data.length()];
+		for (int i=0;i<count;i++)
+			msgs[i] = getFromResponse(data.getJSONObject(i));
+		
+		return msgs;
+	}
+	
 	private Dialog[] getDialogs(String command) throws ClientProtocolException, IOException, JSONException
 	{
 		InputStream stream = executeCommand(command);
@@ -146,49 +181,57 @@ public class MessageWorker extends Worker
 		
 		for (int i=0;i<itemsCount;i++)
 		{
-			JSONObject item = items.getJSONObject(i);
-			JSONObject msg = item.getJSONObject("message");
-			
-			Dialog dialog;
-			if(msg.has("chat_id"))
+			JSONObject item = items.getJSONObject(i);			
+			dialogs[i] = getDialog(item);
+	    }
+	
+	return dialogs;
+	}
+	
+	private Dialog getDialog(JSONObject item) throws JSONException, ClientProtocolException, IOException
+	{
+		JSONObject msg = item.getJSONObject("message");
+		
+		Dialog dialog;
+		if(msg.has("chat_id"))
+		{
+			dialog = new ConferenceDialog();
+			dialog.ID = msg.getInt("chat_id");
+		}
+		else
+		{
+			int ID = msg.getInt("user_id");
+			if(ID<0)
 			{
-				dialog = new ConferenceDialog();
-				dialog.ID = msg.getInt("chat_id");
+				dialog = new GroupDialog();
+				dialog.ID = -ID;
 			}
 			else
 			{
-				int ID = msg.getInt("user_id");
-				if(ID<0)
-				{
-					dialog = new GroupDialog();
-					dialog.ID = -ID;
-				}
-				else
-				{
-					dialog = new PrivateDialog();
-					dialog.ID = ID;
-				}
+				dialog = new PrivateDialog();
+				dialog.ID = ID;
 			}
-			if (data.has("unread"))
-				dialog.isUnread =  item.getInt("unread");
-			else dialog.isUnread=0;
-			
-			if (dialog instanceof ConferenceDialog)
-			{
-				dialog.title = msg.getString("title");
-				fillConferenceData ((ConferenceDialog)dialog, msg);
-			}
-			else if (dialog instanceof PrivateDialog)
-			{
-				fillPrivateData ((PrivateDialog)dialog, msg);
-			}
-			//TODO: group
-			
-			dialog.lastMessage = getFromResponse(msg);		
-			dialogs[i] = dialog;
-	}
-	
-	return dialogs;
+		}
+		if (item.has("unread"))
+			dialog.unreadMessagesNumber =  item.getInt("unread");
+		else dialog.unreadMessagesNumber=0;
+		
+		if (dialog instanceof ConferenceDialog)
+		{
+			dialog.title = msg.getString("title");
+			fillConferenceData ((ConferenceDialog)dialog, msg);
+		}
+		else if (dialog instanceof PrivateDialog)
+		{
+			fillPrivateData ((PrivateDialog)dialog, msg);
+		}
+		else if (dialog instanceof GroupDialog)
+		{
+			fillGroupData ((GroupDialog)dialog, msg);
+		}
+		
+		dialog.lastMessage = getFromResponse(msg);		
+		return dialog;	
 	}
 	
 	public Dialog[] getDialogs(int offset, int count, boolean isUnread) throws ClientProtocolException, IOException, JSONException
@@ -251,5 +294,10 @@ public class MessageWorker extends Worker
 		dialog.title = user.firstName()+" "+user.lastName();
 		
 		dialog.user = user;
+	}
+	
+	private void fillGroupData (GroupDialog dialog, JSONObject item) throws JSONException, ClientProtocolException, IOException
+	{
+
 	}
 }

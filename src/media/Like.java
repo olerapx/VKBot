@@ -2,12 +2,12 @@ package media;
 
 public class Like 
 {
-	int count;
+	int number;
 	boolean canLike;
 	boolean isLiked;
 	boolean canRepost;
 	
-	public int count() {return this.count;}
+	public int number() {return this.number;}
 	public boolean canLike() {return this.canLike;}
 	public boolean isLiked() {return this.isLiked;}
 	public boolean canRepost() {return this.canRepost;}

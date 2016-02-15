@@ -137,6 +137,7 @@ public class VKClient
 		HeaderLocation = response.getFirstHeader("location").getValue();
 
 		token = HeaderLocation.split("#")[1].split("&")[0].split("=")[1];	
+		
 		UserWorker uw = new UserWorker(this);
 		me = uw.getMe();		
 	}

@@ -1,8 +1,8 @@
 package user;
+
 /**
  * 
- * @class User
- * @brief Any person
+ * Any person.
  *
  */
 public class User 
@@ -11,7 +11,7 @@ public class User
 	String domain;
 	String firstName, lastName, nickname, maidenName;
 	
-	Boolean isDeactivated;
+	boolean isDeactivated;
 	boolean canComment;
 	boolean canPost;
 	boolean canSeeAllPosts;
@@ -37,7 +37,7 @@ public class User
 	public String lastName() {return this.lastName;}
 	public String nickname() {return this.nickname;}
 	public String maidenName() {return this.maidenName;}
-	public Boolean isDeactivated() {return this.isDeactivated;}
+	public boolean isDeactivated() {return this.isDeactivated;}
 	public boolean canComment() {return this.canComment;}
 	public boolean canPost() {return this.canPost;}
 	public boolean canSeeAllPosts() {return this.canSeeAllPosts;}

@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import client.VKClient;
 import dialog.Attachment;
 
-public class Worker 
+public abstract class Worker 
 {
 	protected VKClient client;
 	

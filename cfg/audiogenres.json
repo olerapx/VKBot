@@ -1,0 +1,25 @@
+{
+	genres:[
+{id:1, name: "Rock"},
+{id:2, name: "Pop"},
+{id:3, name: "Rap & Hip-Hop"},
+{id:4, name: "Easy Listening"},
+{id:5, name: "Dance & House"},
+{id:6, name: "Instrumental"},
+{id:7, name: "Metal"},
+{id:21, name: "Alternative"},
+{id:8, name: "Dubstep"},
+{id:1001, name: "Jazz & Blues"},
+{id:10, name: "Drum & Bass"},
+{id:11, name: "Trance"},
+{id:12, name: "Chanson"},
+{id:13, name: "Ethnic"},
+{id:14, name: "Acoustic & Vocal"},
+{id:15, name: "Reggae"},
+{id:16, name: "Classical"},
+{id:17, name: "Indie Pop"},
+{id:19, name: "Speech"},
+{id:22, name: "Electropop & Disco"},
+{id:18, name: "Other"}
+]
+}

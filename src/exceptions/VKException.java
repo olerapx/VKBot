@@ -2,15 +2,11 @@ package exceptions;
 
 /**
  * 
- * @class VKException
- * @brief Basic class for VK invalid responses
+ * Basic class for VK invalid responses
  *
  */
 public class VKException extends Exception
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private String error;
 	

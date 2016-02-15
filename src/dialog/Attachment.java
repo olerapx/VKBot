@@ -13,8 +13,7 @@ import media.WallPostReply;
 
 /**
  * 
- * @class Attachment
- * @brief Attachment in messages
+ * Attachment in messages and on walls (limited).
  *
  */
 
@@ -27,7 +26,6 @@ public class Attachment
 		ATTACH_AUDIO,
 		ATTACH_DOC,
 		ATTACH_WALL,
-		ATTACH_REPLY,
 		ATTACH_LINK
 	}
 	
@@ -40,16 +38,14 @@ public class Attachment
 			put(Type.ATTACH_AUDIO,"audio");
 			put(Type.ATTACH_DOC,"doc");
 			put(Type.ATTACH_WALL,"wall");
-			put(Type.ATTACH_REPLY, "wall");
 			put (Type.ATTACH_LINK, "link");
 		}
 	};
 	
-	public Type type;
-	public int ownerID;
-	public int attachID;
-	
-	
+	Type type;
+	int ownerID;
+	int attachID;
+		
 	public Attachment(Type type, int ownerID, int attachID)
 	{
 		this.type=type;
@@ -105,10 +101,14 @@ public class Attachment
 		
 		Set<HashMap.Entry<Attachment.Type,String>> entrySet=types.entrySet();
 
-		for (HashMap.Entry<Attachment.Type,String> pair : entrySet) {
-		    if (type.equals(pair.getValue())) {
-		       this.type = pair.getKey();
-		    }
+		for (HashMap.Entry<Attachment.Type,String> pair : entrySet) 
+		{
+		    if (type.equals(pair.getValue())) 
+		       this.type = pair.getKey();		    
 		}
 	}
+	
+	public Type type() {return this.type;}
+	public int ownerID() {return this.ownerID;}
+	public int attachID() {return this.attachID;}
 }

@@ -8,13 +8,15 @@ public class Audio extends Media
 	int lyricsID;
 	String lyrics;
 	int albumID;
-	int genreID; //TODO: genre list
+	int genreID;
 	int date;
+	String genre;
 	
-	public Audio(){ 
+	public Audio()
+	{ 
 		super();
 	}
-	
+		
 	public String artist() {return this.artist;}
 	public String title() {return this.title;}
 	public long duration() {return this.duration;}
@@ -23,4 +25,5 @@ public class Audio extends Media
 	public int albumID(){return this.albumID;}
 	public int genreID() {return this.genreID;}
 	public int date() {return this.date;}
+	public String genre() {return this.genre;}
 }
