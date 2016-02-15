@@ -1,6 +1,4 @@
 package dialog;
-import java.util.HashMap;
-import java.util.Set;
 
 import media.Audio;
 import media.Doc;
@@ -26,26 +24,65 @@ public class Attachment
 		ATTACH_AUDIO,
 		ATTACH_DOC,
 		ATTACH_WALL,
-		ATTACH_LINK
+		ATTACH_REPLY,
+		ATTACH_LINK,
+		ATTACH_OTHER
 	}
-	
-	private HashMap <Type, String> types= new HashMap <Type, String>()
-	{
-		private static final long serialVersionUID = 1L;
-		{
-			put(Type.ATTACH_PHOTO,"photo");
-			put(Type.ATTACH_VIDEO,"video"); 
-			put(Type.ATTACH_AUDIO,"audio");
-			put(Type.ATTACH_DOC,"doc");
-			put(Type.ATTACH_WALL,"wall");
-			put (Type.ATTACH_LINK, "link");
-		}
-	};
 	
 	Type type;
 	int ownerID;
 	int attachID;
+	String accessKey;
+	
+	private String typeToString (Type type)
+	{
+		switch (type)
+		{
+		case ATTACH_PHOTO:{ return "photo";}
+		case ATTACH_VIDEO:{ return "video";}
+		case ATTACH_AUDIO:{ return "audio";}
+		case ATTACH_DOC:{ return "doc";}
+		case ATTACH_WALL:{ return "wall";}
+		case ATTACH_REPLY:{ return "wall";}
+		case ATTACH_LINK:{ return "link";}
+		default: return "";	
+		}
+	}
+	
+	private String mediaTypeToString (Media media)
+	{
+		if (media instanceof Audio)
+			return "audio";	
+		if (media instanceof Photo)
+			return "photo";
+		if (media instanceof Video)
+			return "video";
+		if (media instanceof Doc)
+			return "doc";
+		if (media instanceof WallPost)
+			return "wall";
+		if (media instanceof WallPostReply)
+			return "wall_reply";
+		if (media instanceof Link)
+			return "link";
+		return "";
+	}
 		
+	private Type stringToType(String type)
+	{
+		switch (type)
+		{
+		case "photo":{ return Type.ATTACH_PHOTO;}
+		case "video":{ return Type.ATTACH_VIDEO;}
+		case "audio":{ return Type.ATTACH_AUDIO;}
+		case "doc":{ return Type.ATTACH_DOC;}
+		case "wall":{ return Type.ATTACH_WALL;}
+		case "wall_reply":{ return Type.ATTACH_REPLY;}
+		case "link":{ return Type.ATTACH_LINK;}
+		default: return Type.ATTACH_OTHER;	
+		}
+	}
+
 	public Attachment(Type type, int ownerID, int attachID)
 	{
 		this.type=type;
@@ -60,55 +97,38 @@ public class Attachment
 	
 	public Attachment(Media media)
 	{
-		String attachment="";
-		if (media instanceof Audio)
-			 attachment= "audio";	
-		else if (media instanceof Photo)
-			attachment="photo";
-		else if (media instanceof Video)
-			attachment="video";
-		else if (media instanceof Doc)
-			attachment = "doc";
-		else if (media instanceof WallPost)
-			attachment="wall";
-		else if (media instanceof WallPostReply)
-			attachment="wall";
-		else if (media instanceof Link)
-			attachment="link";
+		String attachment=mediaTypeToString(media);
 		
 		attachment+= media.ownerID()+"_"+ media.ID();
 		this.fromString(attachment);
 	}
-	
+		
 	public String toString()
 	{
-		String result=types.get(type);
+		String result=typeToString(type);
 		result+=""+ownerID+"_"+attachID;		
 		return result;
 	}
 	
 	private void fromString(String attachment)
 	{
-		this.attachID = new Integer(attachment.split("_")[1]);	
+		String[] splitted = attachment.split("_");
+		String attach = splitted[splitted.length-1];
+		this.attachID = new Integer(attach);	
 		
-		String typeWithOwner = attachment.split("_")[0];
+		String typeWithOwner = attachment.substring(0, (attachment.length()-attach.length()-1));
 		
 		int firstDigitPos=0;
 		while (!Character.isDigit(typeWithOwner.charAt(firstDigitPos)) && typeWithOwner.charAt(firstDigitPos)!='-') firstDigitPos++;
 				
-		String type = typeWithOwner.substring(0, firstDigitPos);
+		String type = attachment.substring(0, firstDigitPos);
 		this.ownerID = new Integer(typeWithOwner.substring(firstDigitPos));
 		
-		Set<HashMap.Entry<Attachment.Type,String>> entrySet=types.entrySet();
-
-		for (HashMap.Entry<Attachment.Type,String> pair : entrySet) 
-		{
-		    if (type.equals(pair.getValue())) 
-		       this.type = pair.getKey();		    
-		}
+		this.type = stringToType(type);
 	}
 	
 	public Type type() {return this.type;}
 	public int ownerID() {return this.ownerID;}
 	public int attachID() {return this.attachID;}
+	public String accessKey() {return this.accessKey;}
 }

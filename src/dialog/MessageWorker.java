@@ -77,6 +77,12 @@ public class MessageWorker extends Worker
 		sendMessageTo(msg, dest);
 	}
 	
+	public void sendMessageToUser (Message msg, User user) throws ClientProtocolException, IOException, JSONException
+	{
+		String dest = "user_id="+user.ID();
+		sendMessageTo(msg, dest);
+	}
+	
 	public void sendMessageToConference (Message msg, int receiverID) throws ClientProtocolException, IOException, JSONException
 	{
 		String dest = "peer_id="+(2000000000+receiverID);

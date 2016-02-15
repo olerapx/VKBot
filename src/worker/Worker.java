@@ -48,7 +48,7 @@ public abstract class Worker
 			currAttachment = currAttachment.getJSONObject(type);
 			int ownerID;
 	
-			if (type.equals("wall")) ownerID =currAttachment.getInt("from_id");
+			if (type.equals("wall") || type.equals("wall_reply")) ownerID =currAttachment.getInt("from_id");
 			
 			else ownerID =currAttachment.getInt("owner_id");
 			

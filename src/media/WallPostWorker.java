@@ -91,14 +91,14 @@ public class WallPostWorker extends Worker
 		return post;
 	}
 	
-	public WallPostReply[] getReplies (int ownerID, int wallPostReplyID, int offset, int count)  throws ClientProtocolException, IOException, JSONException
+	public WallPostReply[] getReplies (int ownerID, int wallPostID, int offset, int count)  throws ClientProtocolException, IOException, JSONException
 	{
 		if (count>100 || count <0) count = 100;
 		
 		InputStream stream = executeCommand("https://api.vk.com/method/"+
 					"wall.getComments?"+
 					"&owner_id="+ownerID+
-					"&post_id="+wallPostReplyID+
+					"&post_id="+wallPostID+
 					"&need_likes=1"+
 					"&offset="+offset+
 					"&count="+count+
