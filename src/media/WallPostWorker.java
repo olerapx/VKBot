@@ -10,87 +10,94 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import client.VKClient;
-import worker.Worker;
+import worker.MediaWorker;
 
-public class WallPostWorker extends Worker 
+public class WallPostWorker extends MediaWorker 
 {
 	public WallPostWorker(VKClient client) 
 	{
 		super(client);
 	}
 	
-	public WallPost getByID(int ownerID, int wallPostID) throws ClientProtocolException, IOException, JSONException
+	protected WallPost[] get (String IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		String wid = "" + ownerID + "_" + wallPostID;
 		InputStream stream = executeCommand("https://api.vk.com/method/"+
-					"wall.getById?"+
-					"&posts="+wid+
-					"&extended=0"+
-					"&v=5.45"+
-					"&access_token="+client.token);
-				
+				"wall.getById?"+
+				"&posts="+IDs+
+				"&extended=0"+
+				"&v=5.45"+
+				"&access_token="+client.token);
+			
 		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
-		JSONObject data = obj.getJSONArray("response").getJSONObject(0);
 		
-		WallPost post = new WallPost();
+		JSONArray response = obj.getJSONArray("response");
 		
-		post.ID = data.getInt("id");
-		post.ownerID = data.getInt("owner_id");
-		post.fromID = data.getInt("from_id");
-		post.date = data.getLong("date");
+		int count = response.length();
+		WallPost[] posts = new WallPost[count];
 		
-		if (data.has("friends_only"))
-			post.friendsOnly = data.getInt("friends_only")!=0;
-		else post.friendsOnly = false;
-		
-		if (data.has("likes"))
+		for (int i=0;i<count;i++)
 		{
-			JSONObject like = data.getJSONObject("likes");
-			post.likes = getLike (like);
-		}
-		else post.likes = null;
-		
-		if (data.has("reposts"))
-		{
-			post.repostsCount = data.getJSONObject("reposts").getInt("count");
-			post.isReposted = data.getJSONObject("reposts").getInt("user_reposted")!=0;
-		}
-		else
-		{
-			post.repostsCount = 0;
-			post.isReposted = false;
-		}
-		
-		if (data.has("comments"))
-		{
-			post.commentsCount = data.getJSONObject("comments").getInt("count");
-			post.canComment = data.getJSONObject("comments").getInt("can_post")!=0;
-		}
-		else
-		{
-			post.commentsCount = 0;
-			post.canComment = false;
-		}
-		
-		if (data.has("copy_history")) 
-		{
-			JSONArray array = data.getJSONArray("copy_history");
-			data = array.getJSONObject(array.length()-1);
-		}
+			JSONObject data = response.getJSONObject(i);
+			WallPost post = new WallPost();
+			
+			post.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));	
+			post.fromID = data.getInt("from_id");
+			post.date = data.getLong("date");
+			
+			if (data.has("friends_only"))
+				post.friendsOnly = data.getInt("friends_only")!=0;
+			else post.friendsOnly = false;
+			
+			if (data.has("likes"))
+			{
+				JSONObject like = data.getJSONObject("likes");
+				post.likes = getLike (like);
+			}
+			else post.likes = null;
+			
+			if (data.has("reposts"))
+			{
+				post.repostsCount = data.getJSONObject("reposts").getInt("count");
+				post.isReposted = data.getJSONObject("reposts").getInt("user_reposted")!=0;
+			}
+			else
+			{
+				post.repostsCount = 0;
+				post.isReposted = false;
+			}
+			
+			if (data.has("comments"))
+			{
+				post.commentsCount = data.getJSONObject("comments").getInt("count");
+				post.canComment = data.getJSONObject("comments").getInt("can_post")!=0;
+			}
+			else
+			{
+				post.commentsCount = 0;
+				post.canComment = false;
+			}
+			
+			if (data.has("copy_history")) 
+			{
+				JSONArray array = data.getJSONArray("copy_history");
+				data = array.getJSONObject(array.length()-1);
+			}
 
-		post.type = data.getString("post_type");
-		post.text = data.getString("text");
-		
-		if(data.has("attachments"))
-		{
-			JSONArray att = data.getJSONArray("attachments");
-			post.atts = getAttachments(att);
+			post.type = data.getString("post_type");
+			post.text = data.getString("text");
+			
+			if(data.has("attachments"))
+			{
+				JSONArray att = data.getJSONArray("attachments");
+				post.atts = getAttachments(att);
+			}
+			else post.atts = null;
+			
+			posts[i] = post;
 		}
-		else post.atts = null;
-					
-		return post;
+		return posts;
 	}
-	
+		
 	public WallPostReply[] getReplies (int ownerID, int wallPostID, int offset, int count)  throws ClientProtocolException, IOException, JSONException
 	{
 		if (count>100 || count <0) count = 100;
@@ -119,8 +126,7 @@ public class WallPostWorker extends Worker
 		{
 			JSONObject comment = items.getJSONObject(i);
 			WallPostReply reply = new WallPostReply();
-			reply.ID = comment.getInt("id");
-			reply.ownerID = ownerID;
+			reply.ID = new MediaID(ownerID, data.getInt("id"));	
 			reply.fromID = comment.getInt("from_id");
 			reply.date = comment.getLong("date");
 			reply.text = comment.getString("text");
@@ -154,5 +160,15 @@ public class WallPostWorker extends Worker
 		likes.canRepost = true;
 		
 		return likes;
+	}
+	
+	public WallPost getByID(MediaID ID) throws ClientProtocolException, IOException, JSONException
+	{
+		return (WallPost)super.getByID(ID);
+	}
+	
+	public WallPost[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
+	{
+		return (WallPost[])super.getByIDs(IDs);
 	}
 }

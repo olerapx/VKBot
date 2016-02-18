@@ -13,20 +13,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import client.VKClient;
-import worker.Worker;
+import worker.MediaWorker;
 
-public class AudioWorker extends Worker 
+public class AudioWorker extends MediaWorker 
 {
 	public AudioWorker(VKClient client) 
 	{
 		super(client);
 	}
 
-	private Audio[] get (String ids) throws ClientProtocolException, IOException, JSONException
+	protected Audio[] get (String IDs) throws ClientProtocolException, IOException, JSONException
 	{
 		InputStream stream = executeCommand("https://api.vk.com/method/"+
 				"audio.getById?"+
-				"&audios="+ids+
+				"&audios="+IDs+
 				"&v=5.45"+
 				"&access_token="+client.token);
 				
@@ -41,8 +41,8 @@ public class AudioWorker extends Worker
 			JSONObject data = response.getJSONObject(i);
 			
 			Audio audio = new Audio();
-			audio.ID = data.getInt("id");
-			audio.ownerID = data.getInt("owner_id");
+
+			audio.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));
 			audio.artist = data.getString("artist");
 			audio.title = data.getString("title");
 			audio.duration = data.getLong("duration");
@@ -84,26 +84,7 @@ public class AudioWorker extends Worker
 		}		
 		return audios;
 	}
-	
-	public Audio getByID(int ownerID, int audioID) throws ClientProtocolException, IOException, JSONException
-	{
-		String aid = ""+ownerID+"_"+audioID;
 		
-		return this.get(aid)[0];
-	}
-	
-	public Audio[] getByIDs(Integer[][] IDs) throws ClientProtocolException, IOException, JSONException
-	{
-		String ids="";
-		for (int i=0;i<IDs.length-1;i++)
-		{
-			ids+=IDs[i][0].toString()+"_" + IDs[i][1].toString()+",";
-		}
-		ids+=IDs[IDs.length-1][0].toString()+"_" + IDs[IDs.length-1][1].toString();
-		
-		return this.get(ids);
-	}
-	
 	String getGenre (int genreID) throws FileNotFoundException, JSONException
 	{
 		String s = "";
@@ -123,5 +104,19 @@ public class AudioWorker extends Worker
 				return obj.getString("name");
 		}
 		return "";
+	}
+	
+	public Audio getByID(MediaID ID) throws ClientProtocolException, IOException, JSONException
+	{
+		return (Audio)super.getByID(ID);
+	}
+	
+	public Audio[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
+	{
+		return (Audio[])super.getByIDs(IDs);
+	}
+	
+	{
+		
 	}
 }

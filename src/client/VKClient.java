@@ -1,9 +1,13 @@
 package client;
+import java.awt.Desktop;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
@@ -12,6 +16,8 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
@@ -47,24 +53,45 @@ public class VKClient
 	String captchaKey="";
 	String captchaURL="";
 	
-	CloseableHttpResponse response;
+	String headerLocation;
 	
+	CloseableHttpResponse response;
+		
 	public VKClient(String email, String pass) throws Exception
+	{
+		buildClient();
+		 
+		this.email=email;
+		this.pass=pass;
+		connect();
+	}	
+	
+	private void buildClient()
 	{
 		RequestConfig globalConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();
 		CookieStore cookieStore = new BasicCookieStore();
 		HttpClientContext context = HttpClientContext.create();
 		context.setCookieStore(cookieStore);
 		httpClient = HttpClients.custom().setDefaultRequestConfig(globalConfig).setDefaultCookieStore(cookieStore).build();	
-		 
-		this.email=email;
-		this.pass=pass;
-		connect();
-	}	
+	}
 
 	public void connect() throws Exception
 	{	
-		//post to get code		 
+		authorize();		
+		login();
+		confirmApplicationRights();
+		
+		while(response.containsHeader("location")==false)
+			handleCaptcha();		
+			
+		getToken();
+		
+		UserWorker uw = new UserWorker(this);
+		me = uw.getMe();		
+	}
+
+	private void authorize() throws ClientProtocolException, IOException, BadLocationException
+	{
 		HttpPost post = new HttpPost("https://oauth.vk.com/authorize?" +
 				"client_id="+ID+
 				"&redirect_uri="+redirectUri+
@@ -86,7 +113,7 @@ public class VKClient
 	    { 
 	      if(elem.getName().equals("input"))
 	      { 
-	    	  String name = (String)elem.getAttributes().getAttribute(HTML.Attribute.NAME);
+	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.NAME);
 	    	  if (name==null) continue;
 	    	  
 	    	  if (name.equals("ip_h"))
@@ -97,9 +124,11 @@ public class VKClient
 	    		 to=(String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);
 	      } 
 	    }
-		 
-		//authorization post
-		post = new HttpPost("https://login.vk.com/?act=login&soft=1"+
+	}
+	
+	private void login() throws ClientProtocolException, IOException
+	{
+		HttpPost post = new HttpPost("https://login.vk.com/?act=login&soft=1"+
 				"&q=1"+
 				"&ip_h="+ip_h+
 				"&lg_h="+lg_h+
@@ -110,39 +139,32 @@ public class VKClient
 				"&pass="+pass);
 		response = httpClient.execute(post);
 		post.reset();
-	
-		//application rights
-		String HeaderLocation = response.getFirstHeader("location").getValue();
-		post = new HttpPost(HeaderLocation);
-		response = httpClient.execute(post);
-		
-		System.out.println(HeaderLocation);
-		
-		while(response.containsHeader("location")==false)
-		{
-			handleCaptcha();
-			
-			HeaderLocation = response.getFirstHeader("location").getValue();
-			post = new HttpPost(HeaderLocation);
-			response = httpClient.execute(post);
-			post.reset();
-		}
-			
-		// get that token    
-		HeaderLocation = response.getFirstHeader("location").getValue();
-		post = new HttpPost(HeaderLocation);
-		response = httpClient.execute(post);
-		post.reset();
-
-		HeaderLocation = response.getFirstHeader("location").getValue();
-
-		token = HeaderLocation.split("#")[1].split("&")[0].split("=")[1];	
-		
-		UserWorker uw = new UserWorker(this);
-		me = uw.getMe();		
 	}
 	
-	private void handleCaptcha() throws UnsupportedOperationException, IOException, BadLocationException //TODO: Make that shit work
+	private void confirmApplicationRights() throws ClientProtocolException, IOException
+	{
+		headerLocation = response.getFirstHeader("location").getValue();
+		HttpPost post = new HttpPost(headerLocation);
+		response = httpClient.execute(post);
+	}
+		
+	private void handleCaptcha() throws UnsupportedOperationException, IOException, BadLocationException
+	{
+	    getCaptcha();
+	    
+	    File file = new File("file.jpg");	    
+	    downloadCaptcha(file);
+	    	    
+		System.out.println("Input captcha:");
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        captchaKey= input.readLine();
+        
+        sendCaptcha();
+		
+	    file.delete();
+	}
+	
+	private void getCaptcha() throws UnsupportedOperationException, IOException, BadLocationException
 	{
 		InputStream stream = response.getEntity().getContent(); 
 		HTMLDocument doc = streamToHtml(stream);
@@ -154,11 +176,11 @@ public class VKClient
 	    while((elem=it.next()) != null)
 	    { 
 	      if(elem.getName().equals("img"))
-	    	  captchaURL= (String)elem.getAttributes().getAttribute(HTML.Attribute.SRC);	
+	    	  captchaURL= (String) elem.getAttributes().getAttribute(HTML.Attribute.SRC);	
 	      
 	      else if (elem.getName().equals("input"))
 	      {
-	    	  String name = (String)elem.getAttributes().getAttribute(HTML.Attribute.NAME);
+	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.NAME);
 	    	  if (name==null) continue;
     	  	    	  
 	    	  if (name.equals("captcha_sid"))
@@ -169,11 +191,22 @@ public class VKClient
 	    	  }
 	      }
 	    }
+	}
+	
+	private void downloadCaptcha(File file) throws MalformedURLException, IOException
+	{
+	    FileUtils.copyURLToFile(new URL(captchaURL), file);
 	    
-		System.out.println("Captcha image:\n"+ captchaURL+"\n Input captcha:\n");
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        captchaKey= input.readLine();
-        
+	    Desktop desktop = null;
+	    if (Desktop.isDesktopSupported()) 
+	    {
+	        desktop = Desktop.getDesktop();
+	        desktop.open(file);
+	    }
+	}
+	
+	private void sendCaptcha() throws ClientProtocolException, IOException
+	{
 		HttpPost post = new HttpPost("https://login.vk.com/?act=login&soft=1"+
 				"&q=1"+
 				"&ip_h="+ip_h+
@@ -189,9 +222,26 @@ public class VKClient
 		response = httpClient.execute(post);
 		
 		post.reset();
+		
+		headerLocation = response.getFirstHeader("location").getValue();
+		post = new HttpPost(headerLocation);
+		response = httpClient.execute(post);
+		post.reset();
 	}
 	
-	private HTMLDocument streamToHtml (InputStream stream) throws IOException, BadLocationException
+	private void getToken() throws ClientProtocolException, IOException
+	{
+		headerLocation = response.getFirstHeader("location").getValue();
+		HttpPost post = new HttpPost(headerLocation);
+		response = httpClient.execute(post);
+		post.reset();
+
+		headerLocation = response.getFirstHeader("location").getValue();
+
+		token = headerLocation.split("#")[1].split("&")[0].split("=")[1];	
+	}
+	
+	HTMLDocument streamToHtml (InputStream stream) throws IOException, BadLocationException
 	{
 		HTMLEditorKit kit = new HTMLEditorKit(); 
 		HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument(); 

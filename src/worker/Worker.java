@@ -28,7 +28,7 @@ public abstract class Worker
 		CloseableHttpResponse response;
 		response = client.httpClient.execute(post);		
 		InputStream stream = response.getEntity().getContent();
-		post.reset();
+	//	post.reset();
 		return stream;
 	}
 	

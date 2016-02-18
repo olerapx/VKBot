@@ -7,15 +7,14 @@ package media;
  */
 public abstract class Media 
 {
-	int ID, ownerID; //TODO: write getFromGroup in all child classes
+	//TODO: write getFromGroup in all child classes
 	
-	public Media() {}
+	MediaID ID;
 	
-	public int ID() {return this.ID;}
-	public int ownerID() { return this.ownerID;}
+	public MediaID ID() {return this.ID;} 
 	
 	public boolean doesBelongToGroup()
 	{
-		return (this.ownerID<0? true: false);
+		return (this.ID.ownerID<0? true: false);
 	}
 }

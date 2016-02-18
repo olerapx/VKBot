@@ -10,7 +10,6 @@ public class Video extends Media
 	long addingDate;
 	int viewsNumber;
 	int commentsNumber;
-	String accessKey;
 	String playURL;
 	boolean isLive;
 	
@@ -22,7 +21,6 @@ public class Video extends Media
 	public long addingDate() {return this.addingDate;}
 	public int viewsNumber() {return this.viewsNumber;}
 	public int commentsNumber() {return this.commentsNumber;}
-	public String accessKey() {return this.accessKey;}
 	public String playURL() {return this.playURL;}
 	public boolean isLive() {return this.isLive;}
 }

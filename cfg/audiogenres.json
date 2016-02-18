@@ -1,5 +1,4 @@
-{
-	genres:[
+{genres:[
 {id:1, name: "Rock"},
 {id:2, name: "Pop"},
 {id:3, name: "Rap & Hip-Hop"},
@@ -21,5 +20,4 @@
 {id:19, name: "Speech"},
 {id:22, name: "Electropop & Disco"},
 {id:18, name: "Other"}
-]
-}
+]}

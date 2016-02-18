@@ -23,27 +23,26 @@ import media.WallPostReply;
 import media.WallPostWorker;
 import media.Doc;
 import media.DocWorker;
+import media.MediaID;
 import user.User;
 import user.UserWorker;
 
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.io.File;
+
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
+import javax.swing.JLabel;
 
 public class MainWindow {
 
 	private JFrame frmUchanVkbot;
 	private JTextField textField;
+	private JLabel label;
 	
 	private static VKClient client;
 
-	/**
-	 * Launch the application.
-	 * @throws Exception 
-	 * @throws JSONException 
-	 * @throws UnsupportedOperationException 
-	 */
 	public static void main(String[] args) throws Exception  
 	{
 		EventQueue.invokeLater(new Runnable() 
@@ -63,10 +62,6 @@ public class MainWindow {
 		test();
 	}
 	
-	/**
-	 * Create the application.
-	 * @throws Exception 
-	 */
 	public MainWindow() throws Exception
 	{
 		initialize();
@@ -88,6 +83,9 @@ public class MainWindow {
 		frmUchanVkbot.setTitle("UChan VKBot");
 		frmUchanVkbot.setBounds(100, 100, 897, 598);
 		frmUchanVkbot.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		label = new JLabel();
+		frmUchanVkbot.getContentPane().add(label, BorderLayout.CENTER);
 	}
 	
 	public static void test() throws Exception
@@ -103,24 +101,9 @@ public class MainWindow {
 		DocWorker dw = new DocWorker(client);
 		WallPostWorker ww = new WallPostWorker(client);
 		
-		System.out.println(client.token);	
-		
-		while(true)
-		{
-			Thread.sleep(30000);
-			Dialog[] dials = mw.getDialogs(0, 20, true);
-			
-			for (int i=0;i<dials.length;i++)
-				if (dials[i].ID() == 323086251)
-				{
-					Message msg = dials[i].lastMessage();
-					mw.sendMessageToUser(msg, 323086251);
-				}
-		}
-						
-
+		System.out.println("Logged in under token:\n"+client.token);	
 	}
-	
+
 	public static String gen()
 	{
         String arrNoVowel ="àáâãäå¸æçèéêëìíîïðñòóôõö÷øùüûúýþÿ";

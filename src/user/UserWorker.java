@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import client.VKClient;
 import media.AudioWorker;
+import media.MediaID;
 import worker.Worker;
 
 public class UserWorker extends Worker 
@@ -229,7 +230,7 @@ public class UserWorker extends Worker
 		
 		try{		
 		data = data.getJSONObject("audio");
-		status.audio = new AudioWorker(client).getByID(data.getInt("owner_id"), data.getInt("id"));
+		status.audio = new AudioWorker(client).getByID(new MediaID(data.getInt("owner_id"), data.getInt("id")));
 		}catch(JSONException ex){
 			status.audio=null;
 		}

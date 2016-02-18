@@ -10,20 +10,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import client.VKClient;
-import worker.Worker;
+import worker.MediaWorker;
 
-public class DocWorker extends Worker 
+public class DocWorker extends MediaWorker 
 {
 	public DocWorker(VKClient client) 
 	{
 		super(client);
 	}
 	
-	private Doc[] get(String ids) throws ClientProtocolException, IOException, JSONException
+	protected Doc[] get(String IDs) throws ClientProtocolException, IOException, JSONException
 	{
 		InputStream stream = executeCommand("https://api.vk.com/method/"+
 				"docs.getById?"+
-				"&docs="+ids+
+				"&docs="+IDs+
 				"&v=5.45"+
 				"&access_token="+client.token);
 		
@@ -38,8 +38,7 @@ public class DocWorker extends Worker
 			JSONObject data = response.getJSONObject(i);
 			
 			Doc doc = new Doc();
-			doc.ID = data.getInt("id");
-			doc.ownerID = data.getInt("owner_id");
+			doc.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));	
 			
 			doc.title = data.getString("title");
 			doc.size = data.getLong("size");
@@ -60,22 +59,13 @@ public class DocWorker extends Worker
 		return docs;
 	}
 	
-	public Doc getByID (int ownerID, int docID) throws ClientProtocolException, IOException, JSONException
+	public Doc getByID(MediaID ID) throws ClientProtocolException, IOException, JSONException
 	{
-		String did = "" + ownerID + "_" + docID;
-		
-		return this.get(did)[0];
+		return (Doc)super.getByID(ID);
 	}
 	
-	public Doc[] getByIDs(Integer[][] IDs) throws ClientProtocolException, IOException, JSONException
+	public Doc[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		String ids="";
-		for (int i=0;i<IDs.length-1;i++)
-		{
-			ids+=IDs[i][0].toString()+"_" + IDs[i][1].toString()+",";
-		}
-		ids+=IDs[IDs.length-1][0].toString()+"_" + IDs[IDs.length-1][1].toString();
-		
-		return this.get(ids);
+		return (Doc[])super.getByIDs(IDs);
 	}
 }
