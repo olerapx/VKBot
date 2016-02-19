@@ -1,9 +1,7 @@
 package dialog;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLEncoder;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,14 +49,13 @@ public class MessageWorker extends Worker
 				if (i<msg.fwds.length-1) url+=",";
 			}			
 		}			
-		InputStream stream = executeCommand(url);
-		updateMessage(stream, msg);
+		String str = client.executeCommand(url);
+		updateMessage(new JSONObject (str), msg);
 	}
 	
-	private void updateMessage (InputStream stream, Message msg) throws JSONException, IOException
+	private void updateMessage (JSONObject response, Message msg) throws JSONException, IOException
 	{		
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
-		msg.messageID = obj.getInt("response");
+		msg.messageID = response.getInt("response");
 		msg.userID = client.me.ID();
 		msg.isOut = true;
 		msg.hasEmoji = true;
@@ -137,13 +134,13 @@ public class MessageWorker extends Worker
 	
 	public Message getByID (int ID) throws ClientProtocolException, IOException, JSONException
 	{
-		InputStream stream = executeCommand("https://api.vk.com/method/"+
+		String str = client.executeCommand("https://api.vk.com/method/"+
 				"messages.getById?"+
 				"&message_ids="+ID+
 				"&v=5.45"+
 				"&access_token="+client.token);
 			
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		JSONObject obj = new JSONObject(str);
 		JSONObject data = obj.getJSONObject("response");
 	
 		return getFromResponse(data.getJSONArray("items").getJSONObject(0));
@@ -156,13 +153,13 @@ public class MessageWorker extends Worker
 			ids+=IDs[i].toString()+",";
 		ids+=IDs[IDs.length-1].toString();
 		
-		InputStream stream = executeCommand("https://api.vk.com/method/"+
+		String str = client.executeCommand("https://api.vk.com/method/"+
 				"messages.getById?"+
 				"&message_ids="+ids+
 				"&v=5.45"+
 				"&access_token="+client.token);
 			
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		JSONObject obj = new JSONObject(str);
 		JSONArray data = obj.getJSONObject("response").getJSONArray("items");
 		
 		int count = data.length();
@@ -176,9 +173,9 @@ public class MessageWorker extends Worker
 	
 	private Dialog[] getDialogs(String command) throws ClientProtocolException, IOException, JSONException
 	{
-		InputStream stream = executeCommand(command);
+		String str = client.executeCommand(command);
 			
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		JSONObject obj = new JSONObject(str);
 		JSONObject data = obj.getJSONObject("response");
 		JSONArray items = data.getJSONArray("items");
 		int itemsCount = items.length();

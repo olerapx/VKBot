@@ -1,12 +1,8 @@
 package user;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLEncoder;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,15 +31,10 @@ public class UserWorker extends Worker
 				+ "photo_max_orig,sex,bdate,online,followers_count,common_count"+
 				"&v=5.45"+
 				"&access_token="+client.token;
-						
-		HttpPost post = new HttpPost(command);
-				
-		CloseableHttpResponse response;
-		response = client.httpClient.execute(post);		
-		post.reset();
-		InputStream stream = response.getEntity().getContent();
+
+		String str = client.executeCommand(command); 
+		JSONObject obj = new JSONObject(str);
 		
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
 		
 		int count = obj.getJSONArray("response").length();
 		
@@ -120,10 +111,9 @@ public class UserWorker extends Worker
 			if (data.has("common_count"))
 				user.commonCount = data.getInt("common_count");
 			else user.commonCount=0;
-			
+						
 			users[i] = user;
 		}
-		post.abort();
 		
 		return users;
 	}
@@ -157,14 +147,14 @@ public class UserWorker extends Worker
 	public User[] getFriends(User user) throws ClientProtocolException, IOException //TODO:sort
 , JSONException
 	{		
-		InputStream stream = executeCommand("https://api.vk.com/method/"+
+		String str = client.executeCommand("https://api.vk.com/method/"+
 				"friends.get?"+
 				"&user_id="+user.ID+
 				"&order=hints"+
 				"&v=5.45"+
 				"&access_token="+client.token);
 		
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		JSONObject obj = new JSONObject(str);
 		JSONObject data= obj.getJSONObject("response");
 		JSONArray array = data.getJSONArray("items");
 		
@@ -185,7 +175,7 @@ public class UserWorker extends Worker
 	{
 		if (user.canAddToFriends== false) return -1;
 		
-		InputStream stream = executeCommand("https://api.vk.com/method/"+
+		String str = client.executeCommand("https://api.vk.com/method/"+
 				"friends.add?"+
 				"&user_id="+user.ID+
 				"&text"+URLEncoder.encode(text, "UTF-8")+
@@ -193,26 +183,26 @@ public class UserWorker extends Worker
 				"&v=5.45"+
 				"&access_token="+client.token);
 				
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		JSONObject obj = new JSONObject(str);
 		
 		return obj.getInt("response");
 	}
 	
-	//only with your account
+	/**
+	 * Sets status of user client logged in.
+	 * @param status
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public void setStatus (String status) throws ClientProtocolException, IOException
 	{
-		executeCommand("https://api.vk.com/method/"+
+		client.executeCommand("https://api.vk.com/method/"+
 				"status.set?"+
 				"text="+URLEncoder.encode(status,"UTF-8".replace(".", "&#046;"))+
 				"&v=5.45"+
 				"&access_token="+client.token);
 	}
-	
-	public Status getStatus () throws ClientProtocolException, IOException, JSONException //TODO:GroupID
-	{
-		return getStatus(null);
-	}
-	
+		
 	public Status getStatus (User user) throws ClientProtocolException, IOException, JSONException
 	{
 		Status status = new Status();
@@ -222,18 +212,18 @@ public class UserWorker extends Worker
 		command+="&v=5.45";
 		command+="&access_token="+client.token;
 				
-		InputStream stream = executeCommand(command);
-
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		String str = client.executeCommand(command);
+		JSONObject obj = new JSONObject(str);
 		JSONObject data =  obj.getJSONObject("response");
 		status.text =  data.getString("text");
 		
-		try{		
-		data = data.getJSONObject("audio");
-		status.audio = new AudioWorker(client).getByID(new MediaID(data.getInt("owner_id"), data.getInt("id")));
-		}catch(JSONException ex){
-			status.audio=null;
+		if(data.has("audio"))
+		{
+			data = data.getJSONObject("audio");
+			status.audio = new AudioWorker(client).getByID(new MediaID(data.getInt("owner_id"), data.getInt("id")));
 		}
+		else
+			status.audio=null;
 		
 		return status;
 	}

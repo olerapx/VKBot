@@ -1,9 +1,7 @@
 package media;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,14 +19,14 @@ public class WallPostWorker extends MediaWorker
 	
 	protected WallPost[] get (String IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		InputStream stream = executeCommand("https://api.vk.com/method/"+
+		String str  = client.executeCommand("https://api.vk.com/method/"+
 				"wall.getById?"+
 				"&posts="+IDs+
 				"&extended=0"+
 				"&v=5.45"+
 				"&access_token="+client.token);
 			
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		JSONObject obj = new JSONObject(str);
 		
 		JSONArray response = obj.getJSONArray("response");
 		
@@ -102,7 +100,7 @@ public class WallPostWorker extends MediaWorker
 	{
 		if (count>100 || count <0) count = 100;
 		
-		InputStream stream = executeCommand("https://api.vk.com/method/"+
+		String str  = client.executeCommand("https://api.vk.com/method/"+
 					"wall.getComments?"+
 					"&owner_id="+ownerID+
 					"&post_id="+wallPostID+
@@ -114,7 +112,7 @@ public class WallPostWorker extends MediaWorker
 					"&v=5.45"+
 					"&access_token="+client.token);
 				
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		JSONObject obj = new JSONObject(str);
 		JSONObject data = obj.getJSONObject("response");
 		
 		int commentsCount = data.getInt("count");

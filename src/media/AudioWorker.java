@@ -3,10 +3,8 @@ package media;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Scanner;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,13 +22,13 @@ public class AudioWorker extends MediaWorker
 
 	protected Audio[] get (String IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		InputStream stream = executeCommand("https://api.vk.com/method/"+
+		String str = client.executeCommand("https://api.vk.com/method/"+
 				"audio.getById?"+
 				"&audios="+IDs+
 				"&v=5.45"+
 				"&access_token="+client.token);
 				
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		JSONObject obj = new JSONObject(str);
 		JSONArray response = obj.getJSONArray("response");
 		
 		int count = response.length();
@@ -66,23 +64,25 @@ public class AudioWorker extends MediaWorker
 			else audio.date=0;
 			
 			if (audio.lyricsID == 0) 
-			{
 				audio.lyrics="";
-			}
 			else
-			{
-				stream = executeCommand("https://api.vk.com/method/"+
-						"audio.getLyrics?"+
-						"&lyrics_id="+audio.lyricsID+
-						"&v=5.45"+
-						"&access_token="+client.token);
-				obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
-				obj = obj.getJSONObject("response");
-				audio.lyrics = obj.getString("text");	
-			}
+				audio.lyrics = getLyrics (audio);
+			
 			audios[i] = audio;
 		}		
 		return audios;
+	}
+	
+	String getLyrics(Audio audio) throws ClientProtocolException, IOException, JSONException
+	{
+		String str = client.executeCommand("https://api.vk.com/method/"+
+				"audio.getLyrics?"+
+				"&lyrics_id="+audio.lyricsID+
+				"&v=5.45"+
+				"&access_token="+client.token);
+		JSONObject obj = new JSONObject(str);
+		obj = obj.getJSONObject("response");
+		return obj.getString("text");
 	}
 		
 	String getGenre (int genreID) throws FileNotFoundException, JSONException
@@ -114,9 +114,5 @@ public class AudioWorker extends MediaWorker
 	public Audio[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
 	{
 		return (Audio[])super.getByIDs(IDs);
-	}
-	
-	{
-		
 	}
 }

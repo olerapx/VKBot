@@ -1,10 +1,5 @@
 package worker;
-import java.io.IOException;
-import java.io.InputStream;
 
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,17 +14,6 @@ public abstract class Worker
 	public Worker (VKClient client)
 	{
 		this.client=client;
-	}
-	
-	protected InputStream executeCommand(String command) throws ClientProtocolException, IOException
-	{
-		HttpPost post = new HttpPost(command);
-		
-		CloseableHttpResponse response;
-		response = client.httpClient.execute(post);		
-		InputStream stream = response.getEntity().getContent();
-	//	post.reset();
-		return stream;
 	}
 	
 	protected Attachment[] getAttachments(JSONArray att) throws JSONException

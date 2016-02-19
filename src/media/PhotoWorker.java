@@ -1,9 +1,7 @@
 package media;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,13 +19,13 @@ public class PhotoWorker extends MediaWorker
 	
 	protected Photo[] get (String IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		InputStream stream = executeCommand("https://api.vk.com/method/"+
+		String str  = client.executeCommand("https://api.vk.com/method/"+
 				"photos.getById?"+
 				"&photos="+IDs+
 				"&v=5.45"+
 				"&access_token="+client.token);
 		
-		JSONObject obj = new JSONObject(IOUtils.toString(stream, "UTF-8"));
+		JSONObject obj = new JSONObject(str);
 		JSONArray response = obj.getJSONArray("response");
 		
 		int count = response.length();

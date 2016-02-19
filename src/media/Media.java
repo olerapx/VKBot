@@ -12,9 +12,4 @@ public abstract class Media
 	MediaID ID;
 	
 	public MediaID ID() {return this.ID;} 
-	
-	public boolean doesBelongToGroup()
-	{
-		return (this.ID.ownerID<0? true: false);
-	}
 }

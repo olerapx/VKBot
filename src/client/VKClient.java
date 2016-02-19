@@ -17,6 +17,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
@@ -81,7 +82,7 @@ public class VKClient
 		login();
 		confirmApplicationRights();
 		
-		while(response.containsHeader("location")==false)
+		while(!response.containsHeader("location"))
 			handleCaptcha();		
 			
 		getToken();
@@ -124,6 +125,16 @@ public class VKClient
 	    		 to=(String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);
 	      } 
 	    }
+	}
+	
+	HTMLDocument streamToHtml (InputStream stream) throws IOException, BadLocationException
+	{
+		HTMLEditorKit kit = new HTMLEditorKit(); 
+		HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument(); 
+		doc.putProperty("IgnoreCharsetDirective", Boolean.TRUE);
+		Reader HTMLReader = new InputStreamReader(stream); 
+		kit.read(HTMLReader, doc, 0); 
+		return doc;
 	}
 	
 	private void login() throws ClientProtocolException, IOException
@@ -241,13 +252,14 @@ public class VKClient
 		token = headerLocation.split("#")[1].split("&")[0].split("=")[1];	
 	}
 	
-	HTMLDocument streamToHtml (InputStream stream) throws IOException, BadLocationException
+	public String executeCommand(String command) throws ClientProtocolException, IOException
 	{
-		HTMLEditorKit kit = new HTMLEditorKit(); 
-		HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument(); 
-		doc.putProperty("IgnoreCharsetDirective", Boolean.TRUE);
-		Reader HTMLReader = new InputStreamReader(stream); 
-		kit.read(HTMLReader, doc, 0); 
-		return doc;
+		HttpPost post = new HttpPost(command);
+		
+		CloseableHttpResponse response;
+		response = httpClient.execute(post);		
+		String str = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
+		post.reset();
+		return str;
 	}
 }
