@@ -1,9 +1,7 @@
 package dialog;
 
 /**
- * 
  * Base class for all chats.
- *
  */
 public class Dialog 
 {

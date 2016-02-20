@@ -1,5 +1,8 @@
 package media;
 
+/**
+ * Represents ID of any Media. Contains owner ID, media ID and access key if it exists.
+ */
 public class MediaID
 {
 	int ownerID;

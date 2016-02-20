@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import client.VKClient;
-import worker.MediaWorker;
 
 public class DocWorker extends MediaWorker 
 {

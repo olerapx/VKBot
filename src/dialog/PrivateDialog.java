@@ -1,9 +1,7 @@
 package dialog;
 
 /**
- * 
  * Dialog with a single user.
- * 
  */
 import user.User;
 

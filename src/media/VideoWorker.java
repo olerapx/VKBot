@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import client.VKClient;
-import worker.MediaWorker;
 
 public class VideoWorker extends MediaWorker 
 {
@@ -22,6 +21,7 @@ public class VideoWorker extends MediaWorker
 		String str  = client.executeCommand("https://api.vk.com/method/"+
 				"video.get?"+
 				"&videos="+IDs+
+				"&extended=1"+
 				"&v=5.45"+
 				"&access_token="+client.token);
 		
@@ -67,6 +67,20 @@ public class VideoWorker extends MediaWorker
 			if (data.has("live"))
 				video.isLive = true;
 			else video.isLive = false;
+			
+			if (data.has("likes"))
+			{
+				JSONObject like = data.getJSONObject("likes");		
+				video.likes = getLike (like);
+			}
+			else video.likes = null;
+			
+			video.canComment = data.getInt("can_comment")!=0;
+			video.canRepost = data.getInt("can_repost")!=0;
+			
+			if(data.has("comments"))
+				video.commentsCount = data.getInt("comments");
+			else video.commentsCount = 0;	
 			
 			videos[i] = video;
 		}

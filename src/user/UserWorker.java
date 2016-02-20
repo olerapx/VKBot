@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import client.VKClient;
 import media.AudioWorker;
 import media.MediaID;
+import user.User.Online;
 import worker.Worker;
 
 public class UserWorker extends Worker 
@@ -18,10 +19,12 @@ public class UserWorker extends Worker
 	{
 		super(client);
 	}
+	
 	private User[] get(String ids) throws JSONException, UnsupportedOperationException, IOException
 	{
 		String command="https://api.vk.com/method/"+
 				"users.get?";
+		
 		if (ids!=null)
 			command+="&user_ids="+ids;
 		
@@ -35,9 +38,7 @@ public class UserWorker extends Worker
 		String str = client.executeCommand(command); 
 		JSONObject obj = new JSONObject(str);
 		
-		
-		int count = obj.getJSONArray("response").length();
-		
+		int count = obj.getJSONArray("response").length();		
 		User[] users = new User[count];
 		
 		for(int i=0;i<count;i++)
@@ -102,7 +103,20 @@ public class UserWorker extends Worker
 				user.birthDate = data.getString("bdate");
 			else user.birthDate="";
 			
-			user.isOnline = (data.getInt("online")!=0);
+			boolean isOnline = (data.getInt("online")!=0);
+			user.onlineAppID = -1;
+			
+			if(isOnline)
+				user.online = Online.PC;
+			else user.online = Online.OFFLINE;
+			
+			if (data.has("online_app"))
+			{
+				user.online = Online.APP;
+				user.onlineAppID = data.getInt("online_app");
+			}
+			else if (data.has("online_mobile"))
+				user.online = Online.MOBILE;
 			
 			if (data.has("followers_count"))
 				user.followersCount = data.getInt("followers_count");
@@ -118,25 +132,27 @@ public class UserWorker extends Worker
 		return users;
 	}
 
-	
-	public User getByID(Integer ID) throws ClientProtocolException, IOException, JSONException
+	public User getByID(int ID) throws ClientProtocolException, IOException, JSONException
 	{
-		return this.get(ID.toString())[0];
+		String id = ""+ID;
+		return this.get(id)[0];
+	}
+	
+	public User getByDomain(String domain) throws UnsupportedOperationException, JSONException, IOException
+	{
+		return this.get(domain)[0];
 	}
 	
 	public User[] getByIDs(Integer[] IDs) throws ClientProtocolException, IOException, JSONException
 	{
+		if (IDs.length<=0) return new User[0];
 		String ids="";
-		if (IDs.length>0)
-		{
-			for (int i=0;i<IDs.length-1;i++)
-				ids+=IDs[i].toString()+",";
-			ids+=IDs[IDs.length-1].toString();
+		
+		for (int i=0;i<IDs.length-1;i++)
+			ids+=IDs[i].toString()+",";
+		ids+=IDs[IDs.length-1].toString();
 			
-			return this.get(ids);
-		}
-		User[] user = new User[0];
-		return user;
+		return this.get(ids);
 	}
 		
 	public User getMe() throws UnsupportedOperationException, JSONException, IOException
@@ -163,15 +179,14 @@ public class UserWorker extends Worker
 		String ids="";
 		
 		for (int i=0;i<count-1;i++)
-			ids+=""+array.getInt(i)+",";
-		
+			ids+=""+array.getInt(i)+",";		
 		ids+=""+array.getInt(count-1);
 		
-		User[] friends =this.get(ids);
+		User[] friends = this.get(ids);
 		return friends;
 	}
 	
-	public Integer addToFriends(User user, String text) throws ClientProtocolException, IOException, JSONException
+	public int addToFriends(User user, String text) throws ClientProtocolException, IOException, JSONException
 	{
 		if (user.canAddToFriends== false) return -1;
 		
@@ -206,6 +221,7 @@ public class UserWorker extends Worker
 	public Status getStatus (User user) throws ClientProtocolException, IOException, JSONException
 	{
 		Status status = new Status();
+		
 		String command = "https://api.vk.com/method/"+
 				"status.get?";
 		if (user!=null) command+="&user_id="+user.ID();
@@ -226,6 +242,5 @@ public class UserWorker extends Worker
 			status.audio=null;
 		
 		return status;
-	}
-	
+	}	
 }

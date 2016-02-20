@@ -2,7 +2,10 @@ package media;
 
 import dialog.Attachment;
 
-public class WallPostReply extends Media
+/**
+ * Represents a photo, video or wall comment.  
+ */
+public class Comment extends Media
 {
 	int fromID;
 	long date;

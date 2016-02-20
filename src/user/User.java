@@ -1,12 +1,18 @@
 package user;
 
 /**
- * 
  * Any person.
- *
  */
 public class User 
 {
+	enum Online
+	{
+		PC,
+		MOBILE,
+		APP,
+		OFFLINE
+	}
+	
 	int ID;
 	String domain;
 	String firstName, lastName, nickname, maidenName;
@@ -25,11 +31,10 @@ public class User
 	int sex;
 	String birthDate;
 	
-	boolean isOnline; //TODO: mobile/app
+	Online online;
+	int onlineAppID;
 	
 	int followersCount, commonCount;
-
-	int timeZone;
 	
 	public int ID(){return this.ID;}
 	public String domain(){return this.domain;}
@@ -37,6 +42,7 @@ public class User
 	public String lastName() {return this.lastName;}
 	public String nickname() {return this.nickname;}
 	public String maidenName() {return this.maidenName;}
+	
 	public boolean isDeactivated() {return this.isDeactivated;}
 	public boolean canComment() {return this.canComment;}
 	public boolean canPost() {return this.canPost;}
@@ -47,9 +53,13 @@ public class User
 	public boolean canAddToFriends () {return this.canAddToFriends;}
 	public boolean hasPhoto () {return this.hasPhoto;}
 	public int photoID() {return this.photoID;}
+	
 	public int sex() {return this.sex;}
 	public String birthDate() {return this.birthDate;}
-	public boolean isOnline() {return this.isOnline;}
+	
+	public Online online() {return this.online;}
+	public int onlineAppID() {return this.onlineAppID;}
+	
 	public int followersCount(){return this.followersCount;}
 	public int commonCount() {return this.commonCount;}
 }

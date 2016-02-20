@@ -12,6 +12,10 @@ public class Video extends Media
 	int commentsNumber;
 	String playURL;
 	boolean isLive;
+	Like likes;
+	boolean canComment;
+	boolean canRepost;
+	int commentsCount;
 	
 	public String title(){return this.title;}
 	public String description() {return this.description;}
@@ -23,4 +27,8 @@ public class Video extends Media
 	public int commentsNumber() {return this.commentsNumber;}
 	public String playURL() {return this.playURL;}
 	public boolean isLive() {return this.isLive;}
+	public Like likes() {return this.likes;}
+	public boolean canComment() {return this.canComment;}
+	public boolean canRepost() {return this.canRepost;}
+	public int commentsCount() {return this.commentsCount;}
 }

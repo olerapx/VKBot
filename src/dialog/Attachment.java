@@ -8,14 +8,11 @@ import media.MediaID;
 import media.Photo;
 import media.Video;
 import media.WallPost;
-import media.WallPostReply;
+import media.Comment;
 
 /**
- * 
  * Attachment in messages and on walls (limited).
- *
  */
-
 public class Attachment
 {
 	public enum Type
@@ -25,7 +22,7 @@ public class Attachment
 		ATTACH_AUDIO,
 		ATTACH_DOC,
 		ATTACH_WALL,
-		ATTACH_REPLY,
+		ATTACH_COMMENT,
 		ATTACH_LINK,
 		ATTACH_OTHER
 	}
@@ -34,12 +31,10 @@ public class Attachment
 	MediaID ID;
 	
 	/**
-	 * 
 	 * @param type
 	 * Convert enum Type to string to use in API requests. 
 	 * API methods such as messages.getById returns type of wall reply attachment as "wall_reply" but to attach reply to a message we need to write "wall".
 	 * So we need to convert it that way.
-	 * 
 	 */
 	private String typeToString (Type type)
 	{
@@ -50,7 +45,7 @@ public class Attachment
 		case ATTACH_AUDIO:{ return "audio";}
 		case ATTACH_DOC:{ return "doc";}
 		case ATTACH_WALL:{ return "wall";}
-		case ATTACH_REPLY:{ return "wall";}
+		case ATTACH_COMMENT:{ return "wall";}
 		case ATTACH_LINK:{ return "link";}
 		default: return "";	
 		}
@@ -69,7 +64,7 @@ public class Attachment
 			return "doc";
 		if (media instanceof WallPost)
 			return "wall";
-		if (media instanceof WallPostReply)
+		if (media instanceof Comment)
 			return "wall_reply";
 		if (media instanceof Link)
 			return "link";
@@ -85,7 +80,7 @@ public class Attachment
 			case "audio":{ return Type.ATTACH_AUDIO;}
 			case "doc":{ return Type.ATTACH_DOC;}
 			case "wall":{ return Type.ATTACH_WALL;}
-			case "wall_reply":{ return Type.ATTACH_REPLY;}
+			case "wall_reply":{ return Type.ATTACH_COMMENT;}
 			case "link":{ return Type.ATTACH_LINK;}
 			default: return Type.ATTACH_OTHER;	
 		}
@@ -103,8 +98,8 @@ public class Attachment
 			 return Type.ATTACH_DOC;
 		if (media instanceof WallPost)
 			return Type.ATTACH_WALL;
-		if (media instanceof WallPostReply)
-			return Type.ATTACH_REPLY;
+		if (media instanceof Comment)
+			return Type.ATTACH_COMMENT;
 		if (media instanceof Link)
 			return Type.ATTACH_LINK;
 		return Type.ATTACH_OTHER;	

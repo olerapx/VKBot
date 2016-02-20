@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import client.VKClient;
-import worker.MediaWorker;
 
 public class PhotoWorker extends MediaWorker 
 {
@@ -22,6 +21,7 @@ public class PhotoWorker extends MediaWorker
 		String str  = client.executeCommand("https://api.vk.com/method/"+
 				"photos.getById?"+
 				"&photos="+IDs+
+				"&extended=1"+
 				"&v=5.45"+
 				"&access_token="+client.token);
 		
@@ -54,6 +54,24 @@ public class PhotoWorker extends MediaWorker
 				photo.userID = data.getInt("user_id");
 			else photo.userID=0;
 						
+			if (data.has("likes"))
+			{
+				JSONObject like = data.getJSONObject("likes");		
+				photo.likes = getLike (like);
+			}
+			else photo.likes = null;
+			
+			photo.canComment = data.getInt("can_comment")!=0;
+			photo.canRepost = data.getInt("can_repost")!=0;
+			
+			if(data.has("comments"))
+				photo.commentsCount = data.getJSONObject("comments").getInt("count");
+			else photo.commentsCount = 0;	
+			
+			if(data.has("reposts"))
+				photo.repostsCount = data.getJSONObject("reposts").getInt("count");
+			else photo.repostsCount = 0;
+			
 			photos[i] = photo;
 		}
 		return photos;

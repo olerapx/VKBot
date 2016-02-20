@@ -3,9 +3,9 @@ import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -53,9 +53,7 @@ public class VKClient
 	String captchaSid="";
 	String captchaKey="";
 	String captchaURL="";
-	
-	String headerLocation;
-	
+		
 	CloseableHttpResponse response;
 		
 	public VKClient(String email, String pass) throws Exception
@@ -80,7 +78,6 @@ public class VKClient
 	{	
 		authorize();		
 		login();
-		confirmApplicationRights();
 		
 		while(!response.containsHeader("location"))
 			handleCaptcha();		
@@ -93,19 +90,14 @@ public class VKClient
 
 	private void authorize() throws ClientProtocolException, IOException, BadLocationException
 	{
-		HttpPost post = new HttpPost("https://oauth.vk.com/authorize?" +
+		String post = "https://oauth.vk.com/authorize?" +
 				"client_id="+ID+
 				"&redirect_uri="+redirectUri+
 				"&display="+display+
 				"&scope="+scope+	
-				"&response_type="+responseType);
-		response = httpClient.execute(post);
-		post.reset();
-		
-		InputStream stream = response.getEntity().getContent();	
+				"&response_type="+responseType;		
 
-		HTMLDocument doc = streamToHtml(stream);
-		stream.close();
+		HTMLDocument doc = stringToHtml(executeCommand(post));
 		
 	    ElementIterator it = new ElementIterator(doc); 
 	    Element elem; 
@@ -127,19 +119,19 @@ public class VKClient
 	    }
 	}
 	
-	HTMLDocument streamToHtml (InputStream stream) throws IOException, BadLocationException
+	HTMLDocument stringToHtml (String string) throws IOException, BadLocationException
 	{
 		HTMLEditorKit kit = new HTMLEditorKit(); 
 		HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument(); 
 		doc.putProperty("IgnoreCharsetDirective", Boolean.TRUE);
-		Reader HTMLReader = new InputStreamReader(stream); 
+		Reader HTMLReader = new StringReader(string); 
 		kit.read(HTMLReader, doc, 0); 
 		return doc;
 	}
 	
 	private void login() throws ClientProtocolException, IOException
 	{
-		HttpPost post = new HttpPost("https://login.vk.com/?act=login&soft=1"+
+		String post = "https://login.vk.com/?act=login&soft=1"+
 				"&q=1"+
 				"&ip_h="+ip_h+
 				"&lg_h="+lg_h+
@@ -147,18 +139,11 @@ public class VKClient
 				"&to="+to+
 				"&expire=0"+
 				"&email="+email+
-				"&pass="+pass);
-		response = httpClient.execute(post);
-		post.reset();
+				"&pass="+pass;
+		executeCommand(post);
+		executeCommand(response.getFirstHeader("location").getValue());
 	}
-	
-	private void confirmApplicationRights() throws ClientProtocolException, IOException
-	{
-		headerLocation = response.getFirstHeader("location").getValue();
-		HttpPost post = new HttpPost(headerLocation);
-		response = httpClient.execute(post);
-	}
-		
+
 	private void handleCaptcha() throws UnsupportedOperationException, IOException, BadLocationException
 	{
 	    getCaptcha();
@@ -177,9 +162,7 @@ public class VKClient
 	
 	private void getCaptcha() throws UnsupportedOperationException, IOException, BadLocationException
 	{
-		InputStream stream = response.getEntity().getContent(); 
-		HTMLDocument doc = streamToHtml(stream);
-		stream.close();
+		HTMLDocument doc = stringToHtml(IOUtils.toString(response.getEntity().getContent(), "UTF-8"));
 		
 	    ElementIterator it = new ElementIterator(doc); 
 	    Element elem; 
@@ -218,7 +201,7 @@ public class VKClient
 	
 	private void sendCaptcha() throws ClientProtocolException, IOException
 	{
-		HttpPost post = new HttpPost("https://login.vk.com/?act=login&soft=1"+
+		String post = "https://login.vk.com/?act=login&soft=1"+
 				"&q=1"+
 				"&ip_h="+ip_h+
 				"&lg_h="+lg_h+
@@ -228,35 +211,31 @@ public class VKClient
 				"&email="+email+
 				"&pass="+pass+
 				"&captcha_sid="+captchaSid+
-				"&captcha_key="+captchaKey);
+				"&captcha_key="+captchaKey;
 		
-		response = httpClient.execute(post);
-		
-		post.reset();
-		
-		headerLocation = response.getFirstHeader("location").getValue();
-		post = new HttpPost(headerLocation);
-		response = httpClient.execute(post);
-		post.reset();
+		executeCommand(post);
+		executeCommand(response.getFirstHeader("location").getValue());
 	}
 	
 	private void getToken() throws ClientProtocolException, IOException
 	{
-		headerLocation = response.getFirstHeader("location").getValue();
-		HttpPost post = new HttpPost(headerLocation);
-		response = httpClient.execute(post);
-		post.reset();
+		executeCommand(response.getFirstHeader("location").getValue());
 
-		headerLocation = response.getFirstHeader("location").getValue();
-
+		String headerLocation = response.getFirstHeader("location").getValue();
 		token = headerLocation.split("#")[1].split("&")[0].split("=")[1];	
 	}
 	
+	/**
+	 * Sends the POST query, gets server response and returns response's String representation.
+	 * @param command
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public String executeCommand(String command) throws ClientProtocolException, IOException
 	{
 		HttpPost post = new HttpPost(command);
 		
-		CloseableHttpResponse response;
 		response = httpClient.execute(post);		
 		String str = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
 		post.reset();

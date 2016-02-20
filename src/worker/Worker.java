@@ -16,7 +16,7 @@ public abstract class Worker
 		this.client=client;
 	}
 	
-	protected Attachment[] getAttachments(JSONArray att) throws JSONException
+	protected Attachment[] getAttachmentsFromJSON(JSONArray att) throws JSONException
 	{
 		int attCount = att.length();
 		

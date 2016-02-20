@@ -1,13 +1,13 @@
-package worker;
+package media;
 
 import java.io.IOException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import client.VKClient;
-import media.Media;
-import media.MediaID;
+import worker.Worker;
 
 public abstract class MediaWorker extends Worker 
 {
@@ -28,14 +28,10 @@ public abstract class MediaWorker extends Worker
 		return this.get(id)[0];
 	}
 	
-	public Media getByID (int ownerID, int mediaID) throws ClientProtocolException, IOException, JSONException
-	{
-		MediaID ID = new MediaID(ownerID, mediaID);
-		return this.getByID(ID);
-	}
-	
 	public Media[] getByIDs (MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
 	{
+		if (IDs.length<=0) return new Media[0];
+		
 		String ids="";
 		for (int i=0;i<IDs.length-1;i++)
 		{
@@ -49,5 +45,20 @@ public abstract class MediaWorker extends Worker
 		if (!ID.accessKey().equals("")) ids+="_" + ID.accessKey();
 		
 		return this.get(ids);
+	}
+	
+	protected Like getLike (JSONObject like) throws JSONException
+	{
+		Like likes = new Like();
+		likes.number = like.getInt("count");
+		
+		if(like.has("can_like"))
+			likes.canLike = like.getInt("can_like")!=0;
+		else likes.canLike = true;
+		
+		likes.isLiked = like.getInt("user_likes")!=0;
+		likes.canRepost = true;
+		
+		return likes;
 	}
 }

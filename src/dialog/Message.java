@@ -1,9 +1,7 @@
 package dialog;
 
 /**
- * 
  * Message in a chat.
- *
  */
 public class Message 
 {

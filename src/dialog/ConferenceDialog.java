@@ -3,9 +3,7 @@ package dialog;
 import user.User;
 
 /**
- * 
  * Conference.
- *
  */
 public class ConferenceDialog extends Dialog 
 {
