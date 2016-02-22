@@ -7,7 +7,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import attachment.Attachment;
+import attachment.AttachmentWorker;
+import attachment.MediaAttachment;
 import client.Client;
+import exceptions.VKException;
 import user.User;
 import user.UserWorker;
 import worker.Worker;
@@ -19,18 +23,22 @@ public class MessageWorker extends Worker
 		super(client);
 	}
 	
-	private void sendMessageTo (Message msg, String dest) throws ClientProtocolException, IOException, JSONException
+	private void sendMessageTo (Message msg, String dest) throws Exception
 	{
 		String url = "messages.send?"+ dest;
 			
 		if (msg.text!=null)
-			url+="&message="+URLEncoder.encode(msg.text, "UTF-8".replace(".", "&#046;"));
-		
-		if (msg.attachments!=null)
+			url+="&message=" + URLEncoder.encode(msg.text, "UTF-8".replace(".", "&#046;"));
+				
+		if (hasMediaAttachment(msg))
 		{
 			url+="&attachment=";
+			
 			for (int i=0;i<msg.attachments.length;i++)
 			{
+				Attachment att = msg.attachments[i];
+				if(!att.canAttach()) continue;
+				
 				url+=msg.attachments[i].toString();
 				if (i<msg.attachments.length-1) url+=",";
 			}			
@@ -47,49 +55,68 @@ public class MessageWorker extends Worker
 		}
 		
 		String str = client.executeCommand(url);
-		updateMessage(new JSONObject (str), msg);
+		
+	    updateMessage(new JSONObject (str), msg);
 	}
 	
-	private void updateMessage (JSONObject response, Message msg) throws JSONException, IOException
+	private boolean hasMediaAttachment(Message msg)
+	{
+		if (msg.attachments==null) return false;
+		
+		for (int i=0;i<msg.attachments.length;i++)
+			if (msg.attachments[i] instanceof MediaAttachment) return true;
+		
+		return false;
+	}
+	
+	private void updateMessage (JSONObject response, Message msg) throws Exception
 	{		
-		msg.messageID = response.getInt("response");
-		msg.userID = client.me.ID();
-		msg.isOut = true;
-		msg.hasEmoji = true;
-		msg.date=System.currentTimeMillis()/1000L;
+		try
+		{
+			msg.messageID = response.getInt("response");
+			msg.userID = client.me.ID();
+			msg.isOut = true;
+			msg.hasEmoji = true;
+			msg.date=System.currentTimeMillis()/1000L;
+		}
+		catch(JSONException ex)
+		{
+			String error= response.getJSONObject("error").getString("error_msg");
+			throw new VKException(error);
+		}
 	}
 
-	public void sendMessageToUser (Message msg, int receiverID) throws ClientProtocolException, IOException, JSONException
+	public void sendMessageToUser (Message msg, int receiverID) throws Exception
 	{
 		String dest = "user_id="+receiverID;
 		sendMessageTo(msg, dest);
 	}
 	
-	public void sendMessageToUser (Message msg, String domain) throws ClientProtocolException, IOException, JSONException
+	public void sendMessageToUser (Message msg, String domain) throws Exception
 	{
 		String dest = "domain="+domain;
 		sendMessageTo(msg, dest);
 	}
 	
-	public void sendMessageToUser (Message msg, User user) throws ClientProtocolException, IOException, JSONException
+	public void sendMessageToUser (Message msg, User user) throws Exception
 	{
 		String dest = "user_id="+user.ID();
 		sendMessageTo(msg, dest);
 	}
 	
-	public void sendMessageToConference (Message msg, int receiverID) throws ClientProtocolException, IOException, JSONException
+	public void sendMessageToConference (Message msg, int receiverID) throws Exception
 	{
 		String dest = "peer_id="+(2000000000+receiverID);
 		sendMessageTo(msg, dest);
 	}
 	
-	public void sendMessageToGroup (Message msg, int receiverID) throws ClientProtocolException, IOException, JSONException
+	public void sendMessageToGroup (Message msg, int receiverID) throws Exception
 	{
 		String dest = "peer_id="+(-receiverID);
 		sendMessageTo(msg, dest);
 	}
 	
-	public void sendMessageToChat (Message msg, Dialog chat) throws ClientProtocolException, IOException, JSONException
+	public void sendMessageToChat (Message msg, Dialog chat) throws Exception
 	{
 		String dest;
 		
@@ -103,7 +130,7 @@ public class MessageWorker extends Worker
 		sendMessageTo(msg, dest);
 	}
 		
-	private Message[] get(String IDs) throws ClientProtocolException, IOException, JSONException
+	private Message[] get(String IDs) throws Exception
 	{
 		String str = client.executeCommand("messages.getById?"+
 				"&message_ids="+IDs);
@@ -148,13 +175,13 @@ public class MessageWorker extends Worker
 	    return msg;
 	}
 	
-	public Message getByID (int ID) throws ClientProtocolException, IOException, JSONException
+	public Message getByID (int ID) throws Exception
 	{
 		String id = ""+ID;	
 		return this.get(id)[0];
 	}
 	
-	public Message[] getByIDs(Integer[] IDs) throws ClientProtocolException, IOException, JSONException
+	public Message[] getByIDs(Integer[] IDs) throws Exception
 	{
 		if (IDs.length<=0) return new Message[0];
 

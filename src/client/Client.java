@@ -55,6 +55,7 @@ public class Client
 	String captchaURL="";
 		
 	CloseableHttpResponse response;
+	String stringResponse;
 		
 	public Client(String email, String pass) throws Exception
 	{
@@ -140,6 +141,7 @@ public class Client
 				"&expire=0"+
 				"&email="+email+
 				"&pass="+pass;
+
 		postQuery(post);
 		postQuery(response.getFirstHeader("location").getValue());
 	}
@@ -148,7 +150,8 @@ public class Client
 	{
 	    getCaptcha();
 	    
-	    File file = new File("file.jpg");	    
+	    File file = new File("file.jpg");	  
+
 	    downloadCaptcha(file);
 	    	    
 		System.out.println("Input captcha:");
@@ -162,7 +165,7 @@ public class Client
 	
 	private void getCaptcha() throws UnsupportedOperationException, IOException, BadLocationException
 	{
-		HTMLDocument doc = stringToHtml(IOUtils.toString(response.getEntity().getContent(), "UTF-8"));
+		HTMLDocument doc = stringToHtml(stringResponse);
 		
 	    ElementIterator it = new ElementIterator(doc); 
 	    Element elem; 
@@ -253,9 +256,9 @@ public class Client
 		HttpPost post = new HttpPost(query);
 		
 		response = httpClient.execute(post);		
-		String str = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
+		stringResponse = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
 		post.reset();
 		
-		return str;
+		return stringResponse;
 	}
 }

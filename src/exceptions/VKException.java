@@ -1,7 +1,7 @@
 package exceptions;
 
 /**
- * Represents VK invalid responses
+ * Represents VK invalid responses.
  */
 public class VKException extends Exception
 {

@@ -7,8 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import attachment.AttachmentWorker;
 import client.Client;
-import dialog.AttachmentWorker;
 
 public class WallPostWorker extends MediaWorker 
 {

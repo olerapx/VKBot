@@ -1,5 +1,8 @@
 package dialog;
 
+import attachment.Attachment;
+import attachment.MediaAttachment;
+
 /**
  * Message in a chat.
  */
@@ -27,7 +30,7 @@ public class Message
 	public Attachment[] attachments() {return this.attachments;}
 	public Integer [] fwds() {return this.fwds;}
 		
-	private void construct (String message, Attachment[]attachments, Integer[] fwds, boolean isOut, String title, long date, boolean hasEmoji)
+	private void construct (String message, MediaAttachment[]attachments, Integer[] fwds, boolean isOut, String title, long date, boolean hasEmoji)
 	{
 		this.messageID=0;
 		this.userID = 0;
@@ -51,12 +54,12 @@ public class Message
 		this.hasEmoji=hasEmoji;
 	}
 	
-	public Message(String message, Attachment[]attachments, Integer[] fwds, String title)
+	public Message(String message, MediaAttachment[]attachments, Integer[] fwds, String title)
 	{
 		this.construct(message, attachments, fwds, true, title, 0, true);
 	}
 		
-	public Message (String message, Attachment[]attachments, Integer[] fwds)
+	public Message (String message, MediaAttachment[]attachments, Integer[] fwds)
 	{
 		this.construct( message, attachments, fwds, true, null, 0, true);
 	}

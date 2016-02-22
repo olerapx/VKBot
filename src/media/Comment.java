@@ -1,6 +1,6 @@
 package media;
 
-import dialog.Attachment;
+import attachment.Attachment;
 
 /**
  * Represents a photo, video or wall comment.  
