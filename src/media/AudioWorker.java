@@ -10,22 +10,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import client.VKClient;
+import client.Client;
 
 public class AudioWorker extends MediaWorker 
 {
-	public AudioWorker(VKClient client) 
+	public AudioWorker(Client client) 
 	{
 		super(client);
 	}
 
 	protected Audio[] get (String IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		String str = client.executeCommand("https://api.vk.com/method/"+
-				"audio.getById?"+
-				"&audios="+IDs+
-				"&v=5.45"+
-				"&access_token="+client.token);
+		String str = client.executeCommand("audio.getById?"+
+				"&audios="+IDs);
 				
 		JSONObject obj = new JSONObject(str);
 		JSONArray response = obj.getJSONArray("response");
@@ -74,11 +71,9 @@ public class AudioWorker extends MediaWorker
 	
 	String getLyrics(Audio audio) throws ClientProtocolException, IOException, JSONException
 	{
-		String str = client.executeCommand("https://api.vk.com/method/"+
-				"audio.getLyrics?"+
-				"&lyrics_id="+audio.lyricsID+
-				"&v=5.45"+
-				"&access_token="+client.token);
+		String str = client.executeCommand("audio.getLyrics?"+
+				"&lyrics_id="+audio.lyricsID);
+		
 		JSONObject obj = new JSONObject(str);
 		obj = obj.getJSONObject("response");
 		return obj.getString("text");

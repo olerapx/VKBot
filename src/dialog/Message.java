@@ -11,10 +11,10 @@ public class Message
 	long date;
 	boolean hasEmoji;
 	
-	public String title;
-	public String text;
-	public Attachment[] attachments;
-	public Integer [] fwds;
+	String title;
+	String text;
+	Attachment[] attachments;
+	Integer [] fwds;
 	
 	public int messageID() {return this.messageID;}
 	public int userID() {return this.userID;}	
@@ -22,6 +22,11 @@ public class Message
 	public long date() {return this.date;}
 	public boolean hasEmoji() {return this.hasEmoji;}
 	
+	public String title() {return this.title;}
+	public String text() {return this.text;}
+	public Attachment[] attachments() {return this.attachments;}
+	public Integer [] fwds() {return this.fwds;}
+		
 	private void construct (String message, Attachment[]attachments, Integer[] fwds, boolean isOut, String title, long date, boolean hasEmoji)
 	{
 		this.messageID=0;

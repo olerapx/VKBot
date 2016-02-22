@@ -1,3 +1,4 @@
+
 package user;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -7,7 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import client.VKClient;
+import client.Client;
 import media.AudioWorker;
 import media.MediaID;
 import user.User.Online;
@@ -15,25 +16,21 @@ import worker.Worker;
 
 public class UserWorker extends Worker 
 {
-	public UserWorker(VKClient client) 
+	public UserWorker(Client client) 
 	{
 		super(client);
 	}
 	
 	private User[] get(String ids) throws JSONException, UnsupportedOperationException, IOException
 	{
-		String command="https://api.vk.com/method/"+
-				"users.get?";
-		
-		if (ids!=null)
-			command+="&user_ids="+ids;
-		
+		String command="users.get?";
+		if(ids!=null)
+				command += "&user_ids="+ids;
+
 		command+="&fields=domain,nickname,maiden_name,wall_comments,"
 				+ "can_post,can_see_all_posts,can_see_audio,can_write_private_message,"
 				+ "is_friend,can_send_friend_request,has_photo,photo_id,"
-				+ "photo_max_orig,sex,bdate,online,followers_count,common_count"+
-				"&v=5.45"+
-				"&access_token="+client.token;
+				+ "photo_max_orig,sex,bdate,online,followers_count,common_count";
 
 		String str = client.executeCommand(command); 
 		JSONObject obj = new JSONObject(str);
@@ -145,7 +142,6 @@ public class UserWorker extends Worker
 	
 	public User[] getByIDs(Integer[] IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		if (IDs.length<=0) return new User[0];
 		String ids="";
 		
 		for (int i=0;i<IDs.length-1;i++)
@@ -163,12 +159,9 @@ public class UserWorker extends Worker
 	public User[] getFriends(User user) throws ClientProtocolException, IOException //TODO:sort
 , JSONException
 	{		
-		String str = client.executeCommand("https://api.vk.com/method/"+
-				"friends.get?"+
+		String str = client.executeCommand("friends.get?"+
 				"&user_id="+user.ID+
-				"&order=hints"+
-				"&v=5.45"+
-				"&access_token="+client.token);
+				"&order=hints");
 		
 		JSONObject obj = new JSONObject(str);
 		JSONObject data= obj.getJSONObject("response");
@@ -188,15 +181,12 @@ public class UserWorker extends Worker
 	
 	public int addToFriends(User user, String text) throws ClientProtocolException, IOException, JSONException
 	{
-		if (user.canAddToFriends== false) return -1;
+		if (!user.canAddToFriends) return -1;
 		
-		String str = client.executeCommand("https://api.vk.com/method/"+
-				"friends.add?"+
+		String str = client.executeCommand("friends.add?"+
 				"&user_id="+user.ID+
 				"&text"+URLEncoder.encode(text, "UTF-8")+
-				"&follow=0"+
-				"&v=5.45"+
-				"&access_token="+client.token);
+				"&follow=0");
 				
 		JSONObject obj = new JSONObject(str);
 		
@@ -211,24 +201,19 @@ public class UserWorker extends Worker
 	 */
 	public void setStatus (String status) throws ClientProtocolException, IOException
 	{
-		client.executeCommand("https://api.vk.com/method/"+
-				"status.set?"+
-				"text="+URLEncoder.encode(status,"UTF-8".replace(".", "&#046;"))+
-				"&v=5.45"+
-				"&access_token="+client.token);
+		client.executeCommand("status.set?"+
+				"text="+URLEncoder.encode(status,"UTF-8".replace(".", "&#046;")));
 	}
 		
 	public Status getStatus (User user) throws ClientProtocolException, IOException, JSONException
 	{
 		Status status = new Status();
 		
-		String command = "https://api.vk.com/method/"+
-				"status.get?";
-		if (user!=null) command+="&user_id="+user.ID();
-		command+="&v=5.45";
-		command+="&access_token="+client.token;
+		String command = "status.get?"+
+				"&user_id="+user.ID();
 				
 		String str = client.executeCommand(command);
+		
 		JSONObject obj = new JSONObject(str);
 		JSONObject data =  obj.getJSONObject("response");
 		status.text =  data.getString("text");

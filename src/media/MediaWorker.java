@@ -6,13 +6,13 @@ import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import client.VKClient;
+import client.Client;
 import worker.Worker;
 
 public abstract class MediaWorker extends Worker 
 {
 
-	public MediaWorker(VKClient client) 
+	public MediaWorker(Client client) 
 	{
 		super(client);
 	}

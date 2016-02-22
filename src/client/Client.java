@@ -32,7 +32,7 @@ import org.apache.http.impl.client.HttpClients;
 import user.User;
 import user.UserWorker;
 
-public class VKClient 
+public class Client 
 {
 	public CloseableHttpClient httpClient;
 	public String token="";
@@ -56,7 +56,7 @@ public class VKClient
 		
 	CloseableHttpResponse response;
 		
-	public VKClient(String email, String pass) throws Exception
+	public Client(String email, String pass) throws Exception
 	{
 		buildClient();
 		 
@@ -97,7 +97,7 @@ public class VKClient
 				"&scope="+scope+	
 				"&response_type="+responseType;		
 
-		HTMLDocument doc = stringToHtml(executeCommand(post));
+		HTMLDocument doc = stringToHtml(postQuery(post));
 		
 	    ElementIterator it = new ElementIterator(doc); 
 	    Element elem; 
@@ -140,8 +140,8 @@ public class VKClient
 				"&expire=0"+
 				"&email="+email+
 				"&pass="+pass;
-		executeCommand(post);
-		executeCommand(response.getFirstHeader("location").getValue());
+		postQuery(post);
+		postQuery(response.getFirstHeader("location").getValue());
 	}
 
 	private void handleCaptcha() throws UnsupportedOperationException, IOException, BadLocationException
@@ -213,32 +213,49 @@ public class VKClient
 				"&captcha_sid="+captchaSid+
 				"&captcha_key="+captchaKey;
 		
-		executeCommand(post);
-		executeCommand(response.getFirstHeader("location").getValue());
+		postQuery(post);
+		postQuery(response.getFirstHeader("location").getValue());
 	}
 	
 	private void getToken() throws ClientProtocolException, IOException
 	{
-		executeCommand(response.getFirstHeader("location").getValue());
+		postQuery(response.getFirstHeader("location").getValue());
 
 		String headerLocation = response.getFirstHeader("location").getValue();
 		token = headerLocation.split("#")[1].split("&")[0].split("=")[1];	
 	}
 	
 	/**
-	 * Sends the POST query, gets server response and returns response's String representation.
+	 * Sends the VKApi command to execute. Automatically adds address, API version and token to the end of the command.
 	 * @param command
-	 * @return
+	 * @return Response's String representation.
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
 	public String executeCommand(String command) throws ClientProtocolException, IOException
 	{
-		HttpPost post = new HttpPost(command);
+		command = "https://api.vk.com/method/" + command;
+		command+="&v=5.45";
+		command+="&access_token="+token;
+		
+		return postQuery(command);
+	}
+	
+	/**
+	 * Sends the POST query and writes a server response to the class member.
+	 * @param command
+	 * @return Response's String representation.
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	private String postQuery(String query) throws ClientProtocolException, IOException
+	{
+		HttpPost post = new HttpPost(query);
 		
 		response = httpClient.execute(post);		
 		String str = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
 		post.reset();
+		
 		return str;
 	}
 }

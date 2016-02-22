@@ -7,22 +7,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import client.VKClient;
+import client.Client;
 
 public class DocWorker extends MediaWorker 
 {
-	public DocWorker(VKClient client) 
+	public DocWorker(Client client) 
 	{
 		super(client);
 	}
 	
 	protected Doc[] get(String IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		String str  = client.executeCommand("https://api.vk.com/method/"+
-				"docs.getById?"+
-				"&docs="+IDs+
-				"&v=5.45"+
-				"&access_token="+client.token);
+		String str  = client.executeCommand("docs.getById?"+
+				"&docs="+IDs);
 		
 		JSONObject obj = new JSONObject(str);
 		JSONArray response = obj.getJSONArray("response");

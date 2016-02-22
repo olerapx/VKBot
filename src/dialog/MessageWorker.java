@@ -7,25 +7,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import client.VKClient;
+import client.Client;
 import user.User;
 import user.UserWorker;
 import worker.Worker;
 
 public class MessageWorker extends Worker
 {
-	public MessageWorker(VKClient client) 
+	public MessageWorker(Client client) 
 	{
 		super(client);
 	}
 	
 	private void sendMessageTo (Message msg, String dest) throws ClientProtocolException, IOException, JSONException
 	{
-		String url = "https://api.vk.com/method/"+
-				"messages.send?"+
-				 dest+
-				"&v=5.45"+
-				"&access_token="+this.client.token;
+		String url = "messages.send?"+ dest;
 			
 		if (msg.text!=null)
 			url+="&message="+URLEncoder.encode(msg.text, "UTF-8".replace(".", "&#046;"));
@@ -109,11 +105,8 @@ public class MessageWorker extends Worker
 		
 	private Message[] get(String IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		String str = client.executeCommand("https://api.vk.com/method/"+
-				"messages.getById?"+
-				"&message_ids="+IDs+
-				"&v=5.45"+
-				"&access_token="+client.token);
+		String str = client.executeCommand("messages.getById?"+
+				"&message_ids="+IDs);
 			
 		JSONObject obj = new JSONObject(str);
 		JSONArray items = obj.getJSONObject("response").getJSONArray("items");
@@ -147,7 +140,7 @@ public class MessageWorker extends Worker
 	    if (response.has("attachments"))
 	    {
 	    	JSONArray atts = response.getJSONArray("attachments");
-	    	msg.attachments = getAttachmentsFromJSON(atts);
+	    	msg.attachments = new AttachmentWorker(this.client).getFromJSONArray(atts);
 	    }
 	    else msg.attachments = null;
 	    
@@ -179,13 +172,10 @@ public class MessageWorker extends Worker
 		if (count<0 || count>200) count=200;
 		int unread = (isUnread)? 1:0;
 		
-		String command = "https://api.vk.com/method/"+
-				"messages.getDialogs?"+
+		String command = "messages.getDialogs?"+
 				"&offset="+offset+
 				"&count="+count+
-				"&unread="+unread+
-				"&v=5.45"+
-				"&access_token="+client.token;
+				"&unread="+unread;
 				
 		return this.getDialogs(command);
 	}
@@ -252,12 +242,9 @@ public class MessageWorker extends Worker
 	{
 		if (count<0 || count>200) count=200;
 		
-		String command = "https://api.vk.com/method/"+
-				"messages.getDialogs?"+
+		String command = "messages.getDialogs?"+
 				"&offset="+offset+
-				"&count="+count+
-				"&v=5.45"+
-				"&access_token="+client.token;
+				"&count="+count;
 		
 		return this.getDialogs(command);
 	}

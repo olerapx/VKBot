@@ -7,23 +7,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import client.VKClient;
+import client.Client;
 
 public class PhotoWorker extends MediaWorker 
 {
-	public PhotoWorker(VKClient client) 
+	public PhotoWorker(Client client) 
 	{
 		super(client);
 	}
 	
 	protected Photo[] get (String IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		String str  = client.executeCommand("https://api.vk.com/method/"+
-				"photos.getById?"+
+		String str  = client.executeCommand("photos.getById?"+
 				"&photos="+IDs+
-				"&extended=1"+
-				"&v=5.45"+
-				"&access_token="+client.token);
+				"&extended=1");
 		
 		JSONObject obj = new JSONObject(str);
 		JSONArray response = obj.getJSONArray("response");

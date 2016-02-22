@@ -2,7 +2,6 @@ package dialog;
 
 import media.Audio;
 import media.Doc;
-import media.Link;
 import media.Media;
 import media.MediaID;
 import media.Photo;
@@ -23,7 +22,6 @@ public class Attachment
 		ATTACH_DOC,
 		ATTACH_WALL,
 		ATTACH_COMMENT,
-		ATTACH_LINK,
 		ATTACH_OTHER
 	}
 	
@@ -46,7 +44,6 @@ public class Attachment
 		case ATTACH_DOC:{ return "doc";}
 		case ATTACH_WALL:{ return "wall";}
 		case ATTACH_COMMENT:{ return "wall";}
-		case ATTACH_LINK:{ return "link";}
 		default: return "";	
 		}
 	}
@@ -66,8 +63,6 @@ public class Attachment
 			return "wall";
 		if (media instanceof Comment)
 			return "wall_reply";
-		if (media instanceof Link)
-			return "link";
 		return "";
 	}
 		
@@ -81,7 +76,6 @@ public class Attachment
 			case "doc":{ return Type.ATTACH_DOC;}
 			case "wall":{ return Type.ATTACH_WALL;}
 			case "wall_reply":{ return Type.ATTACH_COMMENT;}
-			case "link":{ return Type.ATTACH_LINK;}
 			default: return Type.ATTACH_OTHER;	
 		}
 	}
@@ -100,8 +94,6 @@ public class Attachment
 			return Type.ATTACH_WALL;
 		if (media instanceof Comment)
 			return Type.ATTACH_COMMENT;
-		if (media instanceof Link)
-			return Type.ATTACH_LINK;
 		return Type.ATTACH_OTHER;	
 	}
 	
@@ -144,7 +136,13 @@ public class Attachment
 		this.type = mediaTypeToType(media);
 		this.ID = media.ID();
 	}
-		
+	
+	public Attachment(String type, MediaID ID)
+	{
+		this.type =  stringToType(type);
+		this.ID = ID;
+	}
+			
 	public String toString()
 	{
 		String result=typeToString(type);

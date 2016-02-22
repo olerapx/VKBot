@@ -7,23 +7,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import client.VKClient;
+import client.Client;
+import dialog.AttachmentWorker;
 
 public class WallPostWorker extends MediaWorker 
 {
-	public WallPostWorker(VKClient client) 
+	public WallPostWorker(Client client) 
 	{
 		super(client);
 	}
 	
 	protected WallPost[] get (String IDs) throws ClientProtocolException, IOException, JSONException
 	{
-		String str  = client.executeCommand("https://api.vk.com/method/"+
-				"wall.getById?"+
+		String str  = client.executeCommand("wall.getById?"+
 				"&posts="+IDs+
-				"&extended=0"+
-				"&v=5.45"+
-				"&access_token="+client.token);
+				"&extended=0");
 			
 		JSONObject obj = new JSONObject(str);
 		
@@ -90,7 +88,7 @@ public class WallPostWorker extends MediaWorker
 			if(data.has("attachments"))
 			{
 				JSONArray att = data.getJSONArray("attachments");
-				post.atts = getAttachmentsFromJSON(att);
+				post.atts =  new AttachmentWorker(this.client).getFromJSONArray(att);
 			}
 			else post.atts = null;
 			
@@ -103,17 +101,14 @@ public class WallPostWorker extends MediaWorker
 	{
 		if (count>100 || count <0) count = 100;
 		
-		String str  = client.executeCommand("https://api.vk.com/method/"+
-					"wall.getComments?"+
+		String str  = client.executeCommand("wall.getComments?"+
 					"&owner_id="+ownerID+
 					"&post_id="+wallPostID+
 					"&need_likes=1"+
 					"&offset="+offset+
 					"&count="+count+
 					"&preview_length=0"+
-					"&extended=0"+
-					"&v=5.45"+
-					"&access_token="+client.token);
+					"&extended=0");
 				
 		JSONObject obj = new JSONObject(str);
 		JSONObject data = obj.getJSONObject("response");
@@ -142,7 +137,7 @@ public class WallPostWorker extends MediaWorker
 			if (comment.has("attachments"))
 			{
 				JSONArray att = comment.getJSONArray("attachments");
-				reply.atts = getAttachmentsFromJSON(att);
+				reply.atts = new AttachmentWorker(this.client).getFromJSONArray(att);
 			}
 			else reply.atts = null;
 			
