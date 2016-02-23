@@ -3,33 +3,26 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
-import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONWriter;
 
-import client.VKClient;
-import dialog.Attachment;
-import dialog.Message;
+import client.Decryptor;
+import client.Encryptor;
+import client.Client;
 import dialog.MessageWorker;
-import dialog.Attachment.Type;
-import dialog.ConferenceDialog;
-import dialog.Dialog;
-import media.Audio;
 import media.AudioWorker;
-import media.Photo;
 import media.PhotoWorker;
-import media.Video;
 import media.VideoWorker;
-import media.WallPost;
-import media.WallPostReply;
 import media.WallPostWorker;
-import media.Doc;
 import media.DocWorker;
-import media.MediaID;
-import user.User;
 import user.UserWorker;
 
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 
 import javax.swing.JTextField;
 import java.awt.BorderLayout;
@@ -41,7 +34,7 @@ public class MainWindow {
 	private JTextField textField;
 	private JLabel label;
 	
-	private static VKClient client;
+	private static Client client;
 
 	public static void main(String[] args) throws Exception  
 	{
@@ -59,6 +52,7 @@ public class MainWindow {
 				}
 			}
 		});
+		login();
 		test();
 	}
 	
@@ -88,10 +82,46 @@ public class MainWindow {
 		frmUchanVkbot.getContentPane().add(label, BorderLayout.CENTER);
 	}
 	
-	public static void test() throws Exception
+	private static void login() throws Exception
 	{
-		client = new VKClient("xxx", "xxx");
+		File file = new File("cfg/user.json");
 		
+		if(!file.exists())
+		{
+			file.createNewFile();
+			StringWriter string = new StringWriter();
+			
+			JSONWriter writer = new JSONWriter(string);
+	        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+	        
+			writer.object();
+			
+			System.out.println("Input email");
+			writer.key("email");
+			writer.value(input.readLine());
+			
+			System.out.println("Input pass");
+			writer.key("pass");
+			writer.value(input.readLine());
+			
+			writer.endObject();
+			
+			string.close();
+			
+			Encryptor en = new Encryptor();
+			en.encrypt(string.toString(), file, "cfg/user.cr");
+		}
+		
+		Decryptor de = new Decryptor();
+		String userdata = de.decrypt(file, new File("cfg/user.cr"));
+		
+		JSONObject data = new JSONObject(userdata);
+		
+		client = new Client(data.getString("email"), data.getString("pass"));
+	}
+	
+	public static void test() throws Exception
+	{	
 		UserWorker uw = new UserWorker(client);
 		
 		MessageWorker mw = new MessageWorker(client);
@@ -101,12 +131,15 @@ public class MainWindow {
 		DocWorker dw = new DocWorker(client);
 		WallPostWorker ww = new WallPostWorker(client);
 		
-		System.out.println("Logged in under token:\n"+client.token);	
+		System.out.println("Logged in under token:\n"+client.token);
+		
+		Encryptor en = new Encryptor();
+		Decryptor de = new Decryptor();
 	}
 
 	public static String gen()
 	{
-        String arrNoVowel ="‡·‚„‰Â∏ÊÁËÈÍÎÏÌÓÔÒÚÛÙıˆ˜¯˘¸˚˙˝˛ˇ";
+        String arrNoVowel ="–∞–±–≤–≥–¥–µ—ë–∂–∑–∏–π–∫–ª–º–Ω–æ–ø—Ä—Å—Ç—É—Ñ—Ö—Ü—á—à—â—å—ã—ä—ç—é—è";
         int numberLetters=10;
  
         Random rand = new Random();

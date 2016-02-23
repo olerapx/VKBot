@@ -1,33 +1,37 @@
 package client;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESedeKeySpec;
 
-public class Decryptor
+public class Decryptor extends Cryptor
 {
 	public Decryptor() throws Exception
 	{
-        FileInputStream fis = null;
-        String keyfile = "key.key";
-        String algorithm = "DESede";
-        fis = new FileInputStream(keyfile);
-        byte[] keyspecbytes = new byte[fis.available()];
-        fis.read(keyspecbytes);
-        SecretKeyFactory skf = SecretKeyFactory.getInstance(algorithm);
-        DESedeKeySpec keyspec = new DESedeKeySpec(keyspecbytes);
-        SecretKey key = skf.generateSecret(keyspec);
-        Cipher cipher = Cipher.getInstance(algorithm);
+        fis = null;
+        key = null;
+        cipher = Cipher.getInstance(algorithm);
+	}
+	
+	/**
+	 * Decrypts the data from file with a key from keyFile.
+	 * @param file
+	 * @param keyFile
+	 * @return Decrypted data.
+	 * @throws Exception
+	 */
+	public String decrypt (File file, File keyFile) throws Exception
+	{
+		getKeyFromSpec(keyFile);
+		
         cipher.init(Cipher.DECRYPT_MODE, key);
-        ObjectInputStream ois = new ObjectInputStream(new CipherInputStream(new FileInputStream("Secret.file"), cipher));
-        String secret = (String) ois.readObject();
-        System.out.println(secret);
-        fis.close();
+        ObjectInputStream ois = new ObjectInputStream(new CipherInputStream(new FileInputStream(file), cipher));
+        String output = (String) ois.readObject();
         ois.close();
+        
+        return output;
 	}
 }
