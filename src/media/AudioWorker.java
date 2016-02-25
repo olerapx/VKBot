@@ -30,43 +30,41 @@ public class AudioWorker extends MediaWorker
 		int count = response.length();
 		Audio[] audios = new Audio[count];
 		
-		for (int i=0;i<count;i++)
-		{
-			JSONObject data = response.getJSONObject(i);
-			
-			Audio audio = new Audio();
-
-			audio.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));
-			audio.artist = data.getString("artist");
-			audio.title = data.getString("title");
-			audio.duration = data.getLong("duration");
-			
-			if(data.has("lyrics_id"))
-				audio.lyricsID = data.getInt("lyrics_id");
-			else audio.lyricsID = 0;
-			
-			if (data.has("album_id"))
-				audio.albumID = data.getInt("album_id");
-			else audio.albumID=0;
-			
-			if (data.has("genre_id"))
-				audio.genreID = data.getInt("genre_id");
-			else audio.genreID=0;
-			
-			audio.genre = this.getGenre(audio.genreID);
-			
-			if(data.has("date"))
-				audio.date = data.getInt("date");
-			else audio.date=0;
-			
-			if (audio.lyricsID == 0) 
-				audio.lyrics="";
-			else
-				audio.lyrics = getLyrics (audio);
-			
-			audios[i] = audio;
-		}		
+		for (int i=0;i<count;i++)			
+			audios[i] = getFromJSON(response.getJSONObject(i));	
+		
 		return audios;
+	}
+	
+	public Audio getFromJSON(JSONObject data) throws JSONException, ClientProtocolException, IOException
+	{	
+		Audio audio = new Audio();
+
+		audio.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));
+		audio.artist = data.getString("artist");
+		audio.title = data.getString("title");
+		audio.duration = data.getLong("duration");
+		
+		if(data.has("lyrics_id"))
+			audio.lyricsID = data.getInt("lyrics_id");
+		
+		if (data.has("album_id"))
+			audio.albumID = data.getInt("album_id");
+		
+		if (data.has("genre_id"))
+			audio.genreID = data.getInt("genre_id");
+		
+		audio.genre = this.getGenre(audio.genreID);
+		
+		if(data.has("date"))
+			audio.date = data.getLong("date");
+		
+		if (audio.lyricsID == 0) 
+			audio.lyrics="";
+		else
+			audio.lyrics = getLyrics (audio);
+		
+		return audio;
 	}
 	
 	String getLyrics(Audio audio) throws ClientProtocolException, IOException, JSONException

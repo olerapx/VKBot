@@ -11,10 +11,14 @@ import client.Encryptor;
 import client.Client;
 import dialog.MessageWorker;
 import media.AudioWorker;
+import media.Comment;
 import media.PhotoWorker;
 import media.VideoWorker;
+import media.WallPost;
 import media.WallPostWorker;
 import media.DocWorker;
+import media.MediaID;
+import media.Photo;
 import user.UserWorker;
 
 import java.awt.Font;
@@ -28,8 +32,8 @@ import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
 
-public class MainWindow {
-
+public class MainWindow 
+{
 	private JFrame frmUchanVkbot;
 	private JTextField textField;
 	private JLabel label;
@@ -52,6 +56,7 @@ public class MainWindow {
 				}
 			}
 		});
+		
 		login();
 		test();
 	}
@@ -84,7 +89,7 @@ public class MainWindow {
 	
 	private static void login() throws Exception
 	{
-		File file = new File("cfg/user.json");
+		File file = new File("cache/user.dat");
 		
 		if(!file.exists())
 		{
@@ -109,15 +114,16 @@ public class MainWindow {
 			string.close();
 			
 			Encryptor en = new Encryptor();
-			en.encrypt(string.toString(), file, "cfg/user.cr");
+			en.encrypt(string.toString(), file, "cache/user.cr");
 		}
 		
 		Decryptor de = new Decryptor();
-		String userdata = de.decrypt(file, new File("cfg/user.cr"));
+		String userdata = de.decrypt(file, new File("cache/user.cr"));
 		
 		JSONObject data = new JSONObject(userdata);
 		
 		client = new Client(data.getString("email"), data.getString("pass"));
+		System.out.println("Logged in under token:\n"+client.token);
 	}
 	
 	public static void test() throws Exception
@@ -129,12 +135,9 @@ public class MainWindow {
 		PhotoWorker pw = new PhotoWorker(client);
 		VideoWorker vw = new VideoWorker(client);
 		DocWorker dw = new DocWorker(client);
-		WallPostWorker ww = new WallPostWorker(client);
+		WallPostWorker ww = new WallPostWorker(client);	
 		
-		System.out.println("Logged in under token:\n"+client.token);
-		
-		Encryptor en = new Encryptor();
-		Decryptor de = new Decryptor();
+
 	}
 
 	public static String gen()

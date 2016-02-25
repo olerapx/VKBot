@@ -18,14 +18,17 @@ public abstract class MediaWorker extends Worker
 	}
 	
 	protected abstract Media[] get (String IDs)  throws ClientProtocolException, IOException, JSONException;
+	public abstract Media getFromJSON(JSONObject data)  throws JSONException, ClientProtocolException, IOException;
 	
 	public Media getByID (MediaID ID) throws ClientProtocolException, IOException, JSONException
 	{
 		String id = ""+ID.ownerID()+"_"+ID.mediaID();
 		if (!ID.accessKey().equals(""))
 			id+="_"+ID.accessKey();
+		
+		Media[] media = this.get(id);
 
-		return this.get(id)[0];
+		return media[0]; //TODO:safety
 	}
 	
 	public Media[] getByIDs (MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
@@ -33,17 +36,15 @@ public abstract class MediaWorker extends Worker
 		if (IDs.length<=0) return new Media[0];
 		
 		String ids="";
-		for (int i=0;i<IDs.length-1;i++)
+		for (int i=0;i<IDs.length;i++)
 		{
 			MediaID ID = IDs[i];
 			ids+=ID.ownerID()+"_" + ID.mediaID();
 			if (!ID.accessKey().equals("")) ids+="_" + ID.accessKey();
-			ids+=",";
-		}
-		MediaID ID = IDs[IDs.length-1];
-		ids+=ID.ownerID()+"_" + ID.mediaID();
-		if (!ID.accessKey().equals("")) ids+="_" + ID.accessKey();
-		
+			
+			if (i<IDs.length-1)	ids+=",";
+		}		
+
 		return this.get(ids);
 	}
 	

@@ -53,25 +53,22 @@ public class PhotoWorker extends MediaWorker
 		
 		if (data.has("user_id"))
 			photo.userID = data.getInt("user_id");
-		else photo.userID=0;
 					
 		if (data.has("likes"))
 		{
 			JSONObject like = data.getJSONObject("likes");		
 			photo.likes = getLike (like);
 		}
-		else photo.likes = null;
+		else photo.likes = new Like();
 		
 		photo.canComment = data.getInt("can_comment")!=0;
 		photo.canRepost = data.getInt("can_repost")!=0;
 		
 		if(data.has("comments"))
 			photo.commentsCount = data.getJSONObject("comments").getInt("count");
-		else photo.commentsCount = 0;	
 		
 		if(data.has("reposts"))
 			photo.repostsCount = data.getJSONObject("reposts").getInt("count");
-		else photo.repostsCount = 0;
 		
 		return photo;
 	}

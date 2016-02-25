@@ -28,29 +28,31 @@ public class DocWorker extends MediaWorker
 		Doc[] docs = new Doc[count];
 		
 		for (int i=0;i<count;i++)
-		{
-			JSONObject data = response.getJSONObject(i);
-			
-			Doc doc = new Doc();
-			doc.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));	
-			
-			doc.title = data.getString("title");
-			doc.size = data.getLong("size");
-			doc.extention = data.getString("ext");
-			doc.URL = data.getString("url");
-			doc.addingDate = data.getLong("date");
-			doc.type = data.getInt("type");
-			
-			if (data.has("preview"))
-			{
-				data = data.getJSONObject("preview").getJSONObject("photo");
-				doc.photoURL = data.getJSONArray("sizes").getJSONObject(0).getString("src");
-			}
-			else doc.photoURL="";
-
-			docs[i] = doc;
-		}
+			docs[i] = getFromJSON(response.getJSONObject(i));
+		
 		return docs;
+	}
+	
+	public Doc getFromJSON(JSONObject data) throws JSONException
+	{
+		Doc doc = new Doc();
+		doc.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));	
+		
+		doc.title = data.getString("title");
+		doc.size = data.getLong("size");
+		doc.extention = data.getString("ext");
+		doc.URL = data.getString("url");
+		doc.addingDate = data.getLong("date");
+		doc.type = data.getInt("type");
+		
+		if (data.has("preview"))
+		{
+			data = data.getJSONObject("preview").getJSONObject("photo");
+			doc.photoURL = data.getJSONArray("sizes").getJSONObject(0).getString("src");
+		}
+		else doc.photoURL="";
+
+		return doc;
 	}
 	
 	public Doc getByID(MediaID ID) throws ClientProtocolException, IOException, JSONException

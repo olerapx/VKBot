@@ -13,7 +13,7 @@ public class Audio extends Media
 	int genreID;
 	String genre;
 	
-	int date;
+	long date;
 	
 	public Audio()
 	{ 
@@ -31,5 +31,5 @@ public class Audio extends Media
 	public int genreID() {return this.genreID;}
 	public String genre() {return this.genre;}
 	
-	public int date() {return this.date;}
+	public long date() {return this.date;}
 }

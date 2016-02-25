@@ -41,7 +41,7 @@ public class MessageWorker extends Worker
 				
 				url+=msg.attachments[i].toString();
 				if (i<msg.attachments.length-1) url+=",";
-			}			
+			}
 		}
 		
 		if (msg.fwds!=null)
@@ -144,7 +144,7 @@ public class MessageWorker extends Worker
 		for (int i=0;i<count;i++)
 		{
 			JSONObject data = items.getJSONObject(i);
-		    messages[i] = this.getFromJSON(data);
+		    messages[i] = getFromJSON(data);
 		}
 				
 		return messages;
@@ -169,9 +169,9 @@ public class MessageWorker extends Worker
 	    	JSONArray atts = response.getJSONArray("attachments");
 	    	msg.attachments = new AttachmentWorker(this.client).getFromJSONArray(atts);
 	    }
-	    else msg.attachments = null;
+	    else msg.attachments = new Attachment[0];
 	    
-	    msg.fwds = null; 
+	    msg.fwds = new Integer[0]; 
 	    return msg;
 	}
 	
@@ -259,7 +259,6 @@ public class MessageWorker extends Worker
 		
 		if (item.has("unread"))
 			dialog.unreadMessagesNumber =  item.getInt("unread");
-		else dialog.unreadMessagesNumber=0;
 				
 		dialog.lastMessage = getFromJSON(msg);		
 		return dialog;	

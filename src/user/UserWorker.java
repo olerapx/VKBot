@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import client.Client;
+import media.Audio;
 import media.AudioWorker;
 import media.MediaID;
 import user.User.Online;
@@ -33,105 +34,100 @@ public class UserWorker extends Worker
 				+ "photo_max_orig,sex,bdate,online,followers_count,common_count";
 
 		String str = client.executeCommand(command); 
-		JSONObject obj = new JSONObject(str);
 		
-		int count = obj.getJSONArray("response").length();		
+		JSONObject obj = new JSONObject(str);		
+		JSONArray response = obj.getJSONArray("response");
+		
+		int count = response.length();		
 		User[] users = new User[count];
 		
-		for(int i=0;i<count;i++)
-		{
-			User user = new User();
-			JSONObject data= obj.getJSONArray("response").getJSONObject(i);
-			
-			user.ID = data.getInt("id");
-			
-			if (data.has("domain"))
-				user.domain= data.getString("domain");
-			else user.domain="";
-			
-			user.firstName = data.getString("first_name");
-			user.lastName=data.getString("last_name");
-	
-			if (data.has("nickname"))
-				user.nickname= data.getString("nickname");
-			else user.nickname="";
-			
-			if (data.has("maiden_name")) 
-				user.maidenName= data.getString("maiden_name");
-			else user.maidenName="";
-			
-			if (data.has("deactivated"))
-				user.isDeactivated= true;
-			else user.isDeactivated=false;
-						
-			if (data.has("wall_comments"))
-				user.canComment =(data.getInt("wall_comments")!=0);
-			else user.canComment = false;
-			
-			user.canPost = (data.getInt("can_post")!=0);
-			
-			if (data.has("can_see_all_posts"))
-				user.canSeeAllPosts= (data.getInt("can_see_all_posts")!=0);
-			else user.canSeeAllPosts=false;
-			
-			if(data.has("can_see_audio"))
-				user.canSeeAudio= (data.getInt("can_see_audio")!=0);
-			else user.canSeeAudio=false;
-			
-			user.canWriteMessage= (data.getInt("can_write_private_message")!=0);
-			
-			if (data.has("is_friend"))
-				user.isFriend = (data.getInt("is_friend")!=0);
-			else user.isFriend=false;
-			
-			if (data.has("can_send_friend_request"))
-				user.canAddToFriends =(data.getInt("can_send_friend_request")!=0);
-			else user.canAddToFriends=false;
-			
-			user.hasPhoto = (data.getInt("has_photo")!=0);
-					
-			if (data.has("photo_id"))
-				user.photoID =Integer.parseInt(data.getString("photo_id").split("_")[1]);
-			else user.photoID=0;
-			
-			user.sex = data.getInt("sex");
-			
-			if (data.has("bdate"))
-				user.birthDate = data.getString("bdate");
-			else user.birthDate="";
-			
-			boolean isOnline = (data.getInt("online")!=0);
-			user.onlineAppID = -1;
-			
-			if(isOnline)
-				user.online = Online.PC;
-			else user.online = Online.OFFLINE;
-			
-			if (data.has("online_app"))
-			{
-				user.online = Online.APP;
-				user.onlineAppID = data.getInt("online_app");
-			}
-			else if (data.has("online_mobile"))
-				user.online = Online.MOBILE;
-			
-			if (data.has("followers_count"))
-				user.followersCount = data.getInt("followers_count");
-			else user.followersCount=0;
-			
-			if (data.has("common_count"))
-				user.commonCount = data.getInt("common_count");
-			else user.commonCount=0;
-						
-			users[i] = user;
-		}
-		
+		for(int i=0;i<count;i++)						
+			users[i] = getFromJSON(response.getJSONObject(i));
+				
 		return users;
+	}
+	
+	public User getFromJSON(JSONObject data) throws JSONException
+	{
+		User user = new User();
+		
+		user.ID = data.getInt("id");
+		
+		if (data.has("domain"))
+			user.domain= data.getString("domain");
+		else user.domain="";
+		
+		user.firstName = data.getString("first_name");
+		user.lastName=data.getString("last_name");
+
+		if (data.has("nickname"))
+			user.nickname= data.getString("nickname");
+		else user.nickname="";
+		
+		if (data.has("maiden_name")) 
+			user.maidenName= data.getString("maiden_name");
+		else user.maidenName="";
+		
+		if (data.has("deactivated"))
+			user.isDeactivated= true;
+					
+		if (data.has("wall_comments"))
+			user.canComment =(data.getInt("wall_comments")!=0);
+		
+		user.canPost = (data.getInt("can_post")!=0);
+		
+		if (data.has("can_see_all_posts"))
+			user.canSeeAllPosts= (data.getInt("can_see_all_posts")!=0);
+		
+		if(data.has("can_see_audio"))
+			user.canSeeAudio= (data.getInt("can_see_audio")!=0);
+		
+		user.canWriteMessage= (data.getInt("can_write_private_message")!=0);
+		
+		if (data.has("is_friend"))
+			user.isFriend = (data.getInt("is_friend")!=0);
+		
+		if (data.has("can_send_friend_request"))
+			user.canAddToFriends =(data.getInt("can_send_friend_request")!=0);
+		
+		user.hasPhoto = (data.getInt("has_photo")!=0);
+				
+		if (data.has("photo_id"))
+			user.photoID =Integer.parseInt(data.getString("photo_id").split("_")[1]);
+		
+		user.sex = data.getInt("sex");
+		
+		if (data.has("bdate"))
+			user.birthDate = data.getString("bdate");
+		else user.birthDate="";
+		
+		boolean isOnline = (data.getInt("online")!=0);
+		user.onlineAppID = -1;
+		
+		if(isOnline)
+			user.online = Online.PC;
+		else user.online = Online.OFFLINE;
+		
+		if (data.has("online_app"))
+		{
+			user.online = Online.APP;
+			user.onlineAppID = data.getInt("online_app");
+		}
+		else if (data.has("online_mobile"))
+			user.online = Online.MOBILE;
+		
+		if (data.has("followers_count"))
+			user.followersCount = data.getInt("followers_count");
+		
+		if (data.has("common_count"))
+			user.commonCount = data.getInt("common_count");
+					
+		return user;
 	}
 
 	public User getByID(int ID) throws ClientProtocolException, IOException, JSONException
 	{
-		String id = ""+ID;
+		String id = "" + ID;
 		return this.get(id)[0];
 	}
 	
@@ -210,7 +206,7 @@ public class UserWorker extends Worker
 		Status status = new Status();
 		
 		String command = "status.get?"+
-				"&user_id="+user.ID();
+				"&user_id=" + user.ID();
 				
 		String str = client.executeCommand(command);
 		
@@ -224,7 +220,7 @@ public class UserWorker extends Worker
 			status.audio = new AudioWorker(client).getByID(new MediaID(data.getInt("owner_id"), data.getInt("id")));
 		}
 		else
-			status.audio=null;
+			status.audio=new Audio();
 		
 		return status;
 	}	
