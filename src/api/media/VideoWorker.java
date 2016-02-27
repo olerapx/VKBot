@@ -8,6 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.client.Client;
+import api.media.comment.CommentWorker;
+import api.media.comment.VideoComment;
 
 public class VideoWorker extends MediaWorker 
 {
@@ -71,7 +73,7 @@ public class VideoWorker extends MediaWorker
 		if (data.has("likes"))
 		{
 			JSONObject like = data.getJSONObject("likes");		
-			video.likes = getLike (like);
+			video.likes = new LikeWorker(client).getLike (like);
 		}
 		else video.likes = new Like();
 		
@@ -92,5 +94,38 @@ public class VideoWorker extends MediaWorker
 	public Video[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
 	{
 		return (Video[])super.getByIDs(IDs);
+	}
+	
+	public VideoComment[] getComments (Video video, int offset, int count)  throws ClientProtocolException, IOException, JSONException
+	{
+		if (count>100 || count <0) count = 100;
+		
+		MediaID ID = video.ID();
+		
+		String str  = client.executeCommand("video.getComments?"+
+					"&owner_id="+ID.ownerID()+
+					"&video_id="+ID.mediaID()+
+					"&need_likes=1"+
+					"&offset="+offset+
+					"&count="+count+
+					"&preview_length=0"+
+					"&extended=0");
+				
+		JSONObject obj = new JSONObject(str);
+		JSONObject data = obj.getJSONObject("response");
+		
+		int commentsCount = data.getInt("count");
+		
+		commentsCount = (count< commentsCount)? count: commentsCount;
+		
+		JSONArray items = data.getJSONArray("items");		
+		VideoComment[] comments = new VideoComment[commentsCount];
+		
+		CommentWorker cw = new CommentWorker(client);
+		
+		for (int i=0;i<commentsCount;i++)						
+			comments[i] = (VideoComment) cw.getFromJSON(items.getJSONObject(i), video);
+		
+		return comments;
 	}
 }

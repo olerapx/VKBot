@@ -1,6 +1,7 @@
 package api.media;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
@@ -8,6 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.client.Client;
+import api.media.comment.CommentWorker;
+import api.media.comment.WallComment;
 import api.attachment.Attachment;
 import api.attachment.AttachmentWorker;
 
@@ -51,7 +54,7 @@ public class WallPostWorker extends MediaWorker
 		if (data.has("likes"))
 		{
 			JSONObject like = data.getJSONObject("likes");
-			post.likes = getLike (like);
+			post.likes = new LikeWorker(client).getLike (like);
 		}
 		else post.likes = new Like();
 		
@@ -88,10 +91,22 @@ public class WallPostWorker extends MediaWorker
 		
 		return post;
 	}
-		
-	public Comment[] getComments (MediaID ID, int offset, int count)  throws ClientProtocolException, IOException, JSONException
+	
+	public WallPost getByID(MediaID ID) throws ClientProtocolException, IOException, JSONException
+	{
+		return (WallPost)super.getByID(ID);
+	}
+	
+	public WallPost[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
+	{
+		return (WallPost[])super.getByIDs(IDs);
+	}
+	
+	public WallComment[] getComments (WallPost post, int offset, int count)  throws ClientProtocolException, IOException, JSONException
 	{
 		if (count>100 || count <0) count = 100;
+		
+		MediaID ID = post.ID();
 		
 		String str  = client.executeCommand("wall.getComments?"+
 					"&owner_id="+ID.ownerID()+
@@ -107,48 +122,24 @@ public class WallPostWorker extends MediaWorker
 		
 		int commentsCount = data.getInt("count");
 		
+		commentsCount = (count< commentsCount)? count: commentsCount;
+		
 		JSONArray items = data.getJSONArray("items");		
-		Comment[] replies = new Comment[commentsCount];
+		WallComment[] comments = new WallComment[commentsCount];
+		
+		CommentWorker cw = new CommentWorker(client);
 		
 		for (int i=0;i<commentsCount;i++)						
-			replies[i]=getCommentFromJSON(items.getJSONObject(i), ID);
+			comments[i] = (WallComment) cw.getFromJSON(items.getJSONObject(i), post);
 		
-		return replies;
+		return comments;
 	}
 	
-	public Comment getCommentFromJSON(JSONObject data, MediaID ID) throws JSONException
-	{
-		Comment reply = new Comment();
-		
-		reply.ID = new MediaID(ID.ownerID(), data.getInt("id"));	
-		reply.fromID = data.getInt("from_id");
-		reply.date = data.getLong("date");
-		reply.text = data.getString("text");
-		
-		if (data.has("likes"))
-		{
-			JSONObject like = data.getJSONObject("likes");		
-			reply.likes = getLike (like);
-		} 
-		else reply.likes = new Like();
-		
-		if (data.has("attachments"))
-		{
-			JSONArray att = data.getJSONArray("attachments");
-			reply.atts = new AttachmentWorker(this.client).getFromJSONArray(att);
-		}
-		else reply.atts = new Attachment[0];
-		
-		return reply;
+	public void repost (WallPost post, String message) throws ClientProtocolException, IOException
+	{		
+		client.executeCommand("wall.repost?"+
+							  "&object=wall"+post.ID.ownerID+"_"+post.ID.mediaID+
+							  "&message="+URLEncoder.encode(message, "UTF-8".replace(".", "&#046;")));
 	}
-			
-	public WallPost getByID(MediaID ID) throws ClientProtocolException, IOException, JSONException
-	{
-		return (WallPost)super.getByID(ID);
-	}
-	
-	public WallPost[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
-	{
-		return (WallPost[])super.getByIDs(IDs);
-	}
+
 }

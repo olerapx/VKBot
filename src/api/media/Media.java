@@ -10,4 +10,5 @@ public abstract class Media extends VKObject
 	MediaID ID;
 	
 	public MediaID ID() {return this.ID;} 
+	public void setMediaID (MediaID ID) {this.ID = ID;}
 }

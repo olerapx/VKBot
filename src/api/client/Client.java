@@ -236,11 +236,11 @@ public class Client
 	 * @throws IOException
 	 */
 	public String executeCommand(String command) throws ClientProtocolException, IOException
-	{
+	{	
 		command = "https://api.vk.com/method/" + command;
 		command+="&v=5.45";
 		command+="&access_token="+token;
-		
+				
 		return postQuery(command);
 	}
 	

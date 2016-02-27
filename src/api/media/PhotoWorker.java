@@ -8,6 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.client.Client;
+import api.media.comment.CommentWorker;
+import api.media.comment.PhotoComment;
 
 public class PhotoWorker extends MediaWorker 
 {
@@ -57,7 +59,7 @@ public class PhotoWorker extends MediaWorker
 		if (data.has("likes"))
 		{
 			JSONObject like = data.getJSONObject("likes");		
-			photo.likes = getLike (like);
+			photo.likes = new LikeWorker(client).getLike (like);
 		}
 		else photo.likes = new Like();
 		
@@ -81,5 +83,38 @@ public class PhotoWorker extends MediaWorker
 	public Photo[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
 	{
 		return (Photo[])super.getByIDs(IDs);
+	}
+	
+	public PhotoComment[] getComments (Photo photo, int offset, int count)  throws ClientProtocolException, IOException, JSONException
+	{
+		if (count>100 || count <0) count = 100;
+		
+		MediaID ID = photo.ID();
+		
+		String str  = client.executeCommand("photos.getComments?"+
+					"&owner_id="+ID.ownerID()+
+					"&photo_id="+ID.mediaID()+
+					"&need_likes=1"+
+					"&offset="+offset+
+					"&count="+count+
+					"&preview_length=0"+
+					"&extended=0");
+				
+		JSONObject obj = new JSONObject(str);
+		JSONObject data = obj.getJSONObject("response");
+		
+		int commentsCount = data.getInt("count");
+		
+		commentsCount = (count< commentsCount)? count: commentsCount;
+		
+		JSONArray items = data.getJSONArray("items");		
+		PhotoComment[] comments = new PhotoComment[commentsCount];
+		
+		CommentWorker cw = new CommentWorker(client);
+		
+		for (int i=0;i<commentsCount;i++)						
+			comments[i] = (PhotoComment) cw.getFromJSON(items.getJSONObject(i), photo);
+		
+		return comments;
 	}
 }

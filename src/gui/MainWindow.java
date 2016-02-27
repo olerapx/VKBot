@@ -7,12 +7,14 @@ import javax.swing.JFrame;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 
+import api.attachment.Attachment;
+import api.attachment.MediaAttachment;
 import api.client.Client;
 import api.client.Decryptor;
 import api.client.Encryptor;
+import api.dialog.Message;
 import api.dialog.MessageWorker;
 import api.media.AudioWorker;
-import api.media.Comment;
 import api.media.DocWorker;
 import api.media.MediaID;
 import api.media.Photo;
@@ -20,6 +22,9 @@ import api.media.PhotoWorker;
 import api.media.VideoWorker;
 import api.media.WallPost;
 import api.media.WallPostWorker;
+import api.media.comment.Comment;
+import api.media.comment.CommentWorker;
+import api.media.comment.WallComment;
 import api.user.UserWorker;
 
 import java.awt.Font;
@@ -137,8 +142,9 @@ public class MainWindow
 		VideoWorker vw = new VideoWorker(client);
 		DocWorker dw = new DocWorker(client);
 		WallPostWorker ww = new WallPostWorker(client);	
-		
+		CommentWorker cw = new CommentWorker(client);
 
+		
 	}
 
 	public static String gen()

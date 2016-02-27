@@ -1,11 +1,13 @@
-package api.media;
+package api.media.comment;
 
 import api.attachment.Attachment;
+import api.media.Like;
+import api.media.Media;
 
 /**
- * Represents a photo, video or wall comment.  
+ * Base class for comments.
  */
-public class Comment extends Media
+public abstract class Comment extends Media
 {
 	int fromID;
 	
