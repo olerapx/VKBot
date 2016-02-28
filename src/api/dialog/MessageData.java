@@ -4,6 +4,9 @@ import api.attachment.Attachment;
 import api.attachment.MediaAttachment;
 import api.object.VKObject;
 
+/**
+ * Contains a data of message including recursive forward messages data.
+ */
 public class MessageData extends VKObject 
 {
 	int userID;
@@ -22,6 +25,9 @@ public class MessageData extends VKObject
 	public Attachment[] attachments() {return this.attachments;}
 	public MessageData[] forwardMessages() {return this.forwardMessages;}
 	
+	/**
+	 * @return All media attachments this message has.
+	 */
 	public MediaAttachment[] mediaAttachments()
 	{
 		int count = 0;

@@ -8,6 +8,9 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
 
+/**
+ * Base class for data cryptography.
+ */
 public abstract class Cryptor 
 {
     protected String algorithm = "DESede";  

@@ -12,6 +12,7 @@ import api.attachment.MediaAttachment;
 import api.client.Client;
 import api.dialog.Message;
 import api.dialog.MessageWorker;
+import api.media.Audio;
 import api.media.AudioWorker;
 import api.media.DocWorker;
 import api.media.MediaID;

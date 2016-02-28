@@ -119,12 +119,10 @@ public class WallPostWorker extends MediaWorker
 				
 		JSONObject obj = new JSONObject(str);
 		JSONObject data = obj.getJSONObject("response");
-		
-		int commentsCount = data.getInt("count");
-		
-		commentsCount = (count< commentsCount)? count: commentsCount;
-		
+				
 		JSONArray items = data.getJSONArray("items");		
+		int commentsCount = items.length();
+		
 		WallComment[] comments = new WallComment[commentsCount];
 		
 		CommentWorker cw = new CommentWorker(client);

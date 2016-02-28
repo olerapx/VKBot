@@ -103,11 +103,9 @@ public class PhotoWorker extends MediaWorker
 		JSONObject obj = new JSONObject(str);
 		JSONObject data = obj.getJSONObject("response");
 		
-		int commentsCount = data.getInt("count");
+		JSONArray items = data.getJSONArray("items");	
+		int commentsCount = items.length();
 		
-		commentsCount = (count< commentsCount)? count: commentsCount;
-		
-		JSONArray items = data.getJSONArray("items");		
 		PhotoComment[] comments = new PhotoComment[commentsCount];
 		
 		CommentWorker cw = new CommentWorker(client);

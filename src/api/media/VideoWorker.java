@@ -113,12 +113,10 @@ public class VideoWorker extends MediaWorker
 				
 		JSONObject obj = new JSONObject(str);
 		JSONObject data = obj.getJSONObject("response");
-		
-		int commentsCount = data.getInt("count");
-		
-		commentsCount = (count< commentsCount)? count: commentsCount;
-		
+				
 		JSONArray items = data.getJSONArray("items");		
+		int commentsCount = items.length();
+		
 		VideoComment[] comments = new VideoComment[commentsCount];
 		
 		CommentWorker cw = new CommentWorker(client);

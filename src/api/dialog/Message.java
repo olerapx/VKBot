@@ -2,11 +2,12 @@ package api.dialog;
 
 import api.attachment.Attachment;
 import api.attachment.MediaAttachment;
+import api.object.VKObject;
 
 /**
  * Message in a chat.
  */
-public class Message
+public class Message extends VKObject
 {
 	int messageID;
 	boolean isOut;
@@ -33,7 +34,7 @@ public class Message
 		this.data.text=message;
 		
 		if (attachments!=null)
-			this.data.attachments=attachments;
+			this.data.attachments = attachments;
 		else this.data.attachments = new Attachment[0];
 		
 		if (this.data.forwardMessages!=null)
@@ -41,7 +42,7 @@ public class Message
 		else this.data.forwardMessages = new MessageData[0];
 		
 		if (forwardMessagesIDs!=null)
-			this.forwardMessagesIDs=forwardMessagesIDs;	
+			this.forwardMessagesIDs = forwardMessagesIDs;	
 		else this.forwardMessagesIDs = new Integer[0];
 		
 		this.isOut = isOut;

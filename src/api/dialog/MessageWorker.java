@@ -217,7 +217,98 @@ public class MessageWorker extends Worker
 		
 		return this.get(ids);
 	}
+	
+	
+	
+	public Message[] getHistory(Dialog dialog, int offset, int count) throws ClientProtocolException, IOException, JSONException 
+	{
+		return this.getHistory(dialog, offset, count, 0, false);
+	}
+	
+	public Message[] getHistory(Dialog dialog, int offset, int count, boolean reverse) throws ClientProtocolException, IOException, JSONException
+	{
+		return this.getHistory(dialog, offset, count, 0, reverse);
+	}
+	
+	public Message[] getHistory(Dialog dialog, int offset, int count, Message startMessage) throws ClientProtocolException, IOException, JSONException
+	{
+		return this.getHistory(dialog, offset, count, startMessage.messageID, false);
+	}
+	
+	public Message[] getHistoryFromLastUnread (Dialog dialog, int offset, int count) throws ClientProtocolException, IOException, JSONException
+	{
+		return this.getHistory(dialog, offset, count, -1, false);
+	}
+	
+	private Message[] getHistory(Dialog dialog, int offset, int count, int startMessageID, boolean reverse) throws ClientProtocolException, IOException, JSONException
+	{
+		String dest;
+		
+		if (dialog instanceof PrivateDialog)
+			dest = "&user_id="+dialog.ID;
+		else if (dialog instanceof ConferenceDialog)
+			dest = "&peer_id="+(2000000000+dialog.ID);
+		else 
+			dest = "&peer_id="+(-dialog.ID);
+		
+		return getHistory(dest, offset, count, startMessageID, reverse);
+	}
+
+	public Message[] getHistory(User user, int offset, int count) throws ClientProtocolException, IOException, JSONException 
+	{
+		String dest = "&user_id="+user.ID();
+		return this.getHistory(dest, offset, count, 0, false);
+	}
+	
+	public Message[] getHistory(User user, int offset, int count, boolean reverse) throws ClientProtocolException, IOException, JSONException
+	{
+		String dest = "&user_id="+user.ID();
+		return this.getHistory(dest, offset, count, 0, reverse);
+	}
+	
+	public Message[] getHistory(User user, int offset, int count, Message startMessage) throws ClientProtocolException, IOException, JSONException
+	{
+		String dest = "&user_id="+user.ID();
+		return this.getHistory(dest, offset, count, startMessage.messageID, false);
+	}
+	
+	public Message[] getHistoryFromLastUnread (User user, int offset, int count) throws ClientProtocolException, IOException, JSONException
+	{
+		String dest = "&user_id="+user.ID();
+		return this.getHistory(dest, offset, count, -1, false);
+	}
+		
+	private Message[] getHistory(String dest, int offset, int count, int startID, boolean reverse) throws ClientProtocolException, IOException, JSONException
+	{
+		if (count<0 || count>200) count=200;
+				
+		String startMessageID = (startID==0) ? ""  : "&start_message_id=" + startID;
+		
+		String rev = (startID==0) ? "&rev=" + (reverse? 1: 0) :""; 
+		
+		String str = client.executeCommand("messages.getHistory?"+
+												dest+
+											    startMessageID+
+											    "&offset="+offset+
+											    "&count="+count+
+											    rev);
+		
+		JSONObject obj = new JSONObject(str);
+		JSONObject data = obj.getJSONObject("response");		
+		JSONArray items = data.getJSONArray("items");
+		
+		int itemsCount = items.length();
+		
+		Message[] msgs = new Message[itemsCount];
+		
+		for (int i=0;i<itemsCount;i++)
+			msgs[i] = getFromJSON(items.getJSONObject(i));
 			
+		return msgs;
+	}
+			
+	
+	
 	public Dialog[] getDialogs(int offset, int count, boolean isUnread) throws ClientProtocolException, IOException, JSONException
 	{
 		if (count<0 || count>200) count=200;
