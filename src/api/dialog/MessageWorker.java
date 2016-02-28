@@ -26,31 +26,30 @@ public class MessageWorker extends Worker
 	private void sendMessageTo (Message msg, String dest) throws Exception
 	{
 		String url = "messages.send?"+ dest;
-			
-		if (msg.text!=null)
-			url+="&message=" + URLEncoder.encode(msg.text, "UTF-8".replace(".", "&#046;"));
+					
+		url+="&message=" + URLEncoder.encode(msg.data.text(), "UTF-8".replace(".", "&#046;"));
 				
 		if (hasMediaAttachment(msg))
 		{
 			url+="&attachment=";
 			
-			for (int i=0;i<msg.attachments.length;i++)
+			for (int i=0;i<msg.data.attachments().length;i++)
 			{
-				Attachment att = msg.attachments[i];
+				Attachment att = msg.data.attachments()[i];
 				if(!att.canAttach()) continue;
 				
-				url+=msg.attachments[i].toString();
-				if (i<msg.attachments.length-1) url+=",";
+				url+=msg.data.attachments()[i].toString();
+				if (i<msg.data.attachments().length-1) url+=",";
 			}
 		}
 		
-		if (msg.fwds!=null)
+		if (msg.forwardMessagesIDs.length>0)
 		{
 			url+="&forward_messages=";
-			for (int i=0;i<msg.fwds.length;i++)
+			for (int i=0;i<msg.forwardMessagesIDs.length;i++)
 			{
-				url+=msg.fwds[i];
-				if (i<msg.fwds.length-1) url+=",";
+				url+=msg.forwardMessagesIDs[i];
+				if (i<msg.forwardMessagesIDs.length-1) url+=",";
 			}			
 		}
 		
@@ -61,10 +60,10 @@ public class MessageWorker extends Worker
 	
 	private boolean hasMediaAttachment(Message msg)
 	{
-		if (msg.attachments==null) return false;
+		if (msg.data.attachments()==null) return false;
 		
-		for (int i=0;i<msg.attachments.length;i++)
-			if (msg.attachments[i] instanceof MediaAttachment) return true;
+		for (int i=0;i<msg.data.attachments().length;i++)
+			if (msg.data.attachments()[i] instanceof MediaAttachment) return true;
 		
 		return false;
 	}
@@ -74,10 +73,10 @@ public class MessageWorker extends Worker
 		try
 		{
 			msg.messageID = response.getInt("response");
-			msg.userID = client.me.ID();
+			msg.data.userID = client.me.ID();
 			msg.isOut = true;
 			msg.hasEmoji = true;
-			msg.date=System.currentTimeMillis()/1000L;
+			msg.data.date=System.currentTimeMillis()/1000L;
 		}
 		catch(JSONException ex)
 		{
@@ -153,25 +152,50 @@ public class MessageWorker extends Worker
 	public Message getFromJSON(JSONObject response) throws JSONException
 	{
 		Message msg = new Message("");
-		
+				
 		msg.messageID = response.getInt("id");
-		msg.userID = response.getInt("user_id");
 		msg.isOut = response.getInt("out") !=0;
-		msg.date = response.getLong("date");
-	    msg.title = response.getString("title");
-	    msg.text = response.getString("body");
+		
+		msg.data = getDataFromJSON(response);
 	    
 	    if (response.has("emoji"))
 	    	msg.hasEmoji = response.getInt("emoji")!=0;
-	    
-	    if (response.has("attachments"))
+	    	    
+	    msg.forwardMessagesIDs = new Integer[0]; 
+	    return msg;
+	}
+	
+	public MessageData getDataFromJSON(JSONObject data) throws JSONException
+	{
+		MessageData msg = new MessageData();
+		
+		msg.userID = data.getInt("user_id");
+		msg.date = data.getLong("date");
+		
+		if (data.has("title"))
+			msg.title = data.getString("title");
+		
+	    msg.text = data.getString("body");
+	    	    
+	    if (data.has("attachments"))
 	    {
-	    	JSONArray atts = response.getJSONArray("attachments");
+	    	JSONArray atts = data.getJSONArray("attachments");
 	    	msg.attachments = new AttachmentWorker(this.client).getFromJSONArray(atts);
 	    }
 	    else msg.attachments = new Attachment[0];
 	    
-	    msg.fwds = new Integer[0]; 
+	    if (data.has("fwd_messages"))
+	    {
+	    	JSONArray fwds = data.getJSONArray("fwd_messages");
+	    	
+	    	int count = fwds.length();
+	    	msg.forwardMessages = new MessageData[count];
+	    	
+	    	for (int i=0;i<count;i++)
+	    		msg.forwardMessages[i] = getDataFromJSON(fwds.getJSONObject(i));
+	    }
+	    else msg.forwardMessages = new MessageData[0];
+	    
 	    return msg;
 	}
 	
@@ -193,7 +217,7 @@ public class MessageWorker extends Worker
 		
 		return this.get(ids);
 	}
-		
+			
 	public Dialog[] getDialogs(int offset, int count, boolean isUnread) throws ClientProtocolException, IOException, JSONException
 	{
 		if (count<0 || count>200) count=200;
@@ -243,7 +267,7 @@ public class MessageWorker extends Worker
 		else
 		{
 			int ID = msg.getInt("user_id");
-			if(ID<0)
+			if (ID<0)
 			{
 				dialog = new GroupDialog();
 				dialog.ID = -ID;

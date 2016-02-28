@@ -2,71 +2,80 @@ package api.dialog;
 
 import api.attachment.Attachment;
 import api.attachment.MediaAttachment;
-import api.object.VKObject;
 
 /**
  * Message in a chat.
  */
-public class Message extends VKObject 
+public class Message
 {
 	int messageID;
-	int userID;
 	boolean isOut;
-	long date;
 	boolean hasEmoji;
+	MessageData data;
 	
-	String title;
-	String text;
-	Attachment[] attachments;
-	Integer [] fwds;
-	
+	Integer [] forwardMessagesIDs;
+
 	public int messageID() {return this.messageID;}
-	public int userID() {return this.userID;}	
 	public boolean isOut() {return this.isOut;}
-	public long date() {return this.date;}
 	public boolean hasEmoji() {return this.hasEmoji;}
 	
-	public String title() {return this.title;}
-	public String text() {return this.text;}
-	public Attachment[] attachments() {return this.attachments;}
-	public Integer [] fwds() {return this.fwds;}
+	public Integer [] forwardMessagesIDs() {return this.forwardMessagesIDs;}
+	
+	public MessageData data() {return this.data;}
 		
-	private void construct (String message, MediaAttachment[]attachments, Integer[] fwds, boolean isOut, String title, long date, boolean hasEmoji)
+	private void construct (String message, MediaAttachment[]attachments, MessageData[] forwardMessages, Integer[] forwardMessagesIDs, boolean isOut, String title, long date, boolean hasEmoji)
 	{
+		this.data = new MessageData();
+					
 		this.messageID=0;
-		this.userID = 0;
+		this.data.userID = 0;
 		
-		this.text=null;
+		this.data.text=message;
 		
-		this.text=message;
 		if (attachments!=null)
-			this.attachments=attachments;
-			
-		if (fwds!=null)
-			this.fwds=fwds;	
+			this.data.attachments=attachments;
+		else this.data.attachments = new Attachment[0];
+		
+		if (this.data.forwardMessages!=null)
+			this.data.forwardMessages = forwardMessages;
+		else this.data.forwardMessages = new MessageData[0];
+		
+		if (forwardMessagesIDs!=null)
+			this.forwardMessagesIDs=forwardMessagesIDs;	
+		else this.forwardMessagesIDs = new Integer[0];
 		
 		this.isOut = isOut;
 		
 		if (title!=null)
-			this.title=title;
+			this.data.title=title;
 		
-		this.date=date;
+		this.data.date=date;
 		
 		this.hasEmoji=hasEmoji;
 	}
 	
-	public Message(String message, MediaAttachment[]attachments, Integer[] fwds, String title)
+	public Message(String message, MediaAttachment[]attachments, Integer[] forwardMessagesIDs, String title)
 	{
-		this.construct(message, attachments, fwds, true, title, 0, true);
+		this.construct(message, attachments, null, forwardMessagesIDs, true, title, 0, true);
 	}
 		
-	public Message (String message, MediaAttachment[]attachments, Integer[] fwds)
+	public Message (String message, MediaAttachment[]attachments, Integer[] forwardMessagesIDs)
 	{
-		this.construct( message, attachments, fwds, true, null, 0, true);
+		this.construct( message, attachments, null, forwardMessagesIDs, true, null, 0, true);
 	}
 		
 	public Message (String message)
 	{
-		construct (message, null, null, true, null, 0, true);
+		construct (message, null, null, null, true, null, 0, true);
+	}
+	
+	public Message (MessageData data, Integer[] forwardMessagesIDs)
+	{
+		construct (data.text, data.mediaAttachments(), data.forwardMessages, forwardMessagesIDs, true, data.title, 0, true);
+	}
+	
+	public Message (MessageData data)
+	{
+		construct (data.text, data.mediaAttachments(), data.forwardMessages, null, true, data.title, 0, true);	
 	}
 }

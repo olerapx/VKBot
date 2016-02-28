@@ -10,8 +10,6 @@ import org.json.JSONWriter;
 import api.attachment.Attachment;
 import api.attachment.MediaAttachment;
 import api.client.Client;
-import api.client.Decryptor;
-import api.client.Encryptor;
 import api.dialog.Message;
 import api.dialog.MessageWorker;
 import api.media.AudioWorker;
@@ -26,6 +24,8 @@ import api.media.comment.Comment;
 import api.media.comment.CommentWorker;
 import api.media.comment.WallComment;
 import api.user.UserWorker;
+import crypto.Decryptor;
+import crypto.Encryptor;
 
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -143,8 +143,6 @@ public class MainWindow
 		DocWorker dw = new DocWorker(client);
 		WallPostWorker ww = new WallPostWorker(client);	
 		CommentWorker cw = new CommentWorker(client);
-
-		
 	}
 
 	public static String gen()
