@@ -1,8 +1,5 @@
 package api.media;
 
-import java.io.IOException;
-
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +13,7 @@ public class DocWorker extends MediaWorker
 		super(client);
 	}
 	
-	protected Doc[] get(String IDs) throws ClientProtocolException, IOException, JSONException
+	protected Doc[] get(String IDs) throws Exception
 	{
 		String str  = client.executeCommand("docs.getById?"+
 				"&docs="+IDs);
@@ -55,12 +52,12 @@ public class DocWorker extends MediaWorker
 		return doc;
 	}
 	
-	public Doc getByID(MediaID ID) throws ClientProtocolException, IOException, JSONException
+	public Doc getByID(MediaID ID) throws Exception
 	{
 		return (Doc)super.getByID(ID);
 	}
 	
-	public Doc[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
+	public Doc[] getByIDs(MediaID[] IDs) throws Exception
 	{
 		return (Doc[])super.getByIDs(IDs);
 	}

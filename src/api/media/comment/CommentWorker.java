@@ -1,11 +1,8 @@
 package api.media.comment;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.attachment.Attachment;
@@ -27,7 +24,7 @@ public class CommentWorker extends Worker
 		super(client);
 	}
 	
-	public Comment getFromJSON(JSONObject data, Media media) throws JSONException, IllegalArgumentException
+	public Comment getFromJSON(JSONObject data, Media media) throws Exception
 	{
 		Comment comment;
 		
@@ -63,7 +60,7 @@ public class CommentWorker extends Worker
 		return comment;
 	}
 	
-	public void repost (WallComment comment, String message) throws ClientProtocolException, IOException
+	public void repost (WallComment comment, String message) throws Exception
 	{		
 		client.executeCommand("wall.repost?"+
 							  "&object=wall"+comment.ID().ownerID()+"_"+comment.ID().mediaID()+

@@ -1,8 +1,6 @@
 package api.dialog;
-import java.io.IOException;
 import java.net.URLEncoder;
 
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,7 +9,6 @@ import api.attachment.Attachment;
 import api.attachment.AttachmentWorker;
 import api.attachment.MediaAttachment;
 import api.client.Client;
-import api.exceptions.VKException;
 import api.user.User;
 import api.user.UserWorker;
 import api.worker.Worker;
@@ -70,19 +67,11 @@ public class MessageWorker extends Worker
 	
 	private void updateMessage (JSONObject response, Message msg) throws Exception
 	{		
-		try
-		{
-			msg.messageID = response.getInt("response");
-			msg.data.userID = client.me.ID();
-			msg.isOut = true;
-			msg.hasEmoji = true;
-			msg.data.date=System.currentTimeMillis()/1000L;
-		}
-		catch(JSONException ex)
-		{
-			String error= response.getJSONObject("error").getString("error_msg");
-			throw new VKException(error);
-		}
+		msg.messageID = response.getInt("response");
+		msg.data.userID = client.me.ID();
+		msg.isOut = true;
+		msg.hasEmoji = true;
+		msg.data.date=System.currentTimeMillis()/1000L;
 	}
 
 	public void sendMessageToUser (Message msg, int receiverID) throws Exception
@@ -220,27 +209,27 @@ public class MessageWorker extends Worker
 	
 	
 	
-	public Message[] getHistory(Dialog dialog, int offset, int count) throws ClientProtocolException, IOException, JSONException 
+	public Message[] getHistory(Dialog dialog, int offset, int count) throws Exception
 	{
 		return this.getHistory(dialog, offset, count, 0, false);
 	}
 	
-	public Message[] getHistory(Dialog dialog, int offset, int count, boolean reverse) throws ClientProtocolException, IOException, JSONException
+	public Message[] getHistory(Dialog dialog, int offset, int count, boolean reverse) throws Exception
 	{
 		return this.getHistory(dialog, offset, count, 0, reverse);
 	}
 	
-	public Message[] getHistory(Dialog dialog, int offset, int count, Message startMessage) throws ClientProtocolException, IOException, JSONException
+	public Message[] getHistory(Dialog dialog, int offset, int count, Message startMessage) throws Exception
 	{
 		return this.getHistory(dialog, offset, count, startMessage.messageID, false);
 	}
 	
-	public Message[] getHistoryFromLastUnread (Dialog dialog, int offset, int count) throws ClientProtocolException, IOException, JSONException
+	public Message[] getHistoryFromLastUnread (Dialog dialog, int offset, int count) throws Exception
 	{
 		return this.getHistory(dialog, offset, count, -1, false);
 	}
 	
-	private Message[] getHistory(Dialog dialog, int offset, int count, int startMessageID, boolean reverse) throws ClientProtocolException, IOException, JSONException
+	private Message[] getHistory(Dialog dialog, int offset, int count, int startMessageID, boolean reverse) throws Exception
 	{
 		String dest;
 		
@@ -254,31 +243,31 @@ public class MessageWorker extends Worker
 		return getHistory(dest, offset, count, startMessageID, reverse);
 	}
 
-	public Message[] getHistory(User user, int offset, int count) throws ClientProtocolException, IOException, JSONException 
+	public Message[] getHistory(User user, int offset, int count) throws Exception
 	{
 		String dest = "&user_id="+user.ID();
 		return this.getHistory(dest, offset, count, 0, false);
 	}
 	
-	public Message[] getHistory(User user, int offset, int count, boolean reverse) throws ClientProtocolException, IOException, JSONException
+	public Message[] getHistory(User user, int offset, int count, boolean reverse) throws Exception
 	{
 		String dest = "&user_id="+user.ID();
 		return this.getHistory(dest, offset, count, 0, reverse);
 	}
 	
-	public Message[] getHistory(User user, int offset, int count, Message startMessage) throws ClientProtocolException, IOException, JSONException
+	public Message[] getHistory(User user, int offset, int count, Message startMessage) throws Exception
 	{
 		String dest = "&user_id="+user.ID();
 		return this.getHistory(dest, offset, count, startMessage.messageID, false);
 	}
 	
-	public Message[] getHistoryFromLastUnread (User user, int offset, int count) throws ClientProtocolException, IOException, JSONException
+	public Message[] getHistoryFromLastUnread (User user, int offset, int count) throws Exception
 	{
 		String dest = "&user_id="+user.ID();
 		return this.getHistory(dest, offset, count, -1, false);
 	}
 		
-	private Message[] getHistory(String dest, int offset, int count, int startID, boolean reverse) throws ClientProtocolException, IOException, JSONException
+	private Message[] getHistory(String dest, int offset, int count, int startID, boolean reverse) throws Exception
 	{
 		if (count<0 || count>200) count=200;
 				
@@ -309,7 +298,7 @@ public class MessageWorker extends Worker
 			
 	
 	
-	public Dialog[] getDialogs(int offset, int count, boolean isUnread) throws ClientProtocolException, IOException, JSONException
+	public Dialog[] getDialogs(int offset, int count, boolean isUnread) throws Exception
 	{
 		if (count<0 || count>200) count=200;
 		int unread = (isUnread)? 1:0;
@@ -322,7 +311,7 @@ public class MessageWorker extends Worker
 		return this.getDialogs(command);
 	}
 	
-	private Dialog[] getDialogs(String command) throws ClientProtocolException, IOException, JSONException
+	private Dialog[] getDialogs(String command) throws Exception
 	{
 		String str = client.executeCommand(command);
 			
@@ -341,7 +330,7 @@ public class MessageWorker extends Worker
 		return dialogs;
 	}
 	
-	private Dialog getDialog(JSONObject item) throws JSONException, ClientProtocolException, IOException
+	private Dialog getDialog(JSONObject item) throws Exception
 	{
 		JSONObject msg = item.getJSONObject("message");
 		
@@ -379,7 +368,7 @@ public class MessageWorker extends Worker
 		return dialog;	
 	}
 	
-	public Dialog[] getDialogs(int offset, int count) throws ClientProtocolException, IOException, JSONException
+	public Dialog[] getDialogs(int offset, int count) throws Exception
 	{
 		if (count<0 || count>200) count=200;
 		
@@ -390,7 +379,7 @@ public class MessageWorker extends Worker
 		return this.getDialogs(command);
 	}
 	
-	private void fillConferenceData (ConferenceDialog dialog, JSONObject item) throws JSONException, ClientProtocolException, IOException
+	private void fillConferenceData (ConferenceDialog dialog, JSONObject item) throws Exception
 	{
 		UserWorker uw = new UserWorker(client);
 		JSONArray IDs = item.getJSONArray("chat_active");
@@ -414,7 +403,7 @@ public class MessageWorker extends Worker
 	    else dialog.photoURL = "";
 	}
 	
-	private void fillPrivateData (PrivateDialog dialog, JSONObject item) throws JSONException, ClientProtocolException, IOException
+	private void fillPrivateData (PrivateDialog dialog, JSONObject item) throws Exception
 	{
 		User user = new UserWorker(client).getByID(item.getInt("user_id"));
 		
@@ -422,7 +411,7 @@ public class MessageWorker extends Worker
 		dialog.user = user;
 	}
 	
-	private void fillGroupData (GroupDialog dialog, JSONObject item) throws JSONException, ClientProtocolException, IOException
+	private void fillGroupData (GroupDialog dialog, JSONObject item) throws Exception
 	{
 
 	}

@@ -6,10 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
 import javax.swing.text.html.HTML;
@@ -28,7 +26,9 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.json.JSONObject;
 
+import api.exceptions.VKException;
 import api.user.User;
 import api.user.UserWorker;
 
@@ -37,13 +37,14 @@ public class Client
 	public CloseableHttpClient httpClient;
 	public String token="";
 	public User me;
+
 	
 	String ID = "4977827";
 	String scope="friends,photos,audio,video,docs,status,wall,messages,offline";
 	String redirectUri = "https://oauth.vk.com/blank.html";
 	String display = "popup";
 	String responseType = "token";
-	String email="";
+	String login="";
 	String pass="";
 
 	String ip_h="";
@@ -61,7 +62,7 @@ public class Client
 	{
 		buildClient();
 		 
-		this.email=email;
+		this.login=email;
 		this.pass=pass;
 		connect();
 	}	
@@ -80,16 +81,17 @@ public class Client
 		authorize();		
 		login();
 		
-		while(!response.containsHeader("location"))
-			handleCaptcha();		
+		while(!response.containsHeader("location") && token=="")
+			handleProblem();		
 			
-		getToken();
+		if (token=="")
+			getToken();
 		
 		UserWorker uw = new UserWorker(this);
 		me = uw.getMe();		
 	}
 
-	private void authorize() throws ClientProtocolException, IOException, BadLocationException
+	private void authorize() throws Exception
 	{
 		String post = "https://oauth.vk.com/authorize?" +
 				"client_id="+ID+
@@ -120,7 +122,7 @@ public class Client
 	    }
 	}
 	
-	HTMLDocument stringToHtml (String string) throws IOException, BadLocationException
+	HTMLDocument stringToHtml (String string) throws Exception
 	{
 		HTMLEditorKit kit = new HTMLEditorKit(); 
 		HTMLDocument doc = (HTMLDocument) kit.createDefaultDocument(); 
@@ -130,7 +132,7 @@ public class Client
 		return doc;
 	}
 	
-	private void login() throws ClientProtocolException, IOException
+	private void login() throws Exception
 	{
 		String post = "https://login.vk.com/?act=login&soft=1"+
 				"&q=1"+
@@ -139,16 +141,51 @@ public class Client
 				"&_origin=https://oauth.vk.com"+
 				"&to="+to+
 				"&expire=0"+
-				"&email="+email+
+				"&email="+login+
 				"&pass="+pass;
 
 		postQuery(post);
 		postQuery(response.getFirstHeader("location").getValue());
 	}
 
-	private void handleCaptcha() throws UnsupportedOperationException, IOException, BadLocationException
+	private void handleProblem() throws Exception
+	{	    		
+		HTMLDocument doc = stringToHtml(stringResponse);
+		boolean errorFound = false;
+						
+	    ElementIterator it = new ElementIterator(doc); 
+	    Element elem; 
+	   		    	    
+	    while((elem=it.next()) != null)
+	    {       
+	      if (elem.getName().equals("input"))
+	      {
+	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.NAME);
+	    	  if (name==null) continue;
+    	  	    	  
+	    	  if (name.equals("captcha_sid"))
+	    	  {
+	    		  errorFound = true;
+	    		  handleCaptcha(doc);
+	    	  }
+	      }
+	      else if (elem.getName().equals("div"))
+	      {
+	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.CLASS);
+    
+	    	  if (name.equals("oauth_access_header"))
+	    	  {
+	    		  errorFound = true;
+	    		  handleConfirmApplicationRights(doc);
+	    	  }
+	      }
+	    }
+	    if (!errorFound) handleInvalidData(doc);
+	}
+	
+	private void handleCaptcha(HTMLDocument doc) throws Exception
 	{
-	    getCaptcha();
+	    getCaptcha(doc);
 	    
 	    File file = new File("file.jpg");	  
 
@@ -163,10 +200,8 @@ public class Client
 	    file.delete();
 	}
 	
-	private void getCaptcha() throws UnsupportedOperationException, IOException, BadLocationException
-	{
-		HTMLDocument doc = stringToHtml(stringResponse);
-		
+	private void getCaptcha(HTMLDocument doc) throws Exception
+	{		
 	    ElementIterator it = new ElementIterator(doc); 
 	    Element elem; 
 	   		    	    
@@ -190,7 +225,7 @@ public class Client
 	    }
 	}
 	
-	private void downloadCaptcha(File file) throws MalformedURLException, IOException
+	private void downloadCaptcha(File file) throws Exception
 	{
 	    FileUtils.copyURLToFile(new URL(captchaURL), file);
 	    
@@ -202,7 +237,7 @@ public class Client
 	    }
 	}
 	
-	private void sendCaptcha() throws ClientProtocolException, IOException
+	private void sendCaptcha() throws Exception
 	{
 		String post = "https://login.vk.com/?act=login&soft=1"+
 				"&q=1"+
@@ -211,7 +246,7 @@ public class Client
 				"&_origin=https://oauth.vk.com"+
 				"&to="+to+
 				"&expire=0"+
-				"&email="+email+
+				"&email="+login+
 				"&pass="+pass+
 				"&captcha_sid="+captchaSid+
 				"&captcha_key="+captchaKey;
@@ -220,7 +255,57 @@ public class Client
 		postQuery(response.getFirstHeader("location").getValue());
 	}
 	
-	private void getToken() throws ClientProtocolException, IOException
+	private void handleInvalidData(HTMLDocument doc) throws Exception
+	{
+	    ElementIterator it = new ElementIterator(doc); 
+	    Element elem; 
+	    	    	    
+	    while((elem=it.next()) != null)
+	    { 	      
+	      if (elem.getName().equals("input"))
+	      {
+	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.NAME);
+	    	  if (name==null) continue;
+
+	    	  if (name.equals("lg_h"))
+	    	  {
+	    		  lg_h=(String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);
+	    	  }
+	      }
+	    }
+	    
+	    System.out.println("Wrong login or password:\nLogin: "+login);
+	    
+		System.out.println("Input login:");
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        login = input.readLine();
+        
+		System.out.println("Input pass:");
+        input = new BufferedReader(new InputStreamReader(System.in));
+        pass = input.readLine();
+
+        login();
+	}
+	
+	private void handleConfirmApplicationRights(HTMLDocument doc) throws Exception
+	{
+	    ElementIterator it = new ElementIterator(doc); 
+	    Element elem; 
+	    	   		    	    
+	    while((elem=it.next()) != null)
+	    {       
+	      if (elem.getName().equals("form"))
+	      {
+	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.ACTION);
+	    	  postQuery(name);
+	    	  
+	  		  String headerLocation = response.getFirstHeader("location").getValue();
+			  token = headerLocation.split("#")[1].split("&")[0].split("=")[1];	
+	      }
+	    }
+	}
+	
+	private void getToken() throws Exception
 	{
 		postQuery(response.getFirstHeader("location").getValue());
 
@@ -232,16 +317,102 @@ public class Client
 	 * Sends the VKApi command to execute. Automatically adds address, API version and token to the end of the command.
 	 * @param command
 	 * @return Response's String representation.
-	 * @throws ClientProtocolException
-	 * @throws IOException
 	 */
-	public String executeCommand(String command) throws ClientProtocolException, IOException
+	public String executeCommand(String command) throws Exception
 	{	
+		String str="";
+		
 		command = "https://api.vk.com/method/" + command;
 		command+="&v=5.45";
 		command+="&access_token="+token;
-				
-		return postQuery(command);
+		
+		str = postQuery(command);
+		
+		JSONObject obj = new JSONObject(str);
+		if (obj.has("error"))
+		{
+			obj = obj.getJSONObject("error");
+			
+			int code = obj.getInt("error_code");
+			
+			if (code==17)
+				handleSuspectLogin(obj.getString("redirect_uri"));
+			
+			else throw new VKException(obj.getString("error_msg"), code);
+		}
+							
+		return str;
+	}
+	
+	private void handleSuspectLogin(String URL) throws Exception
+	{
+		String str =postQuery(URL);
+		
+		HTMLDocument doc = stringToHtml(str);
+
+		
+	    ElementIterator it = new ElementIterator(doc); 
+	    Element elem; 
+	    	   		    	    
+	    while((elem=it.next()) != null)
+	    {       
+	      if (elem.getName().equals("form"))
+	      {
+	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.ACTION);
+
+	    	  name = "https://vk.com"+name;
+	  	      str = postQuery(name);
+	      }
+	    }
+	    doc = stringToHtml(str);
+	    it = new ElementIterator(doc); 
+	    
+	    String leftNumber="", rightNumber = "";
+	   
+	    while((elem=it.next()) != null)
+	    {       
+	      if (elem.getName().equals("div"))
+	      {
+	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.CLASS);
+	    	  if (name.equals("label ta_r"))
+	    	  {
+	              int count = elem.getElementCount();
+	                for (int i = 0; i < count; i++) 
+	                {
+	                    Element child = elem.getElement(i);
+	                    int startOffset = child.getStartOffset();
+	                    int endOffset = child.getEndOffset();
+	                    int length = endOffset - startOffset;
+	   	    		 leftNumber =(doc.getText(startOffset, length));
+	                }
+	    	  }
+	      }
+	      else if (elem.getName().equals("span"))
+	      {
+	    		 System.out.println("bvavava");
+	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.CLASS);
+	    	  if (name.equals("phone_postfix"))
+	    	  {
+	              int count = elem.getElementCount();
+	                for (int i = 0; i < count; i++) 
+	                {
+	                    Element child = elem.getElement(i);
+	                    int startOffset = child.getStartOffset();
+	                    int endOffset = child.getEndOffset();
+	                    int length = endOffset - startOffset;
+	   	    		 rightNumber =(doc.getText(startOffset, length));
+	                }
+	    	  }
+	      }	      
+	    } 
+	    
+	    System.out.println("Need to confirm the phone number:\n"+leftNumber+"********"+rightNumber);
+	  
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        String number = input.readLine();
+        
+        
+		
 	}
 	
 	/**
@@ -251,14 +422,14 @@ public class Client
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	private String postQuery(String query) throws ClientProtocolException, IOException
-	{
+	private String postQuery(String query) throws Exception
+	{	
 		HttpPost post = new HttpPost(query);
 		
 		response = httpClient.execute(post);		
 		stringResponse = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
 		post.reset();
-		
+
 		return stringResponse;
 	}
 }

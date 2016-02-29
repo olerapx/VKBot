@@ -1,9 +1,5 @@
 package api.media;
 
-import java.io.IOException;
-
-import org.apache.http.client.ClientProtocolException;
-import org.json.JSONException;
 
 import api.client.Client;
 import api.worker.Worker;
@@ -15,9 +11,9 @@ public abstract class MediaWorker extends Worker
 		super(client);
 	}
 	
-	protected abstract Media[] get (String IDs)  throws ClientProtocolException, IOException, JSONException;
+	protected abstract Media[] get (String IDs) throws Exception;
 	
-	public Media getByID (MediaID ID) throws ClientProtocolException, IOException, JSONException
+	public Media getByID (MediaID ID) throws Exception
 	{
 		String id = ""+ID.ownerID()+"_"+ID.mediaID();
 		if (!ID.accessKey().equals(""))
@@ -28,7 +24,7 @@ public abstract class MediaWorker extends Worker
 		return media[0]; //TODO:safety
 	}
 	
-	public Media[] getByIDs (MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
+	public Media[] getByIDs (MediaID[] IDs) throws Exception
 	{
 		if (IDs.length<=0) return new Media[0];
 		

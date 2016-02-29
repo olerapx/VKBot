@@ -2,10 +2,8 @@ package api.media;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Scanner;
 
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +17,7 @@ public class AudioWorker extends MediaWorker
 		super(client);
 	}
 
-	protected Audio[] get (String IDs) throws ClientProtocolException, IOException, JSONException
+	protected Audio[] get (String IDs) throws Exception
 	{
 		String str = client.executeCommand("audio.getById?"+
 				"&audios="+IDs);
@@ -36,7 +34,7 @@ public class AudioWorker extends MediaWorker
 		return audios;
 	}
 	
-	public Audio getFromJSON(JSONObject data) throws JSONException, ClientProtocolException, IOException
+	public Audio getFromJSON(JSONObject data) throws Exception
 	{	
 		Audio audio = new Audio();
 
@@ -67,7 +65,7 @@ public class AudioWorker extends MediaWorker
 		return audio;
 	}
 	
-	String getLyrics(Audio audio) throws ClientProtocolException, IOException, JSONException
+	String getLyrics(Audio audio) throws Exception
 	{
 		String str = client.executeCommand("audio.getLyrics?"+
 				"&lyrics_id="+audio.lyricsID);
@@ -98,12 +96,12 @@ public class AudioWorker extends MediaWorker
 		return "";
 	}
 	
-	public Audio getByID(MediaID ID) throws ClientProtocolException, IOException, JSONException
+	public Audio getByID(MediaID ID) throws Exception
 	{
 		return (Audio)super.getByID(ID);
 	}
 	
-	public Audio[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
+	public Audio[] getByIDs(MediaID[] IDs) throws Exception
 	{
 		return (Audio[])super.getByIDs(IDs);
 	}

@@ -22,7 +22,7 @@ public class UserWorker extends Worker
 		super(client);
 	}
 	
-	private User[] get(String ids) throws JSONException, UnsupportedOperationException, IOException
+	private User[] get(String ids) throws Exception
 	{
 		String command="users.get?";
 		if(ids!=null)
@@ -125,18 +125,18 @@ public class UserWorker extends Worker
 		return user;
 	}
 
-	public User getByID(int ID) throws ClientProtocolException, IOException, JSONException
+	public User getByID(int ID) throws Exception
 	{
 		String id = "" + ID;
 		return this.get(id)[0];
 	}
 	
-	public User getByDomain(String domain) throws UnsupportedOperationException, JSONException, IOException
+	public User getByDomain(String domain) throws Exception
 	{
 		return this.get(domain)[0];
 	}
 	
-	public User[] getByIDs(Integer[] IDs) throws ClientProtocolException, IOException, JSONException
+	public User[] getByIDs(Integer[] IDs) throws Exception
 	{
 		String ids="";
 		
@@ -147,12 +147,12 @@ public class UserWorker extends Worker
 		return this.get(ids);
 	}
 		
-	public User getMe() throws UnsupportedOperationException, JSONException, IOException
+	public User getMe() throws Exception
 	{
 		return this.get(null)[0];
 	}
 	
-	public User[] getFriends(User user) throws ClientProtocolException, IOException //TODO:sort
+	public User[] getFriends(User user) throws Exception //TODO:sort
 , JSONException
 	{		
 		String str = client.executeCommand("friends.get?"+
@@ -175,7 +175,7 @@ public class UserWorker extends Worker
 		return friends;
 	}
 	
-	public int addToFriends(User user, String text) throws ClientProtocolException, IOException, JSONException
+	public int addToFriends(User user, String text) throws Exception
 	{
 		if (!user.canAddToFriends) return -1;
 		
@@ -195,13 +195,13 @@ public class UserWorker extends Worker
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public void setStatus (String status) throws ClientProtocolException, IOException
+	public void setStatus (String status) throws Exception
 	{
 		client.executeCommand("status.set?"+
 				"text="+URLEncoder.encode(status,"UTF-8".replace(".", "&#046;")));
 	}
 		
-	public Status getStatus (User user) throws ClientProtocolException, IOException, JSONException
+	public Status getStatus (User user) throws Exception
 	{
 		Status status = new Status();
 		

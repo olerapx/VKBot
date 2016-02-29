@@ -1,8 +1,5 @@
 package api.media;
 
-import java.io.IOException;
-
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +15,7 @@ public class PhotoWorker extends MediaWorker
 		super(client);
 	}
 	
-	protected Photo[] get (String IDs) throws ClientProtocolException, IOException, JSONException
+	protected Photo[] get (String IDs) throws Exception
 	{
 		String str  = client.executeCommand("photos.getById?"+
 				"&photos="+IDs+
@@ -75,17 +72,17 @@ public class PhotoWorker extends MediaWorker
 		return photo;
 	}
 	
-	public Photo getByID(MediaID ID) throws ClientProtocolException, IOException, JSONException
+	public Photo getByID(MediaID ID) throws Exception
 	{
 		return (Photo)super.getByID(ID);
 	}
 	
-	public Photo[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
+	public Photo[] getByIDs(MediaID[] IDs) throws Exception
 	{
 		return (Photo[])super.getByIDs(IDs);
 	}
 	
-	public PhotoComment[] getComments (Photo photo, int offset, int count)  throws ClientProtocolException, IOException, JSONException
+	public PhotoComment[] getComments (Photo photo, int offset, int count)  throws Exception
 	{
 		if (count>100 || count <0) count = 100;
 		

@@ -1,11 +1,8 @@
 package api.media;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.client.Client;
@@ -21,7 +18,7 @@ public class WallPostWorker extends MediaWorker
 		super(client);
 	}
 	
-	protected WallPost[] get (String IDs) throws ClientProtocolException, IOException, JSONException
+	protected WallPost[] get (String IDs) throws Exception
 	{
 		String str  = client.executeCommand("wall.getById?"+
 				"&posts="+IDs+
@@ -40,7 +37,7 @@ public class WallPostWorker extends MediaWorker
 		return posts;
 	}
 	
-	public WallPost getFromJSON(JSONObject data) throws JSONException
+	public WallPost getFromJSON(JSONObject data) throws Exception
 	{
 		WallPost post = new WallPost();
 		
@@ -92,17 +89,17 @@ public class WallPostWorker extends MediaWorker
 		return post;
 	}
 	
-	public WallPost getByID(MediaID ID) throws ClientProtocolException, IOException, JSONException
+	public WallPost getByID(MediaID ID) throws Exception
 	{
 		return (WallPost)super.getByID(ID);
 	}
 	
-	public WallPost[] getByIDs(MediaID[] IDs) throws ClientProtocolException, IOException, JSONException
+	public WallPost[] getByIDs(MediaID[] IDs) throws Exception
 	{
 		return (WallPost[])super.getByIDs(IDs);
 	}
 	
-	public WallComment[] getComments (WallPost post, int offset, int count)  throws ClientProtocolException, IOException, JSONException
+	public WallComment[] getComments (WallPost post, int offset, int count)  throws Exception
 	{
 		if (count>100 || count <0) count = 100;
 		
@@ -133,7 +130,7 @@ public class WallPostWorker extends MediaWorker
 		return comments;
 	}
 	
-	public void repost (WallPost post, String message) throws ClientProtocolException, IOException
+	public void repost (WallPost post, String message) throws Exception
 	{		
 		client.executeCommand("wall.repost?"+
 							  "&object=wall"+post.ID.ownerID+"_"+post.ID.mediaID+

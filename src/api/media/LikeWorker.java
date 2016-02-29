@@ -1,8 +1,5 @@
 package api.media;
 
-import java.io.IOException;
-
-import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,7 +31,7 @@ public class LikeWorker extends Worker
 		return likes;
 	}
 	
-	public void like (Media media) throws IllegalArgumentException, ClientProtocolException, IOException
+	public void like (Media media) throws Exception
 	{
 		String type;
 		
