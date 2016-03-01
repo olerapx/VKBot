@@ -182,7 +182,7 @@ public class Client
 	    }
 	    if (!errorFound) handleInvalidData(doc);
 	}
-	
+		
 	private void handleCaptcha(HTMLDocument doc) throws Exception
 	{
 	    getCaptcha(doc);
@@ -299,10 +299,15 @@ public class Client
 	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.ACTION);
 	    	  postQuery(name);
 	    	  
-	  		  String headerLocation = response.getFirstHeader("location").getValue();
-			  token = headerLocation.split("#")[1].split("&")[0].split("=")[1];	
+	  		  getTokenFirstTime();
 	      }
 	    }
+	}
+	
+	private void getTokenFirstTime () throws Exception
+	{
+		  String headerLocation = response.getFirstHeader("location").getValue();
+		  token = headerLocation.split("#")[1].split("&")[0].split("=")[1];	
 	}
 	
 	private void getToken() throws Exception
@@ -329,27 +334,30 @@ public class Client
 		str = postQuery(command);
 		
 		JSONObject obj = new JSONObject(str);
+		
 		if (obj.has("error"))
 		{
-			obj = obj.getJSONObject("error");
-			
+			obj = obj.getJSONObject("error");			
 			int code = obj.getInt("error_code");
 			
 			if (code==17)
+			{
 				handleSuspectLogin(obj.getString("redirect_uri"));
-			
+				executeCommand(command);
+			}			
 			else throw new VKException(obj.getString("error_msg"), code);
-		}
-							
+		}					
 		return str;
 	}
 	
+	/**
+	 * If user logins from unusual place and phone confirmation is needed.
+	 */
 	private void handleSuspectLogin(String URL) throws Exception
 	{
-		String str =postQuery(URL);
+		String str = postQuery(URL);
 		
 		HTMLDocument doc = stringToHtml(str);
-
 		
 	    ElementIterator it = new ElementIterator(doc); 
 	    Element elem; 
@@ -364,55 +372,36 @@ public class Client
 	  	      str = postQuery(name);
 	      }
 	    }
-	    doc = stringToHtml(str);
-	    it = new ElementIterator(doc); 
+
+	    String leftNumber = getValue(str, "label ta_r", '<');
+	    String rightNumber = getValue(str, "phone_postfix", '<');
+	    rightNumber = rightNumber.substring(rightNumber.indexOf(';')+1, rightNumber.length());
 	    
-	    String leftNumber="", rightNumber = "";
-	   
-	    while((elem=it.next()) != null)
-	    {       
-	      if (elem.getName().equals("div"))
-	      {
-	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.CLASS);
-	    	  if (name.equals("label ta_r"))
-	    	  {
-	              int count = elem.getElementCount();
-	                for (int i = 0; i < count; i++) 
-	                {
-	                    Element child = elem.getElement(i);
-	                    int startOffset = child.getStartOffset();
-	                    int endOffset = child.getEndOffset();
-	                    int length = endOffset - startOffset;
-	   	    		 leftNumber =(doc.getText(startOffset, length));
-	                }
-	    	  }
-	      }
-	      else if (elem.getName().equals("span"))
-	      {
-	    		 System.out.println("bvavava");
-	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.CLASS);
-	    	  if (name.equals("phone_postfix"))
-	    	  {
-	              int count = elem.getElementCount();
-	                for (int i = 0; i < count; i++) 
-	                {
-	                    Element child = elem.getElement(i);
-	                    int startOffset = child.getStartOffset();
-	                    int endOffset = child.getEndOffset();
-	                    int length = endOffset - startOffset;
-	   	    		 rightNumber =(doc.getText(startOffset, length));
-	                }
-	    	  }
-	      }	      
-	    } 
+	    String hash = getValue(str, "hash: '", '\'');
 	    
+
 	    System.out.println("Need to confirm the phone number:\n"+leftNumber+"********"+rightNumber);
 	  
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        String number = input.readLine();
-        
-        
-		
+        String code = input.readLine();
+	    
+	    str = postQuery("https://vk.com/login.php?act=security_check"+
+	    				"hash="+hash+
+	    				"&to="+to+
+	    				"&code="+code);
+	}
+	
+	private String getValue (String str, String token, char endToken)
+	{
+	    int index = str.indexOf(token) + token.length();
+	    String res="";
+	    
+	    while (str.charAt(index)!=endToken)
+	    {
+	    	res += str.charAt(index);
+	    	index++;
+	    }
+	    return res;
 	}
 	
 	/**
