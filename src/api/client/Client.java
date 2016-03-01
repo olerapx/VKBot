@@ -99,27 +99,45 @@ public class Client
 				"&display="+display+
 				"&scope="+scope+	
 				"&response_type="+responseType;		
-
+		
 		HTMLDocument doc = stringToHtml(postQuery(post));
 		
+		ip_h = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "ip_h", HTML.Attribute.VALUE);
+		lg_h = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "lg_h", HTML.Attribute.VALUE);
+	    to = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "to", HTML.Attribute.VALUE);
+	}
+	
+	private String getAttributeOfElement (HTMLDocument doc, String elementName, HTML.Attribute knownAttribute, String knownValue, HTML.Attribute desiredAttribute)
+	{
 	    ElementIterator it = new ElementIterator(doc); 
 	    Element elem; 
-	    	    	    	    
+	   		    	    
 	    while((elem=it.next()) != null)
 	    { 
-	      if(elem.getName().equals("input"))
-	      { 
-	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.NAME);
+	    	if (elem.getName().equals(elementName))
+	        {
+	    	  String name = (String) elem.getAttributes().getAttribute(knownAttribute);
 	    	  if (name==null) continue;
-	    	  
-	    	  if (name.equals("ip_h"))
-	    		 ip_h = (String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);	  		  
-	    	  else if (name.equals("lg_h"))
-	    		 lg_h=(String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);
-	    	  else if (name.equals("to"))
-	    		 to=(String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);
-	      } 
+    	  	    	  
+	    	  if (name.equals(knownValue))
+	    		  return  (String) elem.getAttributes().getAttribute(desiredAttribute);
+	        }
 	    }
+	    
+	    return "";
+	}
+	
+	private String getAttributeOfElement (HTMLDocument doc, String elementName, HTML.Attribute desiredAttribute)
+	{
+	    ElementIterator it = new ElementIterator(doc); 
+	    Element elem; 
+	   		    	    
+	    while((elem=it.next()) != null)
+	    { 
+	      if(elem.getName().equals(elementName))
+	    	  return (String) elem.getAttributes().getAttribute(desiredAttribute);	
+	    }
+	    return "";
 	}
 	
 	HTMLDocument stringToHtml (String string) throws Exception
@@ -151,38 +169,33 @@ public class Client
 	private void handleProblem() throws Exception
 	{	    		
 		HTMLDocument doc = stringToHtml(stringResponse);
-		boolean errorFound = false;
-						
+		
+		if (hasAttributeValue(doc, "input", HTML.Attribute.NAME, "captcha_sid"))
+  		  handleCaptcha(doc);
+		else if (hasAttributeValue(doc, "div", HTML.Attribute.CLASS, "oauth_access_header"))
+  		  handleConfirmApplicationRights(doc);
+		else handleInvalidData(doc);
+	}
+	
+	private boolean hasAttributeValue (HTMLDocument doc, String elementName, HTML.Attribute attribute, String value)
+	{
 	    ElementIterator it = new ElementIterator(doc); 
-	    Element elem; 
+	    Element elem;       
 	   		    	    
 	    while((elem=it.next()) != null)
 	    {       
-	      if (elem.getName().equals("input"))
+	      if (elem.getName().equals(elementName))
 	      {
-	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.NAME);
+	    	  String name = (String) elem.getAttributes().getAttribute(attribute);
 	    	  if (name==null) continue;
     	  	    	  
-	    	  if (name.equals("captcha_sid"))
-	    	  {
-	    		  errorFound = true;
-	    		  handleCaptcha(doc);
-	    	  }
-	      }
-	      else if (elem.getName().equals("div"))
-	      {
-	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.CLASS);
-    
-	    	  if (name.equals("oauth_access_header"))
-	    	  {
-	    		  errorFound = true;
-	    		  handleConfirmApplicationRights(doc);
-	    	  }
+	    	  if (name.equals(value))
+	    		  return true;
 	      }
 	    }
-	    if (!errorFound) handleInvalidData(doc);
+	    return false;
 	}
-		
+	
 	private void handleCaptcha(HTMLDocument doc) throws Exception
 	{
 	    getCaptcha(doc);
@@ -202,27 +215,9 @@ public class Client
 	
 	private void getCaptcha(HTMLDocument doc) throws Exception
 	{		
-	    ElementIterator it = new ElementIterator(doc); 
-	    Element elem; 
-	   		    	    
-	    while((elem=it.next()) != null)
-	    { 
-	      if(elem.getName().equals("img"))
-	    	  captchaURL= (String) elem.getAttributes().getAttribute(HTML.Attribute.SRC);	
-	      
-	      else if (elem.getName().equals("input"))
-	      {
-	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.NAME);
-	    	  if (name==null) continue;
-    	  	    	  
-	    	  if (name.equals("captcha_sid"))
-	    		  captchaSid = (String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);
-	    	  else if (name.equals("lg_h"))
-	    	  {
-	    		  lg_h=(String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);
-	    	  }
-	      }
-	    }
+	    captchaURL = getAttributeOfElement(doc, "img", HTML.Attribute.SRC);
+	    captchaSid = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "captcha_sid", HTML.Attribute.VALUE);
+	    lg_h = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "lg_h", HTML.Attribute.VALUE);
 	}
 	
 	private void downloadCaptcha(File file) throws Exception
@@ -256,24 +251,9 @@ public class Client
 	}
 	
 	private void handleInvalidData(HTMLDocument doc) throws Exception
-	{
-	    ElementIterator it = new ElementIterator(doc); 
-	    Element elem; 
-	    	    	    
-	    while((elem=it.next()) != null)
-	    { 	      
-	      if (elem.getName().equals("input"))
-	      {
-	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.NAME);
-	    	  if (name==null) continue;
-
-	    	  if (name.equals("lg_h"))
-	    	  {
-	    		  lg_h=(String) elem.getAttributes().getAttribute(HTML.Attribute.VALUE);
-	    	  }
-	      }
-	    }
-	    
+	{	
+		lg_h = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "lg_h", HTML.Attribute.VALUE);
+		
 	    System.out.println("Wrong login or password:\nLogin: "+login);
 	    
 		System.out.println("Input login:");
@@ -287,24 +267,18 @@ public class Client
         login();
 	}
 	
+	/**
+	 * If user logins first time and has to add the application.
+	 */
 	private void handleConfirmApplicationRights(HTMLDocument doc) throws Exception
 	{
-	    ElementIterator it = new ElementIterator(doc); 
-	    Element elem; 
-	    	   		    	    
-	    while((elem=it.next()) != null)
-	    {       
-	      if (elem.getName().equals("form"))
-	      {
-	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.ACTION);
-	    	  postQuery(name);
-	    	  
-	  		  getTokenFirstTime();
-	      }
-	    }
+		String name = getAttributeOfElement(doc, "form", HTML.Attribute.ACTION);		
+		postQuery(name);
+	  
+	    getTokenFirstTime();
 	}
 	
-	private void getTokenFirstTime () throws Exception
+	private void getTokenFirstTime() throws Exception
 	{
 		  String headerLocation = response.getFirstHeader("location").getValue();
 		  token = headerLocation.split("#")[1].split("&")[0].split("=")[1];	
@@ -359,22 +333,12 @@ public class Client
 		
 		HTMLDocument doc = stringToHtml(str);
 		
-	    ElementIterator it = new ElementIterator(doc); 
-	    Element elem; 
-	    	   		    	    
-	    while((elem=it.next()) != null)
-	    {       
-	      if (elem.getName().equals("form"))
-	      {
-	    	  String name = (String) elem.getAttributes().getAttribute(HTML.Attribute.ACTION);
-
-	    	  name = "https://vk.com"+name;
-	  	      str = postQuery(name);
-	      }
-	    }
+		String name = "https://vk.com"+getAttributeOfElement(doc, "form", HTML.Attribute.ACTION);
+	    str = postQuery(name);
 
 	    String leftNumber = getValue(str, "label ta_r", '<');
 	    String rightNumber = getValue(str, "phone_postfix", '<');
+	    
 	    rightNumber = rightNumber.substring(rightNumber.indexOf(';')+1, rightNumber.length());
 	    
 	    String hash = getValue(str, "hash: '", '\'');
@@ -391,9 +355,9 @@ public class Client
 	    				"&code="+code);
 	}
 	
-	private String getValue (String str, String token, char endToken)
+	private String getValue (String str, String startToken, char endToken)
 	{
-	    int index = str.indexOf(token) + token.length();
+	    int index = str.indexOf(startToken) + startToken.length();
 	    String res="";
 	    
 	    while (str.charAt(index)!=endToken)
