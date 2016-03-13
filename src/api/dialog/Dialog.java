@@ -16,4 +16,5 @@ public class Dialog extends VKObject
 	public String title() {return this.title;}
 	public int unreadMessagesNumber() {return this.unreadMessagesNumber;}
 	public Message lastMessage() {return this.lastMessage;}
+	public boolean isRead() {return this.lastMessage.isRead;}
 }

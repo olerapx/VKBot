@@ -7,24 +7,9 @@ import javax.swing.JFrame;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 
-import api.attachment.Attachment;
-import api.attachment.MediaAttachment;
 import api.client.Client;
 import api.dialog.Message;
-import api.dialog.MessageWorker;
-import api.media.Audio;
-import api.media.AudioWorker;
-import api.media.DocWorker;
-import api.media.MediaID;
-import api.media.Photo;
-import api.media.PhotoWorker;
-import api.media.VideoWorker;
-import api.media.WallPost;
-import api.media.WallPostWorker;
-import api.media.comment.Comment;
-import api.media.comment.CommentWorker;
-import api.media.comment.WallComment;
-import api.user.UserWorker;
+import api.worker.WorkerInterface;
 import crypto.Decryptor;
 import crypto.Encryptor;
 
@@ -44,8 +29,6 @@ public class MainWindow
 	private JFrame frmUchanVkbot;
 	private JTextField textField;
 	private JLabel label;
-	
-	private static Client client;
 
 	public static void main(String[] args) throws Exception  
 	{
@@ -63,8 +46,6 @@ public class MainWindow
 				}
 			}
 		});
-		
-		login();
 		test();
 	}
 	
@@ -96,6 +77,7 @@ public class MainWindow
 	
 	private static void login() throws Exception
 	{
+		Client client;
 		File file = new File("cache/user.dat");
 		
 		if(!file.exists())
@@ -135,15 +117,10 @@ public class MainWindow
 	
 	public static void test() throws Exception
 	{	
-		UserWorker uw = new UserWorker(client);
+		Client client = new Client();
+		System.out.println("Logged in under token:\n"+client.token);
 		
-		MessageWorker mw = new MessageWorker(client);
-		AudioWorker aw = new AudioWorker(client);
-		PhotoWorker pw = new PhotoWorker(client);
-		VideoWorker vw = new VideoWorker(client);
-		DocWorker dw = new DocWorker(client);
-		WallPostWorker ww = new WallPostWorker(client);	
-		CommentWorker cw = new CommentWorker(client);
+		WorkerInterface wi = new WorkerInterface(client);	
 	}
 
 	public static String gen()

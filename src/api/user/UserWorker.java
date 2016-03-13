@@ -32,13 +32,14 @@ public class UserWorker extends Worker
 				+ "can_post,can_see_all_posts,can_see_audio,can_write_private_message,"
 				+ "is_friend,can_send_friend_request,has_photo,photo_id,"
 				+ "photo_max_orig,sex,bdate,online,followers_count,common_count";
-
+		
 		String str = client.executeCommand(command); 
 		
 		JSONObject obj = new JSONObject(str);		
 		JSONArray response = obj.getJSONArray("response");
 		
-		int count = response.length();		
+		int count = response.length();	
+		
 		User[] users = new User[count];
 		
 		for(int i=0;i<count;i++)						
@@ -59,7 +60,7 @@ public class UserWorker extends Worker
 		
 		user.firstName = data.getString("first_name");
 		user.lastName=data.getString("last_name");
-
+		
 		if (data.has("nickname"))
 			user.nickname= data.getString("nickname");
 		else user.nickname="";

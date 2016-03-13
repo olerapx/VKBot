@@ -70,6 +70,7 @@ public class MessageWorker extends Worker
 		msg.messageID = response.getInt("response");
 		msg.data.userID = client.me.ID();
 		msg.isOut = true;
+		msg.isRead = true;
 		msg.hasEmoji = true;
 		msg.data.date=System.currentTimeMillis()/1000L;
 	}
@@ -144,6 +145,7 @@ public class MessageWorker extends Worker
 				
 		msg.messageID = response.getInt("id");
 		msg.isOut = response.getInt("out") !=0;
+		msg.isRead = response.getInt("read_state")!=0;
 		
 		msg.data = getDataFromJSON(response);
 	    
@@ -156,7 +158,7 @@ public class MessageWorker extends Worker
 	
 	public MessageData getDataFromJSON(JSONObject data) throws JSONException
 	{
-		MessageData msg = new MessageData();
+		MessageData msg = new MessageData();	
 		
 		msg.userID = data.getInt("user_id");
 		msg.date = data.getLong("date");

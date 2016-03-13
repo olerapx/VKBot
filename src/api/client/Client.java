@@ -26,6 +26,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.exceptions.VKException;
@@ -37,7 +38,8 @@ public class Client
 	public CloseableHttpClient httpClient;
 	public String token="";
 	public User me;
-
+	
+	QueryScheduler scheduler;
 	
 	String ID = "4977827";
 	String scope="friends,photos,audio,video,docs,status,wall,messages,offline";
@@ -64,6 +66,7 @@ public class Client
 		 
 		this.login=email;
 		this.pass=pass;
+		scheduler = new QueryScheduler(1000, 3);
 		connect();
 	}	
 	
@@ -212,7 +215,7 @@ public class Client
 		
 	    file.delete();
 	}
-	
+			
 	private void getCaptcha(HTMLDocument doc) throws Exception
 	{		
 	    captchaURL = getAttributeOfElement(doc, "img", HTML.Attribute.SRC);
@@ -306,8 +309,16 @@ public class Client
 		command+="&access_token="+token;
 		
 		str = postQuery(command);
+		JSONObject obj = null;
 		
-		JSONObject obj = new JSONObject(str);
+		try 
+		{
+			obj = new JSONObject(str);
+		} 
+		catch (JSONException ex)
+		{
+			return str;
+		}
 		
 		if (obj.has("error"))
 		{
@@ -317,10 +328,10 @@ public class Client
 			if (code==17)
 			{
 				handleSuspectLogin(obj.getString("redirect_uri"));
-				executeCommand(command);
+				return executeCommand(command);
 			}			
 			else throw new VKException(obj.getString("error_msg"), code);
-		}					
+		}				
 		return str;
 	}
 	
@@ -377,6 +388,8 @@ public class Client
 	 */
 	private String postQuery(String query) throws Exception
 	{	
+		while (!scheduler.canPostQuery());
+		
 		HttpPost post = new HttpPost(query);
 		
 		response = httpClient.execute(post);		

@@ -11,6 +11,7 @@ public class Message extends VKObject
 {
 	int messageID;
 	boolean isOut;
+	boolean isRead;
 	boolean hasEmoji;
 	MessageData data;
 	
@@ -18,17 +19,17 @@ public class Message extends VKObject
 
 	public int messageID() {return this.messageID;}
 	public boolean isOut() {return this.isOut;}
+	public boolean isRead() {return this.isRead;}
 	public boolean hasEmoji() {return this.hasEmoji;}
 	
 	public Integer [] forwardMessagesIDs() {return this.forwardMessagesIDs;}
 	
 	public MessageData data() {return this.data;}
 		
-	private void construct (String message, MediaAttachment[]attachments, MessageData[] forwardMessages, Integer[] forwardMessagesIDs, boolean isOut, String title, long date, boolean hasEmoji)
+	private void construct (String message, MediaAttachment[]attachments, MessageData[] forwardMessages, Integer[] forwardMessagesIDs, String title, long date, boolean hasEmoji)
 	{
 		this.data = new MessageData();
-					
-		this.messageID=0;
+							
 		this.data.userID = 0;
 		
 		this.data.text=message;
@@ -37,46 +38,49 @@ public class Message extends VKObject
 			this.data.attachments = attachments;
 		else this.data.attachments = new Attachment[0];
 		
-		if (this.data.forwardMessages!=null)
+		if (forwardMessages!=null)
 			this.data.forwardMessages = forwardMessages;
 		else this.data.forwardMessages = new MessageData[0];
-		
-		if (forwardMessagesIDs!=null)
-			this.forwardMessagesIDs = forwardMessagesIDs;	
-		else this.forwardMessagesIDs = new Integer[0];
-		
-		this.isOut = isOut;
 		
 		if (title!=null)
 			this.data.title=title;
 		
 		this.data.date=date;
 		
+		this.messageID=0;
+		
+		if (forwardMessagesIDs!=null)
+			this.forwardMessagesIDs = forwardMessagesIDs;	
+		else this.forwardMessagesIDs = new Integer[0];
+		
+		this.isOut = true;
+		this.isRead = true;
+				
 		this.hasEmoji=hasEmoji;
 	}
 	
 	public Message(String message, MediaAttachment[]attachments, Integer[] forwardMessagesIDs, String title)
 	{
-		this.construct(message, attachments, null, forwardMessagesIDs, true, title, 0, true);
+		this.construct(message, attachments, null, forwardMessagesIDs, title, 0, true);
 	}
 		
 	public Message (String message, MediaAttachment[]attachments, Integer[] forwardMessagesIDs)
 	{
-		this.construct( message, attachments, null, forwardMessagesIDs, true, null, 0, true);
+		this.construct( message, attachments, null, forwardMessagesIDs, null, 0, true);
 	}
 		
 	public Message (String message)
 	{
-		construct (message, null, null, null, true, null, 0, true);
+		construct (message, null, null, null, null, 0, true);
 	}
 	
 	public Message (MessageData data, Integer[] forwardMessagesIDs)
 	{
-		construct (data.text, data.mediaAttachments(), data.forwardMessages, forwardMessagesIDs, true, data.title, 0, true);
+		construct (data.text, data.mediaAttachments(), data.forwardMessages, forwardMessagesIDs, data.title, 0, true);
 	}
 	
 	public Message (MessageData data)
 	{
-		construct (data.text, data.mediaAttachments(), data.forwardMessages, null, true, data.title, 0, true);	
+		construct (data.text, data.mediaAttachments(), data.forwardMessages, null, data.title, 0, true);	
 	}
 }
