@@ -16,16 +16,14 @@ public class LikeWorker extends Worker
 		super(client);
 	}
 
-	public Like getLike (JSONObject like) throws JSONException
+	public static Like getLike (JSONObject data) throws JSONException
 	{
 		Like likes = new Like();
-		likes.number = like.getInt("count");
+		likes.number = getIntFromJSON(data, "count");
 		
-		if(like.has("can_like"))
-			likes.canLike = like.getInt("can_like")!=0;
-		else likes.canLike = true;
+	    likes.canLike = getBooleanFromJSON(data, "can_like");		
+		likes.isLiked = getBooleanFromJSON(data, "user_likes");
 		
-		likes.isLiked = like.getInt("user_likes")!=0;
 		likes.canRepost = true;
 		
 		return likes;

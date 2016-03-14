@@ -9,14 +9,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.client.Client;
+import api.database.DatabaseWorker;
 import api.media.Audio;
 import api.media.AudioWorker;
 import api.media.MediaID;
 import api.user.User.Online;
+import api.user.User.Sex;
 import api.worker.Worker;
 
 public class UserWorker extends Worker 
-{
+{	
 	public UserWorker(Client client) 
 	{
 		super(client);
@@ -52,57 +54,37 @@ public class UserWorker extends Worker
 	{
 		User user = new User();
 		
-		user.ID = data.getInt("id");
+		user.ID = getIntFromJSON(data, "id");		
+		user.domain= getStringFromJSON(data, "domain");
 		
-		if (data.has("domain"))
-			user.domain= data.getString("domain");
-		else user.domain="";
-		
-		user.firstName = data.getString("first_name");
-		user.lastName=data.getString("last_name");
-		
-		if (data.has("nickname"))
-			user.nickname= data.getString("nickname");
-		else user.nickname="";
-		
-		if (data.has("maiden_name")) 
-			user.maidenName= data.getString("maiden_name");
-		else user.maidenName="";
+		user.firstName = getStringFromJSON(data, "first_name");
+		user.lastName = getStringFromJSON(data, "last_name");		
+		user.nickname= getStringFromJSON(data, "nickname");
+		user.maidenName= getStringFromJSON(data, "maiden_name");
 		
 		if (data.has("deactivated"))
 			user.isDeactivated= true;
 					
-		if (data.has("wall_comments"))
-			user.canComment =(data.getInt("wall_comments")!=0);
+		user.canComment = getBooleanFromJSON(data, "wall_comments");		
+		user.canPost = getBooleanFromJSON(data, "can_post");		
+		user.canSeeAllPosts= getBooleanFromJSON(data, "can_see_all_posts");		
+		user.canSeeAudio= getBooleanFromJSON(data, "can_see_audio");		
+		user.canWriteMessage= getBooleanFromJSON(data, "can_write_private_message");
+
+		user.isFriend = getBooleanFromJSON(data, "is_friend");
 		
-		user.canPost = (data.getInt("can_post")!=0);
+		user.canAddToFriends =getBooleanFromJSON(data, "can_send_friend_request");
 		
-		if (data.has("can_see_all_posts"))
-			user.canSeeAllPosts= (data.getInt("can_see_all_posts")!=0);
-		
-		if(data.has("can_see_audio"))
-			user.canSeeAudio= (data.getInt("can_see_audio")!=0);
-		
-		user.canWriteMessage= (data.getInt("can_write_private_message")!=0);
-		
-		if (data.has("is_friend"))
-			user.isFriend = (data.getInt("is_friend")!=0);
-		
-		if (data.has("can_send_friend_request"))
-			user.canAddToFriends =(data.getInt("can_send_friend_request")!=0);
-		
-		user.hasPhoto = (data.getInt("has_photo")!=0);
+		user.hasPhoto = getBooleanFromJSON(data, "has_photo");
 				
 		if (data.has("photo_id"))
-			user.photoID =Integer.parseInt(data.getString("photo_id").split("_")[1]);
+			user.photoID =Integer.parseInt(getStringFromJSON(data, "photo_id").split("_")[1]);
 		
-		user.sex = data.getInt("sex");
+		user.sex = Sex.values()[getIntFromJSON(data, "sex")];
 		
-		if (data.has("bdate"))
-			user.birthDate = data.getString("bdate");
-		else user.birthDate="";
+		user.birthDate = getStringFromJSON(data, "bdate");
 		
-		boolean isOnline = (data.getInt("online")!=0);
+		boolean isOnline = getBooleanFromJSON(data, "online");
 		user.onlineAppID = -1;
 		
 		if(isOnline)
@@ -112,16 +94,13 @@ public class UserWorker extends Worker
 		if (data.has("online_app"))
 		{
 			user.online = Online.APP;
-			user.onlineAppID = data.getInt("online_app");
+			user.onlineAppID = getIntFromJSON(data, "online_app");
 		}
 		else if (data.has("online_mobile"))
 			user.online = Online.MOBILE;
 		
-		if (data.has("followers_count"))
-			user.followersCount = data.getInt("followers_count");
-		
-		if (data.has("common_count"))
-			user.commonCount = data.getInt("common_count");
+		user.followersCount = getIntFromJSON(data, "followers_count");
+		user.commonCount = getIntFromJSON(data, "common_count");
 					
 		return user;
 	}
@@ -131,12 +110,12 @@ public class UserWorker extends Worker
 		String id = "" + ID;
 		return this.get(id)[0];
 	}
-	
+		
 	public User getByDomain(String domain) throws Exception
 	{
 		return this.get(domain)[0];
 	}
-	
+
 	public User[] getByIDs(Integer[] IDs) throws Exception
 	{
 		String ids="";
@@ -152,19 +131,18 @@ public class UserWorker extends Worker
 	{
 		return this.get(null)[0];
 	}
-	
+		
 	public User[] getFriends(User user) throws Exception //TODO:sort
-, JSONException
 	{		
 		String str = client.executeCommand("friends.get?"+
 				"&user_id="+user.ID+
 				"&order=hints");
 		
 		JSONObject obj = new JSONObject(str);
-		JSONObject data= obj.getJSONObject("response");
-		JSONArray array = data.getJSONArray("items");
+		JSONObject data = getObjectFromJSON(obj, "response");
+		JSONArray array = getArrayFromJSON(data, "items");
 		
-		int count = data.getInt("count");
+		int count = array.length();
 		
 		String ids="";
 		
@@ -175,7 +153,7 @@ public class UserWorker extends Worker
 		User[] friends = this.get(ids);
 		return friends;
 	}
-	
+		
 	public int addToFriends(User user, String text) throws Exception
 	{
 		if (!user.canAddToFriends) return -1;
@@ -187,7 +165,7 @@ public class UserWorker extends Worker
 				
 		JSONObject obj = new JSONObject(str);
 		
-		return obj.getInt("response");
+		return getIntFromJSON(obj, "response");
 	}
 	
 	/**
@@ -212,17 +190,137 @@ public class UserWorker extends Worker
 		String str = client.executeCommand(command);
 		
 		JSONObject obj = new JSONObject(str);
-		JSONObject data =  obj.getJSONObject("response");
-		status.text =  data.getString("text");
+		JSONObject data =  getObjectFromJSON(obj, "response");
+		status.text =  getStringFromJSON(data, "text");
 		
 		if(data.has("audio"))
 		{
-			data = data.getJSONObject("audio");
-			status.audio = new AudioWorker(client).getByID(new MediaID(data.getInt("owner_id"), data.getInt("id")));
+			data = getObjectFromJSON(data, "audio");
+			status.audio = new AudioWorker(client).getByID(new MediaID(getIntFromJSON(data, "owner_id"), getIntFromJSON(data, "id")));
 		}
 		else
 			status.audio=new Audio();
 		
 		return status;
 	}	
+
+	/**
+	 * @param Object with all necessary search parameters.
+	 * @return Found users.
+	 */
+	public User[] search (UserSearchParameters param) throws Exception
+	{						 
+		JSONObject obj = new JSONObject(client.executeCommand(searchParametersToCommand(param)));
+		JSONObject data = getObjectFromJSON(obj, "response");
+		JSONArray array = getArrayFromJSON(data, "items");
+		
+	    int count = array.length();
+	    
+	    User[] user = new User[count];
+	    for (int i=0;i<count;i++)
+	    	user[i] = getFromJSON(getObjectFromJSONArray(array, i));
+	    
+	    return user;		
+	}
+
+	/**
+	 * @return Recommended users.
+	 */
+	public User[] searchRecommendations (int offset, int count) throws Exception
+	{
+		UserSearchParameters param = new UserSearchParameters();
+		param.offset = offset;
+		param.count = count;
+		
+		return search(param);
+	}
+	
+	private String searchParametersToCommand(UserSearchParameters param) throws Exception
+	{
+		String sort = "&sort=" + (param.sortByPopularity ? 0 : 1);
+		String userSex = "&sex="+param.sex.ordinal();
+		String userOnline = "&online=" + (param.needOnline ? 1 : 0);
+		String photo = "&has_photo=" + (param.needPhoto ? 1 : 0);
+		
+		String from = "&from_list=";
+		if (param.searchFriends) 
+		{
+			from+="friends";
+			if (param.searchSubscriptions) from+=",subscriptions";
+		}
+		else if (param.searchSubscriptions) from+="subscriptions";
+		else from = "";
+		
+		int country=0, city=0, universityCountry=0, schoolCountry=0, schoolCity=0;
+		
+		DatabaseWorker dw = new DatabaseWorker(client);
+
+		if (param.country!="")
+			country = dw.getCountryID(param.country);
+		
+		if (param.schoolCountry!="")
+			schoolCountry = dw.getCountryID(param.schoolCountry);
+		
+		if (param.universityCountry!="")
+			universityCountry = dw.getCountryID(param.universityCountry);
+
+		if (param.city!="")
+		{
+			if (param.region!="")
+			{
+				int region = dw.getRegionID(country, param.region);
+				city = dw.getCityID(country, region, param.city);
+			}
+			else city = dw.getCityID(country, -1 ,param.city);
+		}
+		
+		if (param.schoolCity!="")
+		{
+			if (param.schoolRegion!="")
+			{
+				int region = dw.getRegionID(schoolCountry, param.schoolRegion);
+				schoolCity = dw.getCityID(schoolCountry, region, param.schoolCity);
+			}
+			else schoolCity = dw.getCityID(schoolCountry, -1, param.schoolCity);
+		}
+		
+		String countryName = (country==0? "" : "&country="+country);
+		String cityName = (city==0? "" : "&city="+city);	
+		String schoolCityName = (schoolCity ==0? "" : "&school_city="+schoolCity);	
+		String universityCountryName = (universityCountry==0? "" : "&university_country="+ universityCountry);
+		
+				
+		String str = "users.search?"+
+				 (param.query!="" ? "&q="+ param.query : "")+
+				 sort+
+				 ( param.offset!=-1 ? "&offset="+  param.offset : "")+
+				 ( param.count!=-1 ? "&count="+  param.count : "")+
+				 "&fields=domain,nickname,maiden_name,wall_comments,"
+					+ "can_post,can_see_all_posts,can_see_audio,can_write_private_message,"
+					+ "is_friend,can_send_friend_request,has_photo,photo_id,"
+					+ "photo_max_orig,sex,bdate,online,followers_count,common_count"+
+					countryName+
+					cityName+
+				 ( param.homeTown!="" ? "&hometown="+ param.homeTown : "")+	
+				 universityCountryName+ 
+				 ( param.graduationYearUniversity!=-1 ? "&university_year="+ param.graduationYearUniversity : "")+		
+				 ( param.graduationYearSchool!=-1 ? "&school_year="+ param.graduationYearSchool : "")+							 
+				 userSex+
+				 ( param.startAge!=-1 ? "&age_from="+ param.startAge : "")+
+				 ( param.endAge!=-1 ? "&age_to="+ param.endAge : "")+
+				 ( param.birthDay!=-1 ? "&birth_day="+ param.birthDay : "")+
+				 ( param.birthMonth!=-1 ? "&birth_month="+ param.birthMonth : "")+
+				 ( param.birthYear!=-1 ? "&birth_year="+ param.birthYear : "")+
+				 userOnline+
+				 photo+
+				 schoolCityName+
+				 ( param.religion!="" ? "&religion="+ param.religion : "")+
+				 ( param.interests!="" ? "&interests="+ param.interests : "")+
+				 ( param.company!="" ? "&company="+ param.company : "")+
+				 ( param.position!="" ? "&position="+ param.position : "")+
+				 ( param.groupID!=0 ? "&group_id="+ param.groupID : "")+						 
+				 from;
+		
+		return str;
+	}
 }

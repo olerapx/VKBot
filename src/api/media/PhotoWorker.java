@@ -33,10 +33,10 @@ public class PhotoWorker extends MediaWorker
 		return photos;
 	}
 	
-	public Photo getFromJSON(JSONObject data) throws JSONException
+	public static Photo getFromJSON(JSONObject data) throws JSONException
 	{
 		Photo photo = new Photo();
-		photo.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));			
+		photo.ID = new MediaID(getIntFromJSON(data, "owner_id"), getIntFromJSON(data, "id"));			
 		photo.albumID = data.getInt("album_id");	
 
 		if (data.has("photo_2560")) photo.URL = data.getString("photo_2560");
@@ -47,27 +47,24 @@ public class PhotoWorker extends MediaWorker
 		else if (data.has("photo_75")) photo.URL = data.getString("photo_75");
 		else photo.URL = "";
 		
-		photo.text = data.getString("text");
-		photo.date = data.getLong("date");
+		photo.text = getStringFromJSON(data, "text");
+		photo.date = getLongFromJSON(data, "date");
 		
-		if (data.has("user_id"))
-			photo.userID = data.getInt("user_id");
+		photo.userID = getIntFromJSON(data, "user_id");
 					
-		if (data.has("likes"))
-		{
-			JSONObject like = data.getJSONObject("likes");		
-			photo.likes = new LikeWorker(client).getLike (like);
-		}
+		JSONObject like = getObjectFromJSON(data, "likes");		
+		if (like!=null)
+			photo.likes = LikeWorker.getLike (like);
 		else photo.likes = new Like();
 		
-		photo.canComment = data.getInt("can_comment")!=0;
-		photo.canRepost = data.getInt("can_repost")!=0;
+		photo.canComment = getBooleanFromJSON(data, "can_comment");		
+		photo.canRepost = getBooleanFromJSON(data, "can_repost");
 		
-		if(data.has("comments"))
-			photo.commentsCount = data.getJSONObject("comments").getInt("count");
+		JSONObject comments = getObjectFromJSON(data, "comments");
+		if (comments!=null) photo.commentsCount = getIntFromJSON(comments, "count");
 		
-		if(data.has("reposts"))
-			photo.repostsCount = data.getJSONObject("reposts").getInt("count");
+		JSONObject reposts = getObjectFromJSON(data, "reposts");
+		if (reposts!=null) photo.repostsCount = getIntFromJSON(reposts, "count");
 		
 		return photo;
 	}

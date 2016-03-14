@@ -41,50 +41,48 @@ public class WallPostWorker extends MediaWorker
 	{
 		WallPost post = new WallPost();
 		
-		post.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));	
-		post.fromID = data.getInt("from_id");
-		post.date = data.getLong("date");
+		post.ID = new MediaID(getIntFromJSON(data, "owner_id"), getIntFromJSON(data, "id"));	
+		post.fromID = getIntFromJSON(data, "from_id");
+		post.date = getLongFromJSON(data, "date");
 		
-		if (data.has("friends_only"))
-			post.friendsOnly = data.getInt("friends_only")!=0;
-		
-		if (data.has("likes"))
-		{
-			JSONObject like = data.getJSONObject("likes");
-			post.likes = new LikeWorker(client).getLike (like);
-		}
+		post.friendsOnly = getBooleanFromJSON(data, "friends_only");
+				
+		JSONObject like = getObjectFromJSON(data, "likes");
+		if(like!=null)
+			post.likes = LikeWorker.getLike (like);
 		else post.likes = new Like();
 		
-		if (data.has("reposts"))
+		JSONObject reposts = getObjectFromJSON(data, "reposts");
+		if(reposts!=null)
 		{
-			JSONObject reposts = data.getJSONObject("reposts");
-			post.repostsCount = reposts.getInt("count");
-			
-			if (reposts.has("user_reposted"))
-				post.isReposted = reposts.getInt("user_reposted")!=0;
+			post.repostsCount = getIntFromJSON(reposts, "count");
+			post.isReposted =getBooleanFromJSON(reposts, "user_reposted");
 		}
 		
-		if (data.has("comments"))
+		JSONObject comments = getObjectFromJSON(data, "comments");
+		if(comments!=null)
 		{
-			post.commentsCount = data.getJSONObject("comments").getInt("count");
-			post.canComment = data.getJSONObject("comments").getInt("can_post")!=0;
-		}
-		
-		if (data.has("copy_history")) 
-		{
-			JSONArray array = data.getJSONArray("copy_history");
-			data = array.getJSONObject(array.length()-1);
+			post.commentsCount = getIntFromJSON(comments, "count");
+			post.canComment = getBooleanFromJSON(comments, "can_post");
 		}
 
-		post.type = data.getString("post_type");
-		post.text = data.getString("text");
+		JSONArray array = getArrayFromJSON(data, "copy_history");
+		if (array != null)
+			data = getObjectFromJSONArray(array, array.length()-1);
+		else data = null;
 		
-		if(data.has("attachments"))
+		if (data!=null)
 		{
-			JSONArray att = data.getJSONArray("attachments");
-			post.atts =  new AttachmentWorker(this.client).getFromJSONArray(att);
+			post.type = getStringFromJSON(data, "post_type");
+			post.text = getStringFromJSON(data, "text");
+
+			JSONArray att = getArrayFromJSON(data, "attachments");
+			if(att != null)
+				post.atts =  AttachmentWorker.getFromJSONArray(att);
+			else post.atts = new Attachment[0];
 		}
-		else post.atts = new Attachment[0];
+		else
+			post.atts = new Attachment[0];
 		
 		return post;
 	}

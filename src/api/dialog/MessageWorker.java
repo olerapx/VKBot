@@ -67,7 +67,7 @@ public class MessageWorker extends Worker
 	
 	private void updateMessage (JSONObject response, Message msg) throws Exception
 	{		
-		msg.messageID = response.getInt("response");
+		msg.messageID = getIntFromJSON(response, "response");
 		msg.data.userID = client.me.ID();
 		msg.isOut = true;
 		msg.isRead = true;
@@ -139,46 +139,42 @@ public class MessageWorker extends Worker
 		return messages;
 	}
 	
-	public Message getFromJSON(JSONObject response) throws JSONException
+	public static Message getFromJSON(JSONObject data) throws JSONException
 	{
 		Message msg = new Message("");
 				
-		msg.messageID = response.getInt("id");
-		msg.isOut = response.getInt("out") !=0;
-		msg.isRead = response.getInt("read_state")!=0;
+		msg.messageID = getIntFromJSON(data,"id");
+		msg.isOut = getBooleanFromJSON(data,"out");
+		msg.isRead = getBooleanFromJSON(data,"read_state");
 		
-		msg.data = getDataFromJSON(response);
+		msg.data = getDataFromJSON(data);
 	    
-	    if (response.has("emoji"))
-	    	msg.hasEmoji = response.getInt("emoji")!=0;
+	    msg.hasEmoji = getBooleanFromJSON(data,"emoji");
 	    	    
 	    msg.forwardMessagesIDs = new Integer[0]; 
 	    return msg;
 	}
 	
-	public MessageData getDataFromJSON(JSONObject data) throws JSONException
+	public static MessageData getDataFromJSON(JSONObject data) throws JSONException
 	{
 		MessageData msg = new MessageData();	
 		
-		msg.userID = data.getInt("user_id");
-		msg.date = data.getLong("date");
+		msg.userID = getIntFromJSON(data,"user_id");
+		msg.date = getLongFromJSON(data,"date");
 		
-		if (data.has("title"))
-			msg.title = data.getString("title");
-		
-	    msg.text = data.getString("body");
+		msg.title = getStringFromJSON(data, "title");		
+	    msg.text = getStringFromJSON(data, "body");
 	    	    
-	    if (data.has("attachments"))
-	    {
-	    	JSONArray atts = data.getJSONArray("attachments");
-	    	msg.attachments = new AttachmentWorker(this.client).getFromJSONArray(atts);
-	    }
-	    else msg.attachments = new Attachment[0];
+	    JSONArray atts = getArrayFromJSON(data, "attachments");	
 	    
-	    if (data.has("fwd_messages"))
-	    {
-	    	JSONArray fwds = data.getJSONArray("fwd_messages");
-	    	
+	    if(atts != null)
+	    	msg.attachments = AttachmentWorker.getFromJSONArray(atts);
+	    else msg.attachments = new Attachment[0];
+
+	    JSONArray fwds = getArrayFromJSON(data, "fwd_messages");
+	    
+	    if (fwds != null)
+	    {	
 	    	int count = fwds.length();
 	    	msg.forwardMessages = new MessageData[count];
 	    	

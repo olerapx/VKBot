@@ -33,18 +33,20 @@ public class DocWorker extends MediaWorker
 	public Doc getFromJSON(JSONObject data) throws JSONException
 	{
 		Doc doc = new Doc();
-		doc.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));	
+		doc.ID = new MediaID(getIntFromJSON(data, "owner_id"), getIntFromJSON(data, "id"));	
 		
-		doc.title = data.getString("title");
-		doc.size = data.getLong("size");
-		doc.extention = data.getString("ext");
-		doc.URL = data.getString("url");
-		doc.addingDate = data.getLong("date");
-		doc.type = data.getInt("type");
+		doc.title = getStringFromJSON(data, "title");
+		doc.size = getLongFromJSON(data, "size");
+		doc.extention = getStringFromJSON(data, "ext");
+		doc.URL = getStringFromJSON(data, "url");
+		doc.addingDate = getLongFromJSON(data, "date");
+		doc.type = getIntFromJSON(data, "type");
 		
-		if (data.has("preview"))
+
+		data = getObjectFromJSON(data, "preview");
+		if (data!=null)
 		{
-			data = data.getJSONObject("preview").getJSONObject("photo");
+			data = getObjectFromJSON(data, "photo");
 			doc.photoURL = data.getJSONArray("sizes").getJSONObject(0).getString("src");
 		}
 		else doc.photoURL="";

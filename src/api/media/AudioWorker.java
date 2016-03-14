@@ -38,24 +38,18 @@ public class AudioWorker extends MediaWorker
 	{	
 		Audio audio = new Audio();
 
-		audio.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));
-		audio.artist = data.getString("artist");
-		audio.title = data.getString("title");
-		audio.duration = data.getLong("duration");
+		audio.ID = new MediaID(getIntFromJSON(data, "owner_id"), getIntFromJSON(data, "id"));
+		audio.artist = getStringFromJSON(data, "artist");
+		audio.title = getStringFromJSON(data, "title");
+		audio.duration = getLongFromJSON(data, "duration");
 		
-		if(data.has("lyrics_id"))
-			audio.lyricsID = data.getInt("lyrics_id");
-		
-		if (data.has("album_id"))
-			audio.albumID = data.getInt("album_id");
-		
-		if (data.has("genre_id"))
-			audio.genreID = data.getInt("genre_id");
+	    audio.lyricsID = getIntFromJSON(data, "lyrics_id");		
+		audio.albumID = getIntFromJSON(data, "album_id");
+		audio.genreID = getIntFromJSON(data, "genre_id");
 		
 		audio.genre = this.getGenre(audio.genreID);
 		
-		if(data.has("date"))
-			audio.date = data.getLong("date");
+		audio.date = getLongFromJSON(data, "date");
 		
 		if (audio.lyricsID == 0) 
 			audio.lyrics="";
@@ -71,7 +65,7 @@ public class AudioWorker extends MediaWorker
 				"&lyrics_id="+audio.lyricsID);
 		
 		JSONObject obj = new JSONObject(str);
-		obj = obj.getJSONObject("response");
+		obj = getObjectFromJSON(obj, "response");
 		return obj.getString("text");
 	}
 		

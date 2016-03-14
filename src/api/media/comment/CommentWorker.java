@@ -38,23 +38,19 @@ public class CommentWorker extends Worker
 		
 		MediaID ID = media.ID();
 		
-		comment.setMediaID(new MediaID(ID.ownerID(), data.getInt("id")));	
-		comment.fromID = data.getInt("from_id");
-		comment.date = data.getLong("date");
-		comment.text = data.getString("text");
+		comment.setMediaID(new MediaID(ID.ownerID(), getIntFromJSON(data, "id")));	
+		comment.fromID = getIntFromJSON(data, "from_id");
+		comment.date = getLongFromJSON(data, "date");
+		comment.text = getStringFromJSON(data, "text");
 		
-		if (data.has("likes"))
-		{
-			JSONObject like = data.getJSONObject("likes");		
-			comment.likes = new LikeWorker(client).getLike (like);
-		} 
+		JSONObject like = getObjectFromJSON(data, "likes");		
+		if (like != null)
+			comment.likes = LikeWorker.getLike(like);
 		else comment.likes = new Like();
 		
-		if (data.has("attachments"))
-		{
-			JSONArray att = data.getJSONArray("attachments");
-			comment.atts = new AttachmentWorker(this.client).getFromJSONArray(att);
-		}
+		JSONArray att = getArrayFromJSON(data, "attachments");
+		if (att != null)
+			comment.atts = AttachmentWorker.getFromJSONArray(att);
 		else comment.atts = new Attachment[0];
 		
 		return comment;

@@ -15,6 +15,13 @@ public class User extends VKObject
 		OFFLINE
 	}
 	
+	enum Sex
+	{
+		ANY,
+		WOMAN,
+		MAN
+	}
+	
 	int ID;
 	String domain;
 	String firstName, lastName, nickname, maidenName;
@@ -30,7 +37,7 @@ public class User extends VKObject
 	boolean hasPhoto;
 	int photoID;
 	
-	int sex;
+	Sex sex;
 	String birthDate;
 	
 	Online online;
@@ -56,7 +63,7 @@ public class User extends VKObject
 	public boolean hasPhoto () {return this.hasPhoto;}
 	public int photoID() {return this.photoID;}
 	
-	public int sex() {return this.sex;}
+	public Sex sex() {return this.sex;}
 	public String birthDate() {return this.birthDate;}
 	
 	public Online online() {return this.online;}

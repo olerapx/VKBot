@@ -39,10 +39,11 @@ public class VideoWorker extends MediaWorker
 	public Video getFromJSON(JSONObject data) throws JSONException
 	{
 		Video video = new Video();
-		video.ID = new MediaID(data.getInt("owner_id"), data.getInt("id"));	
-		video.title = data.getString("title");
-		video.description = data.getString("description");
-		video.duration = data.getLong("duration");
+		
+		video.ID = new MediaID(getIntFromJSON(data, "owner_id"), getIntFromJSON(data, "id"));	
+		video.title = getStringFromJSON(data, "title");
+		video.description = getStringFromJSON(data, "description");
+		video.duration = getLongFromJSON(data, "duration");
 		
 		if(data.has("photo_640"))
 			video.photoURL = data.getString("photo_640");
@@ -52,33 +53,25 @@ public class VideoWorker extends MediaWorker
 			video.photoURL = data.getString("photo_130");
 		else video.photoURL = "";
 		
-		video.creationDate = data.getLong("date");
+		video.creationDate = getLongFromJSON(data, "date");		
+		video.addingDate = getLongFromJSON(data, "adding_date");
 		
-		if (data.has("adding_date"))
-			video.addingDate = data.getLong("adding_date");
+		video.viewsNumber = getIntFromJSON(data, "views");
+		video.commentsNumber = getIntFromJSON(data, "comments");
 		
-		video.viewsNumber = data.getInt("views");
-		video.commentsNumber = data.getInt("comments");
+		video.playURL = getStringFromJSON(data, "player");
 		
-		if (data.has("player"))
-			video.playURL = data.getString("player");
-		else video.playURL = "";
+		video.isLive = getBooleanFromJSON(data, "live");
 		
-		if (data.has("live"))
-			video.isLive = true;
-		
-		if (data.has("likes"))
-		{
-			JSONObject like = data.getJSONObject("likes");		
-			video.likes = new LikeWorker(client).getLike (like);
-		}
+		JSONObject like = getObjectFromJSON(data, "likes");		
+		if (like!=null)
+			video.likes = LikeWorker.getLike (like);
 		else video.likes = new Like();
 		
-		video.canComment = data.getInt("can_comment")!=0;
-		video.canRepost = data.getInt("can_repost")!=0;
+		video.canComment = getBooleanFromJSON(data, "can_comment");
+		video.canRepost = getBooleanFromJSON(data, "can_repost");
 		
-		if(data.has("comments"))
-			video.commentsCount = data.getInt("comments");
+		video.commentsCount = getIntFromJSON(data, "comments");
 		
 		return video;
 	}

@@ -2,6 +2,7 @@ package api.worker;
 
 import api.attachment.AttachmentWorker;
 import api.client.Client;
+import api.database.DatabaseWorker;
 import api.dialog.MessageWorker;
 import api.media.AudioWorker;
 import api.media.DocWorker;
@@ -27,6 +28,7 @@ public class WorkerInterface
 	WallPostWorker wallPostWorker;
 	CommentWorker commentWorker;
 	LikeWorker likeWorker;
+	DatabaseWorker databaseWorker;
 	
 	public WorkerInterface (Client client)
 	{
@@ -40,6 +42,7 @@ public class WorkerInterface
 		wallPostWorker = new WallPostWorker(client);
 		commentWorker = new CommentWorker(client);
 		likeWorker = new LikeWorker(client);
+		databaseWorker = new DatabaseWorker(client);
 	}
 	
 	public UserWorker userWorker(){return this.userWorker;}
@@ -52,4 +55,5 @@ public class WorkerInterface
 	public WallPostWorker wallPostWorker(){return this.wallPostWorker;}
 	public CommentWorker commentWorker(){return this.commentWorker;}
 	public LikeWorker likeWorker(){return this.likeWorker;}
+	public DatabaseWorker databaseWorker() {return this.databaseWorker;}
 }
