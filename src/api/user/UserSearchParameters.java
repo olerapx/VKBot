@@ -1,5 +1,6 @@
 package api.user;
 
+import api.user.User.Relation;
 import api.user.User.Sex;
 
 /**
@@ -17,6 +18,11 @@ public class UserSearchParameters
 	String schoolCountry="";
 	
 	public String universityCountry="";
+	
+	String school="";
+	
+	String universityCity="";
+	String university="";
 		
 	public String query="";
 	public boolean sortByPopularity=true;
@@ -30,6 +36,7 @@ public class UserSearchParameters
 	public int graduationYearSchool=-1;
 	
 	public Sex sex=Sex.ANY;
+	public Relation relation = Relation.NO_INFORMATION;
 	
 	public int startAge=-1;
 	public int endAge=-1;
@@ -59,11 +66,11 @@ public class UserSearchParameters
 		this.city = city;
 	}
 	
-	public void setCity(String ANSICountryCode, String city, String region)
+	public void setCity(String ANSICountryCode, String region, String city)
 	{
 		this.country = ANSICountryCode;
-		this.city = city;
 		this.region = region;
+		this.city = city;
 	}
 	
 	public void setSchoolCity (String ANSICountryCode, String city)
@@ -72,10 +79,38 @@ public class UserSearchParameters
 		this.schoolCity = city;
 	}
 	
-	public void setSchoolCity (String ANSICountryCode, String city, String region)
+	public void setSchoolCity (String ANSICountryCode, String region, String city)
 	{
 		this.schoolCountry = ANSICountryCode;
-		this.schoolCity = city;
 		this.schoolRegion = region;
+		this.schoolCity = city;	
+	}
+
+	public void setSchool(String school, String city, String country)
+	{
+		this.school = school;
+		this.schoolCity = city;
+		this.schoolCountry = country;
+	}
+	
+	public void setSchool(String school, String city, String country, String region)
+	{
+		this.school = school;
+		this.schoolCity = city;
+		this.schoolCountry = country;
+		this.schoolRegion = region;
+	}
+	
+	public void setUniversity(String university, String city, String country)
+	{
+		this.university = university;
+		this.universityCity = city;
+		this.universityCountry = country;
+	}
+	
+	public void setUniversity(String university, String country)
+	{
+		this.university = university;
+		this.universityCountry = country;
 	}
 }

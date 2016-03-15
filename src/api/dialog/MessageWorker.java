@@ -1,5 +1,4 @@
 package api.dialog;
-import java.net.URLEncoder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,7 +23,7 @@ public class MessageWorker extends Worker
 	{
 		String url = "messages.send?"+ dest;
 					
-		url+="&message=" + URLEncoder.encode(msg.data.text(), "UTF-8".replace(".", "&#046;"));
+		url+="&message=" + encodeStringToURL(msg.data.text());
 				
 		if (hasMediaAttachment(msg))
 		{
@@ -75,6 +74,8 @@ public class MessageWorker extends Worker
 		msg.data.date=System.currentTimeMillis()/1000L;
 	}
 
+	
+	
 	public void sendMessageToUser (Message msg, int receiverID) throws Exception
 	{
 		String dest = "user_id="+receiverID;
@@ -119,6 +120,8 @@ public class MessageWorker extends Worker
 		sendMessageTo(msg, dest);
 	}
 		
+	
+	
 	private Message[] get(String IDs) throws Exception
 	{
 		String str = client.executeCommand("messages.getById?"+
@@ -376,6 +379,8 @@ public class MessageWorker extends Worker
 		
 		return this.getDialogs(command);
 	}
+	
+	
 	
 	private void fillConferenceData (ConferenceDialog dialog, JSONObject item) throws Exception
 	{

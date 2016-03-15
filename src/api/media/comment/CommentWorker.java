@@ -1,7 +1,5 @@
 package api.media.comment;
 
-import java.net.URLEncoder;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -60,6 +58,6 @@ public class CommentWorker extends Worker
 	{		
 		client.executeCommand("wall.repost?"+
 							  "&object=wall"+comment.ID().ownerID()+"_"+comment.ID().mediaID()+
-							  "&message="+URLEncoder.encode(message, "UTF-8".replace(".", "&#046;")));
+							  "&message="+encodeStringToURL(message));
 	}
 }

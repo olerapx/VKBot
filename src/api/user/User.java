@@ -7,7 +7,7 @@ import api.object.VKObject;
  */
 public class User extends VKObject
 {
-	enum Online
+	public enum Online
 	{
 		PC,
 		MOBILE,
@@ -15,11 +15,23 @@ public class User extends VKObject
 		OFFLINE
 	}
 	
-	enum Sex
+	public enum Sex
 	{
 		ANY,
 		WOMAN,
 		MAN
+	}
+	
+	public enum Relation
+	{
+		NO_INFORMATION,
+		SINGLE,
+		HAS_RELATIONSHIP,
+		ENGAGED,
+		MARRIED,
+		COMPLICATED,
+		SEARCHING,
+		IN_LOVE
 	}
 	
 	int ID;

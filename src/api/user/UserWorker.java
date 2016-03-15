@@ -1,7 +1,6 @@
 
 package api.user;
 import java.io.IOException;
-import java.net.URLEncoder;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
@@ -160,7 +159,7 @@ public class UserWorker extends Worker
 		
 		String str = client.executeCommand("friends.add?"+
 				"&user_id="+user.ID+
-				"&text"+URLEncoder.encode(text, "UTF-8")+
+				"&text"+encodeStringToURL(text)+
 				"&follow=0");
 				
 		JSONObject obj = new JSONObject(str);
@@ -177,7 +176,7 @@ public class UserWorker extends Worker
 	public void setStatus (String status) throws Exception
 	{
 		client.executeCommand("status.set?"+
-				"text="+URLEncoder.encode(status,"UTF-8".replace(".", "&#046;")));
+				"text="+encodeStringToURL(status));
 	}
 		
 	public Status getStatus (User user) throws Exception
@@ -239,6 +238,7 @@ public class UserWorker extends Worker
 	{
 		String sort = "&sort=" + (param.sortByPopularity ? 0 : 1);
 		String userSex = "&sex="+param.sex.ordinal();
+		String userRelation = (param.relation == User.Relation.NO_INFORMATION ? "" : "&status="+param.relation.ordinal());
 		String userOnline = "&online=" + (param.needOnline ? 1 : 0);
 		String photo = "&has_photo=" + (param.needPhoto ? 1 : 0);
 		
@@ -251,7 +251,7 @@ public class UserWorker extends Worker
 		else if (param.searchSubscriptions) from+="subscriptions";
 		else from = "";
 		
-		int country=0, city=0, universityCountry=0, schoolCountry=0, schoolCity=0;
+		int country=-1, city=-1, universityCountry=-1, schoolCountry=-1, schoolCity=-1, universityCity=-1;
 		
 		DatabaseWorker dw = new DatabaseWorker(client);
 
@@ -262,7 +262,11 @@ public class UserWorker extends Worker
 			schoolCountry = dw.getCountryID(param.schoolCountry);
 		
 		if (param.universityCountry!="")
+		{
 			universityCountry = dw.getCountryID(param.universityCountry);
+			if (param.universityCity!="")
+				universityCity =dw.getCityID(universityCountry, param.universityCity);
+		}
 
 		if (param.city!="")
 		{
@@ -284,10 +288,22 @@ public class UserWorker extends Worker
 			else schoolCity = dw.getCityID(schoolCountry, -1, param.schoolCity);
 		}
 		
-		String countryName = (country==0? "" : "&country="+country);
-		String cityName = (city==0? "" : "&city="+city);	
-		String schoolCityName = (schoolCity ==0? "" : "&school_city="+schoolCity);	
-		String universityCountryName = (universityCountry==0? "" : "&university_country="+ universityCountry);
+		String school="";
+		String university="";
+		if (param.school!="") school = "&school="+dw.getSchoolID(schoolCity, param.school);
+		
+		if (param.university!="")
+		{
+			if (universityCity!=-1)
+				university = "&university=" + dw.getUniversityIDByCity(universityCity, param.university);	
+			else 
+				university = "&university=" + dw.getUniversityIDByCountry(universityCountry, param.university);
+		}
+		
+		String countryName = (country==-1? "" : "&country="+country);
+		String cityName = (city==-1? "" : "&city="+city);	
+		String schoolCityName = (schoolCity ==-1? "" : "&school_city="+schoolCity);	
+		String universityCountryName = (universityCountry==-1? "" : "&university_country="+ universityCountry);
 		
 				
 		String str = "users.search?"+
@@ -301,11 +317,14 @@ public class UserWorker extends Worker
 					+ "photo_max_orig,sex,bdate,online,followers_count,common_count"+
 					countryName+
 					cityName+
+					school+
+					university+
 				 ( param.homeTown!="" ? "&hometown="+ param.homeTown : "")+	
 				 universityCountryName+ 
 				 ( param.graduationYearUniversity!=-1 ? "&university_year="+ param.graduationYearUniversity : "")+		
 				 ( param.graduationYearSchool!=-1 ? "&school_year="+ param.graduationYearSchool : "")+							 
 				 userSex+
+				 userRelation+
 				 ( param.startAge!=-1 ? "&age_from="+ param.startAge : "")+
 				 ( param.endAge!=-1 ? "&age_to="+ param.endAge : "")+
 				 ( param.birthDay!=-1 ? "&birth_day="+ param.birthDay : "")+

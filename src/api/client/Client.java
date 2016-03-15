@@ -218,7 +218,7 @@ public class Client
 			
 	private void getCaptcha(HTMLDocument doc) throws Exception
 	{		
-	    captchaURL = getAttributeOfElement(doc, "img", HTML.Attribute.SRC);
+	    captchaURL = getAttributeOfElement(doc, "img", HTML.Attribute.CLASS, "captcha_img", HTML.Attribute.SRC);
 	    captchaSid = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "captcha_sid", HTML.Attribute.VALUE);
 	    lg_h = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "lg_h", HTML.Attribute.VALUE);
 	}
@@ -305,7 +305,7 @@ public class Client
 		String str="";
 		
 		command = "https://api.vk.com/method/" + command;
-		command+="&v=5.45";
+		command+="&v=5.50";
 		command+="&access_token="+token;
 		
 		str = postQuery(command);

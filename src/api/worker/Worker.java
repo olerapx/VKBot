@@ -1,5 +1,8 @@
 package api.worker;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,5 +66,10 @@ public abstract class Worker
 		if (data.has(name))
 			return data.getJSONArray(name);
 		return null;
+	}
+
+	protected static String encodeStringToURL(String str) throws UnsupportedEncodingException
+	{
+		return URLEncoder.encode(str, "UTF-8".replace(".", "&#046;"));
 	}
 }
