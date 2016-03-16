@@ -39,6 +39,7 @@ public class AudioWorker extends MediaWorker
 		Audio audio = new Audio();
 
 		audio.ID = new MediaID(getIntFromJSON(data, "owner_id"), getIntFromJSON(data, "id"));
+		
 		audio.artist = getStringFromJSON(data, "artist");
 		audio.title = getStringFromJSON(data, "title");
 		audio.duration = getLongFromJSON(data, "duration");
@@ -66,25 +67,27 @@ public class AudioWorker extends MediaWorker
 		
 		JSONObject obj = new JSONObject(str);
 		obj = getObjectFromJSON(obj, "response");
+		
 		return obj.getString("text");
 	}
 		
 	String getGenre (int genreID) throws FileNotFoundException, JSONException
 	{
-		String s = "";
+		String genres = "";
+		
 		Scanner in = new Scanner(new File("cfg/audiogenres.json"));
 		while(in.hasNext())
-		s += in.nextLine() + "\r\n";
+			genres += in.nextLine() + "\r\n";
 		in.close();
 		
-		JSONObject obj = new JSONObject(s);
+		JSONObject obj = new JSONObject(genres);
 		JSONArray data = obj.getJSONArray("genres");
 		int count = data.length();
 		
 		for (int i=0;i<count;i++)
 		{
 			obj = data.getJSONObject(i);
-			if (obj.getInt("id")==genreID)
+			if (obj.getInt("id") == genreID)
 				return obj.getString("name");
 		}
 		return "";

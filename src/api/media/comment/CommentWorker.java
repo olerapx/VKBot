@@ -22,7 +22,7 @@ public class CommentWorker extends Worker
 		super(client);
 	}
 	
-	public Comment getFromJSON(JSONObject data, Media media) throws Exception
+	public static Comment getFromJSON(JSONObject data, Media media) throws Exception
 	{
 		Comment comment;
 		

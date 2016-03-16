@@ -4,45 +4,41 @@ import api.user.User.Relation;
 import api.user.User.Sex;
 
 /**
- * Contains almost all parameters for user searching.
+ * Contains parameters for user searching.
  */
 public class UserSearchParameters 
 {
 	String city="";
 	String country="";
+	public String homeTown="";
 	
 	String region="";
 	String schoolRegion="";
 	
 	String schoolCity="";
 	String schoolCountry="";
-	
-	public String universityCountry="";
-	
 	String school="";
+	public int schoolGraduationYear=0;
 	
-	String universityCity="";
 	String university="";
+	String universityCity="";
+	public String universityCountry="";
+	public int universityGraduationYear=0;	
 		
 	public String query="";
 	public boolean sortByPopularity=true;
 	
-	public int offset=-1;
-	public int count=-1;
-	
-	public String homeTown="";
-	
-	public int graduationYearUniversity=-1;	
-	public int graduationYearSchool=-1;
+	public int offset=0;
+	public int count=0;
 	
 	public Sex sex=Sex.ANY;
 	public Relation relation = Relation.NO_INFORMATION;
 	
-	public int startAge=-1;
-	public int endAge=-1;
-	public int birthDay=-1;
-	public int birthMonth=-1;
-	public int birthYear=-1;
+	public int startAge=0;
+	public int endAge=0;
+	public int birthDay=0;
+	public int birthMonth=0;
+	public int birthYear=0;
 	
 	public boolean needOnline=false;
 	public boolean needPhoto=false;
@@ -51,6 +47,7 @@ public class UserSearchParameters
 	public String interests="";
 	public String company="";
 	public String position="";
+	
 	public boolean searchFriends = false;
 	public boolean searchSubscriptions = false;
 	public int groupID = 0;

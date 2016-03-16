@@ -30,8 +30,7 @@ public abstract class Attachment extends VKObject
 	}
 	
 	/**
-	 * @param type
-	 * Convert enum Type to string to use in API requests. 
+	 * Converts enum Type to string for using in API requests. 
 	 * API methods such as messages.getById returns type of wall reply attachment as "wall_reply" but to attach reply to a message we need to write "wall".
 	 * So we need to convert it that way.
 	 */

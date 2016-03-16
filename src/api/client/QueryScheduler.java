@@ -40,7 +40,7 @@ public class QueryScheduler
 			clearAll();			
 			return;	
 		}		
-		move(firstQueryPos);
+		makeShift(firstQueryPos);
 	}
 	
 	private int getFirstQueryPos()
@@ -68,7 +68,7 @@ public class QueryScheduler
 		queryCount = 0;
 	}
 	
-	private void move(int firstQueryPos)
+	private void makeShift(int firstQueryPos)
 	{
 		int index = 0;
 		

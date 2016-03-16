@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import api.client.Client;
@@ -13,26 +12,32 @@ import api.media.Audio;
 import api.media.AudioWorker;
 import api.media.MediaID;
 import api.user.User.Online;
+import api.user.User.Relation;
 import api.user.User.Sex;
 import api.worker.Worker;
 
 public class UserWorker extends Worker 
 {	
+	private String fields;
+	
 	public UserWorker(Client client) 
 	{
 		super(client);
+		
+		this.fields = "&fields=domain,nickname,maiden_name,wall_comments,"
+				+ "can_post,can_see_all_posts,can_see_audio,can_write_private_message,"
+				+ "is_friend,can_send_friend_request,has_photo,photo_id,"
+				+ "photo_max_orig,sex,bdate,city,country,home_town,online,"
+				+ "followers_count,common_count,education,schools,relation,personal,connections";
 	}
-	
+		
 	private User[] get(String ids) throws Exception
 	{
 		String command="users.get?";
 		if(ids!=null)
 				command += "&user_ids="+ids;
 
-		command+="&fields=domain,nickname,maiden_name,wall_comments,"
-				+ "can_post,can_see_all_posts,can_see_audio,can_write_private_message,"
-				+ "is_friend,can_send_friend_request,has_photo,photo_id,"
-				+ "photo_max_orig,sex,bdate,online,followers_count,common_count";
+		command+=fields;
 		
 		String str = client.executeCommand(command); 
 		
@@ -49,9 +54,11 @@ public class UserWorker extends Worker
 		return users;
 	}
 	
-	public User getFromJSON(JSONObject data) throws JSONException
+	public static User getFromJSON(JSONObject data) throws Exception
 	{
 		User user = new User();
+		
+		System.out.println(data.toString());
 		
 		user.ID = getIntFromJSON(data, "id");		
 		user.domain= getStringFromJSON(data, "domain");
@@ -72,7 +79,7 @@ public class UserWorker extends Worker
 
 		user.isFriend = getBooleanFromJSON(data, "is_friend");
 		
-		user.canAddToFriends =getBooleanFromJSON(data, "can_send_friend_request");
+		user.canAddToFriends = getBooleanFromJSON(data, "can_send_friend_request");
 		
 		user.hasPhoto = getBooleanFromJSON(data, "has_photo");
 				
@@ -81,6 +88,43 @@ public class UserWorker extends Worker
 		
 		user.sex = Sex.values()[getIntFromJSON(data, "sex")];
 		
+		if (data.has("city"))
+		{
+			JSONObject city = getObjectFromJSON(data, "city");
+			user.cityName = getStringFromJSON(city, "title");
+			user.cityID = getIntFromJSON(city, "id");
+		}
+		
+		if (data.has("country"))
+		{
+			JSONObject country = getObjectFromJSON(data, "country");
+			user.countryName = getStringFromJSON(country, "title");
+			user.countryID = getIntFromJSON(country, "id");
+		}
+		
+		user.homeTown = getStringFromJSON(data, "home_town");
+		
+		user.universityID = getIntFromJSON(data, "university");
+		user.universityName = getStringFromJSON(data, "university_name");
+		user.universityGraduationYear = getIntFromJSON(data, "graduation");
+		
+		if (data.has("schools"))
+		{
+			JSONObject school = getObjectFromJSONArray(getArrayFromJSON(data, "schools"), 0);
+			if (school!=null)
+			{
+				user.schoolID = getIntFromJSON(school, "id");
+				user.schoolName = getStringFromJSON(school, "name");
+				user.schoolGraduationYear = getIntFromJSON(school, "year_graduated");
+			}
+		}
+		user.relation = Relation.values()[getIntFromJSON(data, "relation")];
+		user.skype = getStringFromJSON(data, "skype");
+		
+		JSONObject p = data.optJSONObject("personal");
+		if (p!=null)
+			user.religion = getStringFromJSON(p, "religion");
+				
 		user.birthDate = getStringFromJSON(data, "bdate");
 		
 		boolean isOnline = getBooleanFromJSON(data, "online");
@@ -109,7 +153,7 @@ public class UserWorker extends Worker
 		String id = "" + ID;
 		return this.get(id)[0];
 	}
-		
+	
 	public User getByDomain(String domain) throws Exception
 	{
 		return this.get(domain)[0];
@@ -125,12 +169,14 @@ public class UserWorker extends Worker
 			
 		return this.get(ids);
 	}
-		
+	
 	public User getMe() throws Exception
 	{
 		return this.get(null)[0];
 	}
 		
+	
+
 	public User[] getFriends(User user) throws Exception //TODO:sort
 	{		
 		String str = client.executeCommand("friends.get?"+
@@ -166,6 +212,8 @@ public class UserWorker extends Worker
 		
 		return getIntFromJSON(obj, "response");
 	}
+	
+	
 	
 	/**
 	 * Sets status of user client logged in.
@@ -203,6 +251,33 @@ public class UserWorker extends Worker
 		return status;
 	}	
 
+	
+
+	public User getRelationPartner (User user) throws Exception
+	{
+		String command="users.get?";
+				command += "&user_ids="+user.ID;
+		command+="&fields=relation";
+		
+		String str = client.executeCommand(command); 
+		
+		JSONObject obj = new JSONObject(str);		
+		JSONArray response = obj.getJSONArray("response");
+		
+		if (response.length()==0) return new User();
+		
+		JSONObject data = response.getJSONObject(0);
+		
+		if (data.has("relation_partner"))
+		{
+			JSONObject rel = getObjectFromJSON(data, "relation_partner");
+			return getByID(getIntFromJSON(rel, "id"));
+		}
+		else return new User();
+	}
+	
+	
+	
 	/**
 	 * @param Object with all necessary search parameters.
 	 * @return Found users.
@@ -251,7 +326,7 @@ public class UserWorker extends Worker
 		else if (param.searchSubscriptions) from+="subscriptions";
 		else from = "";
 		
-		int country=-1, city=-1, universityCountry=-1, schoolCountry=-1, schoolCity=-1, universityCity=-1;
+		int country=0, city=0, universityCountry=0, schoolCountry=0, schoolCity=0, universityCity=0;
 		
 		DatabaseWorker dw = new DatabaseWorker(client);
 
@@ -275,7 +350,7 @@ public class UserWorker extends Worker
 				int region = dw.getRegionID(country, param.region);
 				city = dw.getCityID(country, region, param.city);
 			}
-			else city = dw.getCityID(country, -1 ,param.city);
+			else city = dw.getCityID(country, 0 ,param.city);
 		}
 		
 		if (param.schoolCity!="")
@@ -285,51 +360,49 @@ public class UserWorker extends Worker
 				int region = dw.getRegionID(schoolCountry, param.schoolRegion);
 				schoolCity = dw.getCityID(schoolCountry, region, param.schoolCity);
 			}
-			else schoolCity = dw.getCityID(schoolCountry, -1, param.schoolCity);
+			else schoolCity = dw.getCityID(schoolCountry, 0, param.schoolCity);
 		}
 		
 		String school="";
 		String university="";
+		
 		if (param.school!="") school = "&school="+dw.getSchoolID(schoolCity, param.school);
 		
 		if (param.university!="")
 		{
-			if (universityCity!=-1)
+			if (universityCity!=0)
 				university = "&university=" + dw.getUniversityIDByCity(universityCity, param.university);	
 			else 
 				university = "&university=" + dw.getUniversityIDByCountry(universityCountry, param.university);
 		}
 		
-		String countryName = (country==-1? "" : "&country="+country);
-		String cityName = (city==-1? "" : "&city="+city);	
-		String schoolCityName = (schoolCity ==-1? "" : "&school_city="+schoolCity);	
-		String universityCountryName = (universityCountry==-1? "" : "&university_country="+ universityCountry);
+		String countryName = (country==0? "" : "&country="+country);
+		String cityName = (city==0? "" : "&city="+city);	
+		String schoolCityName = (schoolCity ==0? "" : "&school_city="+schoolCity);	
+		String universityCountryName = (universityCountry==0? "" : "&university_country="+ universityCountry);
 		
 				
 		String str = "users.search?"+
 				 (param.query!="" ? "&q="+ param.query : "")+
 				 sort+
-				 ( param.offset!=-1 ? "&offset="+  param.offset : "")+
-				 ( param.count!=-1 ? "&count="+  param.count : "")+
-				 "&fields=domain,nickname,maiden_name,wall_comments,"
-					+ "can_post,can_see_all_posts,can_see_audio,can_write_private_message,"
-					+ "is_friend,can_send_friend_request,has_photo,photo_id,"
-					+ "photo_max_orig,sex,bdate,online,followers_count,common_count"+
+				 ( param.offset!=0 ? "&offset="+  param.offset : "")+
+				 ( param.count!=0 ? "&count="+  param.count : "")+
+				 	fields+
 					countryName+
 					cityName+
 					school+
 					university+
 				 ( param.homeTown!="" ? "&hometown="+ param.homeTown : "")+	
 				 universityCountryName+ 
-				 ( param.graduationYearUniversity!=-1 ? "&university_year="+ param.graduationYearUniversity : "")+		
-				 ( param.graduationYearSchool!=-1 ? "&school_year="+ param.graduationYearSchool : "")+							 
+				 ( param.universityGraduationYear!=0 ? "&university_year="+ param.universityGraduationYear : "")+		
+				 ( param.schoolGraduationYear!=0 ? "&school_year="+ param.schoolGraduationYear : "")+							 
 				 userSex+
 				 userRelation+
-				 ( param.startAge!=-1 ? "&age_from="+ param.startAge : "")+
-				 ( param.endAge!=-1 ? "&age_to="+ param.endAge : "")+
-				 ( param.birthDay!=-1 ? "&birth_day="+ param.birthDay : "")+
-				 ( param.birthMonth!=-1 ? "&birth_month="+ param.birthMonth : "")+
-				 ( param.birthYear!=-1 ? "&birth_year="+ param.birthYear : "")+
+				 ( param.startAge!=0 ? "&age_from="+ param.startAge : "")+
+				 ( param.endAge!=0 ? "&age_to="+ param.endAge : "")+
+				 ( param.birthDay!=0 ? "&birth_day="+ param.birthDay : "")+
+				 ( param.birthMonth!=0 ? "&birth_month="+ param.birthMonth : "")+
+				 ( param.birthYear!=0 ? "&birth_year="+ param.birthYear : "")+
 				 userOnline+
 				 photo+
 				 schoolCityName+

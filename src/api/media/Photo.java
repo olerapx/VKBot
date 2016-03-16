@@ -7,7 +7,7 @@ public class Photo extends Media
 	/**
 	 * ID of user who uploaded the photo. Applicable only if the photo belongs to group, equals to 100 in other cases.
 	 */
-	int userID=100;
+	int userID = 100;
 	
 	String text;
 	String URL;

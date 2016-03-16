@@ -310,7 +310,7 @@ public class Client
 		
 		str = postQuery(command);
 		JSONObject obj = null;
-		
+
 		try 
 		{
 			obj = new JSONObject(str);

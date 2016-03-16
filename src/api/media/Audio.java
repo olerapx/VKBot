@@ -15,11 +15,6 @@ public class Audio extends Media
 	
 	long date;
 	
-	public Audio()
-	{ 
-		super();
-	}
-		
 	public String artist() {return this.artist;}
 	public String title() {return this.title;}
 	

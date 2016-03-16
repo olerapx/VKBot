@@ -1,6 +1,5 @@
 package api.media.comment;
 
-
 /**
  * Video comment. Can't be attached or reposted.
  */

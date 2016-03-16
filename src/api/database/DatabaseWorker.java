@@ -136,7 +136,7 @@ public class DatabaseWorker extends Worker
 	 */
 	public int getCityID(int countryID, int regionID, String city) throws Exception
 	{
-		String region = (regionID==-1? "" : "&region_id="+regionID);
+		String region = (regionID==0? "" : "&region_id="+regionID);
 		
 		String str = client.executeCommand("database.getCities?"+
 										   "&country_id=" + countryID+
@@ -158,14 +158,14 @@ public class DatabaseWorker extends Worker
 	 */
 	public int getCityID(int countryID, String city) throws Exception
 	{
-		return getCityID(countryID, -1, city);
+		return getCityID(countryID, 0, city);
 	}
 	
 	
 	private int getUniversityID(int countryID, int cityID, String university) throws Exception
 	{
-		String country = (countryID == -1? "" : "&country_id="+countryID);
-		String city = (cityID == -1? "" : "&city_id="+cityID);
+		String country = (countryID == 0? "" : "&country_id="+countryID);
+		String city = (cityID == 0? "" : "&city_id="+cityID);
 		
 		
 		String str = "database.getUniversities?"+
@@ -184,17 +184,17 @@ public class DatabaseWorker extends Worker
 	
 	public int getUniversityIDByCountry (int countryID, String university) throws Exception
 	{
-		return getUniversityID(countryID, -1, university);
+		return getUniversityID(countryID, 0, university);
 	}
 	
 	public int getUniversityIDByCity (int cityID, String university) throws Exception
 	{
-		return getUniversityID(-1, cityID, university);
+		return getUniversityID(0, cityID, university);
 	}
 	
 	public int getUniversityID (String university) throws Exception
 	{
-		return getUniversityID(-1, -1, university);
+		return getUniversityID(0, 0, university);
 	}
 
 	

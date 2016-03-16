@@ -36,13 +36,13 @@ public class DocWorker extends MediaWorker
 		doc.ID = new MediaID(getIntFromJSON(data, "owner_id"), getIntFromJSON(data, "id"));	
 		
 		doc.title = getStringFromJSON(data, "title");
-		doc.size = getLongFromJSON(data, "size");
 		doc.extention = getStringFromJSON(data, "ext");
-		doc.URL = getStringFromJSON(data, "url");
-		doc.addingDate = getLongFromJSON(data, "date");
 		doc.type = getIntFromJSON(data, "type");
 		
-
+		doc.size = getLongFromJSON(data, "size");		
+		doc.URL = getStringFromJSON(data, "url");		
+		doc.addingDate = getLongFromJSON(data, "date");
+		
 		data = getObjectFromJSON(data, "preview");
 		if (data!=null)
 		{

@@ -38,6 +38,22 @@ public class User extends VKObject
 	String domain;
 	String firstName, lastName, nickname, maidenName;
 	
+	String countryName, cityName;
+	int countryID, cityID;
+	String homeTown;
+	
+	String universityName;
+	int universityID;
+	int universityGraduationYear;	
+	
+	String schoolName;
+	int schoolID;
+	int schoolGraduationYear;
+	
+	Relation relation;
+	String religion;
+	String skype;
+	
 	boolean isDeactivated;
 	boolean canComment;
 	boolean canPost;
@@ -46,6 +62,7 @@ public class User extends VKObject
 	boolean canWriteMessage;
 	boolean isFriend;
 	boolean canAddToFriends;
+	
 	boolean hasPhoto;
 	int photoID;
 	
@@ -64,6 +81,24 @@ public class User extends VKObject
 	public String nickname() {return this.nickname;}
 	public String maidenName() {return this.maidenName;}
 	
+	public String countryName() {return this.countryName;}
+	public String cityName() {return this.cityName;}
+	public int countryID() {return this.countryID;}
+	public int cityID() {return this.cityID;}
+	public String homeTown() {return this.homeTown;}
+	
+	public String universityName() {return this.universityName;}
+	public int universityID() {return this.universityID;}
+	public int universityGraduationYear() {return this.universityGraduationYear;}
+	
+	public String schoolName() {return this.schoolName;}
+	public int schoolID() {return this.schoolID;}
+	public int schoolGraduationYear() {return this.schoolGraduationYear;}
+	
+	public Relation relation() {return this.relation;}
+	public String religion () {return this.religion;}
+	public String skype() {return this.skype;}
+
 	public boolean isDeactivated() {return this.isDeactivated;}
 	public boolean canComment() {return this.canComment;}
 	public boolean canPost() {return this.canPost;}
@@ -71,7 +106,8 @@ public class User extends VKObject
 	public boolean canSeeAudio() {return this.canSeeAudio;}
 	public boolean canWriteMessage() {return this.canWriteMessage;}
 	public boolean isFriend() {return this.isFriend;}
-	public boolean canAddToFriends () {return this.canAddToFriends;}
+	public boolean canAddToFriends() {return this.canAddToFriends;}
+	
 	public boolean hasPhoto () {return this.hasPhoto;}
 	public int photoID() {return this.photoID;}
 	

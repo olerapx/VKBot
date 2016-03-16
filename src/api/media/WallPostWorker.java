@@ -118,10 +118,8 @@ public class WallPostWorker extends MediaWorker
 		
 		WallComment[] comments = new WallComment[commentsCount];
 		
-		CommentWorker cw = new CommentWorker(client);
-		
 		for (int i=0;i<commentsCount;i++)						
-			comments[i] = (WallComment) cw.getFromJSON(items.getJSONObject(i), post);
+			comments[i] = (WallComment) CommentWorker.getFromJSON(items.getJSONObject(i), post);
 		
 		return comments;
 	}

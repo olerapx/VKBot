@@ -21,11 +21,10 @@ public class Message extends VKObject
 	public boolean isOut() {return this.isOut;}
 	public boolean isRead() {return this.isRead;}
 	public boolean hasEmoji() {return this.hasEmoji;}
+	public MessageData data() {return this.data;}
 	
 	public Integer [] forwardMessagesIDs() {return this.forwardMessagesIDs;}
-	
-	public MessageData data() {return this.data;}
-		
+			
 	private void construct (String message, MediaAttachment[]attachments, MessageData[] forwardMessages, Integer[] forwardMessagesIDs, String title, long date, boolean hasEmoji)
 	{
 		this.data = new MessageData();

@@ -109,10 +109,8 @@ public class VideoWorker extends MediaWorker
 		
 		VideoComment[] comments = new VideoComment[commentsCount];
 		
-		CommentWorker cw = new CommentWorker(client);
-		
 		for (int i=0;i<commentsCount;i++)						
-			comments[i] = (VideoComment) cw.getFromJSON(items.getJSONObject(i), video);
+			comments[i] = (VideoComment) CommentWorker.getFromJSON(items.getJSONObject(i), video);
 		
 		return comments;
 	}
