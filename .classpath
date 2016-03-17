@@ -2,19 +2,20 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="lib/commons-codec-1.9.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/fluent-hc-4.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/httpclient-4.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/httpclient-cache-4.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/httpclient-win-4.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/httpcore-4.4.3.jar"/>
-	<classpathentry kind="lib" path="lib/httpmime-4.5.1.jar"/>
-	<classpathentry kind="lib" path="lib/jna-4.1.0.jar"/>
-	<classpathentry kind="lib" path="lib/jna-platform-4.1.0.jar"/>
-	<classpathentry kind="lib" path="lib/java-json.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="F:/Program Files/Eclipse/projects/VKBot/lib/jython-standalone-2.7.0.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH"/>
+	<classpathentry kind="var" path="LIBS_PATH/commons-codec-1.9.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/commons-io-2.4.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/commons-logging-1.2.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/fluent-hc-4.5.1.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/httpclient-4.5.1.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/httpclient-cache-4.5.1.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/httpclient-win-4.5.1.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/httpcore-4.4.3.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/httpmime-4.5.1.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/java-json.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/jna-4.1.0.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/jna-platform-4.1.0.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/jython-standalone-2.7.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
