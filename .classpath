@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="lib/java-json.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="F:/Program Files/Eclipse/projects/VKBot/lib/jython-standalone-2.7.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

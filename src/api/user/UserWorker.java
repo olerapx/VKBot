@@ -58,8 +58,6 @@ public class UserWorker extends Worker
 	{
 		User user = new User();
 		
-		System.out.println(data.toString());
-		
 		user.ID = getIntFromJSON(data, "id");		
 		user.domain= getStringFromJSON(data, "domain");
 		

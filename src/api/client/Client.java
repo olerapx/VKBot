@@ -114,7 +114,7 @@ public class Client
 	{
 	    ElementIterator it = new ElementIterator(doc); 
 	    Element elem; 
-	   		    	    
+
 	    while((elem=it.next()) != null)
 	    { 
 	    	if (elem.getName().equals(elementName))
