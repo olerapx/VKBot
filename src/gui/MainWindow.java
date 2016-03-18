@@ -1,17 +1,26 @@
 package gui;
+
 import java.awt.EventQueue;
+import java.util.Locale;
 import java.util.Random;
+import java.util.ResourceBundle;
 
 import javax.swing.JFrame;
 
 import org.json.JSONObject;
 import org.json.JSONWriter;
+import org.python.core.PySystemState;
+import org.python.util.PythonInterpreter;
 
+import api.attachment.Link;
 import api.client.Client;
 import api.dialog.Message;
+import api.user.User;
+import api.user.UserSearchParameters;
 import api.worker.WorkerInterface;
 import crypto.Decryptor;
 import crypto.Encryptor;
+import scripts.JythonRunner;
 
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -20,15 +29,29 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
-import javax.swing.JLabel;
+import javax.swing.JTabbedPane;
+import javax.swing.JMenuBar;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JToolBar;
+import javax.swing.UIManager;
+
+import javax.swing.border.CompoundBorder;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.ActionEvent;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormSpecs;
+import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.JButton;
 
 public class MainWindow 
 {
+	private static ResourceBundle locale = ResourceBundle.getBundle("resources.locale.MainWindow.MainWindow"); //$NON-NLS-1$
 	private JFrame frmUchanVkbot;
-	private JTextField textField;
-	private JLabel label;
 
 	public static void main(String[] args) throws Exception  
 	{
@@ -54,25 +77,131 @@ public class MainWindow
 		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 * @throws Exception 
-	 */
-	private void initialize()
+	private void initialize() throws Exception
+	{	
+	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	    
+	    initFrame();	
+	    
+	    addMenuBar();		
+	    addToolBar();		
+		addTabPane();
+
+		frmUchanVkbot.setTitle("UChan VKBot");
+		frmUchanVkbot.setBounds(100, 100, 999, 638);
+		frmUchanVkbot.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	private void loadLocale(String language, String country)
+	{
+		Locale l = new Locale(language, country);
+		Locale.setDefault(l);
+	    locale = ResourceBundle.getBundle("locale.MainWindow.MainWindow");
+	}
+	
+	private void initFrame()
 	{
 		frmUchanVkbot = new JFrame();
 		frmUchanVkbot.setIconImage(Toolkit.getDefaultToolkit().getImage(MainWindow.class.getResource("/resources/logo.jpg")));
 		frmUchanVkbot.getContentPane().setFont(new Font("Segoe UI", Font.PLAIN, 11));
+	}
+	
+	private void addMenuBar()
+	{
+		JMenuBar menuBar = new JMenuBar();
+		frmUchanVkbot.setJMenuBar(menuBar);
+
+		addMenuFile(menuBar);
+		addMenuBot(menuBar);
+		addMenuHelp(menuBar);
+	}
+	
+	private void addMenuFile(JMenuBar menuBar)
+	{
+		JMenu menuFile = new JMenu(locale.getString("MainWindow.menuFile.text")); //$NON-NLS-1$
+		menuBar.add(menuFile);
 		
-		textField = new JTextField();
-		frmUchanVkbot.getContentPane().add(textField, BorderLayout.SOUTH);
-		textField.setColumns(10);
-		frmUchanVkbot.setTitle("UChan VKBot");
-		frmUchanVkbot.setBounds(100, 100, 897, 598);
-		frmUchanVkbot.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JMenuItem fileItemNew = new JMenuItem(locale.getString("MainWindow.fileItemNew.text")); //$NON-NLS-1$
+		fileItemNew.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				addNewBot();
+			}
+		});
+		menuFile.add(fileItemNew);
 		
-		label = new JLabel();
-		frmUchanVkbot.getContentPane().add(label, BorderLayout.CENTER);
+		JMenuItem fileItemOpen = new JMenuItem(locale.getString("MainWindow.fileItemOpen.text")); //$NON-NLS-1$
+		menuFile.add(fileItemOpen);
+		
+		JMenuItem fileItemManager = new JMenuItem(locale.getString("MainWindow.fileItemManager.text")); //$NON-NLS-1$
+		menuFile.add(fileItemManager);
+		
+		JMenuItem fileItemExit = new JMenuItem(locale.getString("MainWindow.fileItemExit.text")); //$NON-NLS-1$
+		fileItemExit.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				frmUchanVkbot.dispatchEvent(new WindowEvent(frmUchanVkbot, WindowEvent.WINDOW_CLOSING));
+			}
+		});
+		menuFile.add(fileItemExit);
+	}
+	
+	private void addMenuBot(JMenuBar menuBar)
+	{
+		JMenu menuBot = new JMenu(locale.getString("MainWindow.menuBot.text")); //$NON-NLS-1$
+		menuBar.add(menuBot);
+		
+		JMenuItem botItemToggle = new JMenuItem(locale.getString("MainWindow.botItemToggle.text")); //$NON-NLS-1$
+		menuBot.add(botItemToggle);
+		
+		JMenuItem botItemTask = new JMenuItem(locale.getString("MainWindow.botItemTask.text")); //$NON-NLS-1$
+		menuBot.add(botItemTask);
+		
+		JMenuItem botItemRemove = new JMenuItem(locale.getString("MainWindow.botItemRemove.text")); //$NON-NLS-1$
+		menuBot.add(botItemRemove);
+		
+		JMenuItem botItemDelete = new JMenuItem(locale.getString("MainWindow.botItemDelete.text")); //$NON-NLS-1$
+		menuBot.add(botItemDelete);
+	}
+	
+	private void addMenuHelp(JMenuBar menuBar)
+	{
+		JMenu menuHelp = new JMenu(locale.getString("MainWindow.menuHelp.text")); //$NON-NLS-1$
+		menuBar.add(menuHelp);
+		
+		JMenu helpMenuLang = new JMenu(locale.getString("MainWindow.helpMenuLang.text")); //$NON-NLS-1$
+		menuHelp.add(helpMenuLang);
+		
+		JRadioButtonMenuItem langItemEn = new JRadioButtonMenuItem(locale.getString("MainWindow.langItemEn.text")); //$NON-NLS-1$
+		helpMenuLang.add(langItemEn);
+		
+		JRadioButtonMenuItem langItemRu = new JRadioButtonMenuItem(locale.getString("MainWindow.langItemRu.text")); //$NON-NLS-1$
+		langItemRu.setSelected(true);
+		helpMenuLang.add(langItemRu);
+		
+		JMenuItem helpItemAbout = new JMenuItem(locale.getString("MainWindow.helpItemAbout.text")); //$NON-NLS-1$
+		menuHelp.add(helpItemAbout);
+	}
+
+	private void addToolBar()
+	{
+		frmUchanVkbot.getContentPane().setLayout(new MigLayout("", "[971px]", "[16px][547px]"));
+		JToolBar toolBar = new JToolBar();
+		frmUchanVkbot.getContentPane().add(toolBar, "cell 0 0,alignx left,aligny top");
+	}
+	
+	private void addTabPane()
+	{
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBorder(new CompoundBorder());
+		frmUchanVkbot.getContentPane().add(tabbedPane, "cell 0 1,grow");
+	}
+
+	private void addNewBot()
+	{
+		
 	}
 	
 	private static void login() throws Exception
@@ -117,10 +246,28 @@ public class MainWindow
 	
 	public static void test() throws Exception
 	{	
-		Client client = new Client();
-		System.out.println("Logged in under token:\n"+client.token);
+		/*
+
 		
-		WorkerInterface wi = new WorkerInterface(client);	
+		WorkerInterface wi = new WorkerInterface(client);
+		WorkerInterface wi1 = new WorkerInterface(c1);		
+		
+		long startTime = System.currentTimeMillis();
+		for (int i=0;i<30;i++)
+		{
+			wi.messageWorker().sendMessageToUser(new Message(gen() + " "+i), client.me);
+			wi1.messageWorker().sendMessageToUser(new Message(gen() + " "+i), client.me);
+			long endTime = System.currentTimeMillis();
+			System.out.println("query# "+i+": " + (endTime-startTime));
+			if (i%3==0)
+			{
+				startTime = endTime;
+				System.out.println("pass");
+			}
+			
+		}
+		*/
+
 	}
 
 	public static String gen()

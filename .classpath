@@ -17,5 +17,8 @@
 	<classpathentry kind="var" path="LIBS_PATH/jna-4.1.0.jar"/>
 	<classpathentry kind="var" path="LIBS_PATH/jna-platform-4.1.0.jar"/>
 	<classpathentry kind="var" path="LIBS_PATH/jython-standalone-2.7.0.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/miglayout15-swing.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/jgoodies-common-1.8.0.jar"/>
+	<classpathentry kind="var" path="LIBS_PATH/jgoodies-forms-1.8.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
