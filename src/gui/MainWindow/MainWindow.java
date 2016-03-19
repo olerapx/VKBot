@@ -48,6 +48,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import java.awt.FlowLayout;
+import java.awt.Dimension;
 
 public class MainWindow 
 {
@@ -103,6 +104,7 @@ public class MainWindow
 	private void initFrame()
 	{
 		frmUchanVkbot = new JFrame();
+		frmUchanVkbot.setMinimumSize(new Dimension(550, 400));
 		frmUchanVkbot.setIconImage(Toolkit.getDefaultToolkit().getImage(MainWindow.class.getResource("/resources/logo.jpg")));
 		frmUchanVkbot.getContentPane().setFont(new Font("Segoe UI", Font.PLAIN, 11));
 	}
@@ -186,11 +188,12 @@ public class MainWindow
 	
 	private void addTabPane()
 	{
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);	
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		
 		addMainTab(tabbedPane);
 		
-		tabbedPane.add(new BotTab());
+		BotTab botTab = new BotTab();
+		tabbedPane.add(botTab);
 		tabbedPane.add(new BotTab());	
 		addCloseToTab(tabbedPane, tabbedPane.getComponentAt(1), "Woo");
 		addCloseToTab(tabbedPane, tabbedPane.getComponentAt(2), "Woo1");
@@ -198,16 +201,14 @@ public class MainWindow
 		tabbedPane.setBorder(new CompoundBorder());
 		GroupLayout groupLayout = new GroupLayout(frmUchanVkbot.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 978, Short.MAX_VALUE)
-					.addGap(5))
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addComponent(tabbedPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 983, Short.MAX_VALUE)
 		);
 		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
-					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE)
-					.addGap(5))
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addComponent(tabbedPane, GroupLayout.DEFAULT_SIZE, 607, Short.MAX_VALUE)
+					.addGap(0))
 		);
 		frmUchanVkbot.getContentPane().setLayout(groupLayout);
 	}
@@ -217,8 +218,6 @@ public class MainWindow
 		if (pane.getComponentCount()>0) return;
 		
 		MainTab mainTab = new MainTab();
-		FlowLayout flowLayout = (FlowLayout) mainTab.getLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
 		pane.addTab(locale.getString("MainWindow.mainTab.title"), mainTab);
 	}
 	
@@ -285,6 +284,8 @@ public class MainWindow
 	
 	public static void test() throws Exception
 	{	
+
+		
 		/*
 		
 		WorkerInterface wi = new WorkerInterface(client);

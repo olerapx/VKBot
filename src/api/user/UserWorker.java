@@ -413,4 +413,15 @@ public class UserWorker extends Worker
 		
 		return str;
 	}
+
+	public void setOnline() throws Exception
+	{
+		client.executeCommand("account.setOnline?+"
+							  + "&voip=0");
+	}
+	
+	public void setOffline() throws Exception
+	{
+		client.executeCommand("account.setOffline?");
+	}
 }

@@ -17,6 +17,7 @@ public class BotCard extends JPanel
 	private static final long serialVersionUID = -7514894457484952214L;
 	private JTextField txtBooblieck;
 	private JTextField txtOnline;
+	private JTextField txtImmaDoin;
 
 	public BotCard()
 	{
@@ -36,33 +37,45 @@ public class BotCard extends JPanel
 		txtOnline.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setIcon(new ImageIcon("F:\\Program Files\\Eclipse\\projects\\VKBot\\src\\em4.png"));
+		lblNewLabel.setIcon(new ImageIcon("F:\\Program Files\\Eclipse\\projects\\VKBot\\src\\Everlasting Summer 2015-04-13 23-19-59-453.jpg"));
+		
+		txtImmaDoin = new JTextField();
+		txtImmaDoin.setText("IMMA DOIN");
+		txtImmaDoin.setEditable(false);
+		txtImmaDoin.setColumns(10);
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, 101, Short.MAX_VALUE)
-						.addComponent(txtBooblieck, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(txtOnline, GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE))
-					.addGap(26)
-					.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 97, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(txtBooblieck, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(txtOnline, GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE)
+								.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGap(18, 18, Short.MAX_VALUE)
+							.addComponent(lblNewLabel)
+							.addGap(34))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(txtImmaDoin, GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap(191, Short.MAX_VALUE))))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblNewLabel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
-						.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblNewLabel)
+						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(toolBar, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(txtBooblieck, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addGap(41)
 							.addComponent(txtOnline, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(130, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
+					.addComponent(txtImmaDoin, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap())
 		);
 		
 		JButton btnNewButton = new JButton("ON");
