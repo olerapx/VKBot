@@ -24,10 +24,6 @@ public class Encryptor extends Cryptor
 	
 	/**
 	 * Encrypts the data to outputFile with an existing key from keyFile.
-	 * @param data
-	 * @param outputFile
-	 * @param keyFile
-	 * @throws Exception
 	 */
 	public void encrypt (String data, File outputFile, File keyFile) throws Exception
 	{
@@ -38,10 +34,6 @@ public class Encryptor extends Cryptor
 		
 	/**
 	 * Encrypts the data to outputFile with a new key and writes it to newKeyFilePath.
-	 * @param data
-	 * @param outputFile
-	 * @param newKeyFilePath
-	 * @throws Exception
 	 */
 	public void encrypt (String data, File outputFile, String newKeyFilePath) throws Exception
 	{

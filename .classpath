@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="var" path="LIBS_PATH"/>
 	<classpathentry kind="var" path="LIBS_PATH/commons-codec-1.9.jar"/>
@@ -17,8 +16,7 @@
 	<classpathentry kind="var" path="LIBS_PATH/jna-4.1.0.jar"/>
 	<classpathentry kind="var" path="LIBS_PATH/jna-platform-4.1.0.jar"/>
 	<classpathentry kind="var" path="LIBS_PATH/jython-standalone-2.7.0.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/miglayout15-swing.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/jgoodies-common-1.8.0.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/jgoodies-forms-1.8.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

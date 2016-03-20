@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.BotTabController">
+   <children>
+      <ListView layoutX="14.0" layoutY="14.0" prefWidth="140.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0" />
+      <TextField layoutX="155.0" layoutY="286.0" minHeight="105.0" minWidth="375.0" prefHeight="123.0" prefWidth="478.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="0.0" />
+      <TextArea layoutX="160.0" layoutY="14.0" minHeight="300.0" minWidth="279.0" AnchorPane.bottomAnchor="133.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="14.0" />
+      <AnchorPane fx:id="botCardPane" layoutX="447.0" layoutY="14.0" minHeight="300.0" minWidth="300.0" prefHeight="300.0" prefWidth="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="14.0" />
+   </children>
+</AnchorPane>

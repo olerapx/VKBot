@@ -18,10 +18,6 @@ public class Decryptor extends Cryptor
 	
 	/**
 	 * Decrypts the data from file with a key from keyFile.
-	 * @param file
-	 * @param keyFile
-	 * @return Decrypted data.
-	 * @throws Exception
 	 */
 	public String decrypt (File file, File keyFile) throws Exception
 	{

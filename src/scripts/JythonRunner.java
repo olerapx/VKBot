@@ -10,7 +10,7 @@ import api.worker.WorkerInterface;
 /**
  * Provides an evaluation and an execution of a python script.
  */
-public class JythonRunner 
+public class JythonRunner implements ScriptRunner
 {
 	PythonInterpreter py;
 	WorkerInterface wi;
@@ -20,9 +20,9 @@ public class JythonRunner
 	
 	public JythonRunner(WorkerInterface wi)
 	{
-		PythonInterpreter.initialize(System.getProperties(), System.getProperties(), new String[0]);
 		this.wi = wi;
 		
+		PythonInterpreter.initialize(System.getProperties(), System.getProperties(), new String[0]);		
 		setNewEnvironment();
 	}
 	
@@ -32,7 +32,6 @@ public class JythonRunner
 	public void setNewEnvironment()
 	{
 		this.py = new PythonInterpreter(null, new PySystemState());
-		py.exec("import " + wi.getClass().getName());
 		py.set("workerInterface", wi);
 		py.set(stopVariableName, false);
 	}

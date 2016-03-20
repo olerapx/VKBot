@@ -2,7 +2,6 @@ package api.client;
 import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
@@ -16,7 +15,6 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
@@ -125,8 +123,7 @@ public class Client
 	    	  if (name.equals(knownValue))
 	    		  return  (String) elem.getAttributes().getAttribute(desiredAttribute);
 	        }
-	    }
-	    
+	    }	    
 	    return "";
 	}
 	
@@ -383,8 +380,6 @@ public class Client
 	 * Sends the POST query and writes a server response to the class member.
 	 * @param command
 	 * @return Response's String representation.
-	 * @throws ClientProtocolException
-	 * @throws IOException
 	 */
 	private String postQuery(String query) throws Exception
 	{	

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainWindowController">
+   <children>
+      <MenuBar layoutY="2.0" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="%MainWindow.menuFile.text">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="%MainWindow.fileItemNew.text" />
+                  <MenuItem mnemonicParsing="false" text="%MainWindow.fileItemOpen.text" />
+                  <MenuItem fx:id="menuFileClose" mnemonicParsing="false" onAction="#onMenuFileClose" text="%MainWindow.fileItemExit.text" />
+               </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="%MainWindow.menuBot.text">
+            <items>
+                  <MenuItem mnemonicParsing="false" text="%MainWindow.botItemToggle.text" />
+                  <MenuItem mnemonicParsing="false" text="%MainWindow.botItemTask.text" />
+                  <MenuItem mnemonicParsing="false" text="%MainWindow.botItemRemove.text" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="%MainWindow.menuHelp.text">
+               <items>
+                  <Menu mnemonicParsing="false" text="%MainWindow.helpMenuLang.text">
+                     <items>
+                        <RadioMenuItem id="langEn" fx:id="menuLangEn" mnemonicParsing="false" text="%MainWindow.langItemEn.text">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="languageGroup" />
+                           </toggleGroup>
+                        </RadioMenuItem>
+                        <RadioMenuItem id="langRu" fx:id="menuLangRu" mnemonicParsing="false" text="%MainWindow.langItemRu.text" toggleGroup="$languageGroup" />
+                     </items>
+                  </Menu>
+               </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <TabPane fx:id="tabPane" layoutY="26.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+        <tabs>
+          <Tab fx:id="mainTab" closable="false" text="%MainWindow.mainTab.title" />
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
