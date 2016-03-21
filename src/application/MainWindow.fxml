@@ -9,7 +9,7 @@
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainWindowController">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainWindowController">
    <children>
       <MenuBar layoutY="2.0" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
@@ -27,20 +27,22 @@
                   <MenuItem mnemonicParsing="false" text="%MainWindow.botItemRemove.text" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="%MainWindow.menuHelp.text">
+            <Menu mnemonicParsing="false" text="%MainWindow.menuSet.text">
                <items>
-                  <Menu mnemonicParsing="false" text="%MainWindow.helpMenuLang.text">
+                  <MenuItem mnemonicParsing="false" text="%MainWindow.setMenuSet.text" />
+                  <Menu mnemonicParsing="false" text="%MainWindow.setMenuLang.text">
                      <items>
-                        <RadioMenuItem id="langEn" fx:id="menuLangEn" mnemonicParsing="false" text="%MainWindow.langItemEn.text">
+                        <RadioMenuItem id="en_US" fx:id="menuLangEn" mnemonicParsing="false" text="%MainWindow.langItemEn.text">
                            <toggleGroup>
                               <ToggleGroup fx:id="languageGroup" />
                            </toggleGroup>
                         </RadioMenuItem>
-                        <RadioMenuItem id="langRu" fx:id="menuLangRu" mnemonicParsing="false" text="%MainWindow.langItemRu.text" toggleGroup="$languageGroup" />
+                        <RadioMenuItem id="ru_RU" fx:id="menuLangRu" mnemonicParsing="false" text="%MainWindow.langItemRu.text" toggleGroup="$languageGroup" />
                      </items>
                   </Menu>
                </items>
-          </Menu>
+            </Menu>
+          <Menu mnemonicParsing="false" text="%MainWindow.menuHelp.text" />
         </menus>
       </MenuBar>
       <TabPane fx:id="tabPane" layoutY="26.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">

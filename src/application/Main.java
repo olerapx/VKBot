@@ -25,7 +25,7 @@ public class Main extends Application
 			scene.setRoot(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
-			primaryStage.setMinWidth(960);
+			primaryStage.setMinWidth(1100);
 			primaryStage.setMinHeight(600);
 			primaryStage.show();
 			test();

@@ -28,7 +28,7 @@ public class BotTabController implements Initializable
 		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), botCardResourcePath);
 		try 
 		{
-			botCardPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotCard.fxml"), bundle));
+			botCardPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotCard.fxml"), bundle));				
 		} catch (IOException e) 
 		{
 			e.printStackTrace();

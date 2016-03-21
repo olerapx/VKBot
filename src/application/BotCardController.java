@@ -19,6 +19,7 @@ public class BotCardController  implements Initializable
 
 	public void initialize(URL location, ResourceBundle resources) 
 	{
+		
 		this.resources = resources;
 	}
 }

@@ -36,13 +36,14 @@ public class MainWindowController implements Initializable
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) 
-	{
+	{	
 		resources = arg1;
 		
 		menuLangEn.setOnAction(new LangChangeHandler());
 		menuLangRu.setOnAction(new LangChangeHandler());
 		
 		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.SELECTED_TAB);
+			
 		addMainTab();
 		addBotTab("Boo");
 	}
@@ -53,8 +54,10 @@ public class MainWindowController implements Initializable
 		{
 			AnchorPane pane = new AnchorPane();
 			pane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("MainTab.fxml"), resources));
+			
 			tabPane.getTabs().get(0).setContent(pane);
 			tabPane.getTabs().get(0).setOnClosed(new TabCloseHandler());
+			tabPane.getTabs().get(0).setStyle("-fx-font-size: 14;");
 		} catch (IOException e) 
 		{
 			e.printStackTrace();
@@ -67,11 +70,14 @@ public class MainWindowController implements Initializable
 		{
 			AnchorPane pane = new AnchorPane();
 			pane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotTab.fxml"), resources));
+			
 			Tab tab = new Tab();
 			tab.setContent(pane);
-			tab.setText("Boo");
+			tab.setText(name);
 			tab.setClosable(true);
 			tab.setOnClosed(new TabCloseHandler());
+			tab.setStyle("-fx-font-size: 14;");
+			
 			tabPane.getTabs().add(tab);				
 		} catch (IOException e) 
 		{
@@ -101,7 +107,8 @@ public class MainWindowController implements Initializable
 	        } else if (evt.getSource().equals(menuLangRu)) 
 	        {
 	        	resources = Main.loadLocale(new Locale("ru", "RU"), resourcePath);
-	        }	       
+	        }	  
+	        
 	        try 
 	        {
 				reload();
