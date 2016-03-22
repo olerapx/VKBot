@@ -14,9 +14,8 @@ import javafx.scene.layout.FlowPane;
 
 public class MainTabController implements Initializable
 {
-	final String resourcePath = "resources.locale.MainTab.messages";
-	final String botCardResourcePath = "resources.locale.BotCard.messages";
-	final String fxmlPath = "MainTab.fxml";
+	final static String resourcePath = "resources.locale.MainTab.messages";
+	final static String fxmlPath = "MainTab.fxml";
 	
 	@FXML private ResourceBundle resources;
 	@FXML private AnchorPane root;
@@ -26,20 +25,20 @@ public class MainTabController implements Initializable
 	{
 		this.resources = resources;
 		
-		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), botCardResourcePath);
+		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), BotCardController.resourcePath);
 				
 		flowPane.prefWidthProperty().bind(root.widthProperty());
 		flowPane.prefHeightProperty().bind(root.heightProperty());
 		
 		try 
 		{
-			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotCard.fxml"), bundle));
-			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotCard.fxml"), bundle));
-			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotCard.fxml"), bundle));
-			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotCard.fxml"), bundle));
-			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotCard.fxml"), bundle));
-			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotCard.fxml"), bundle));
-			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotCard.fxml"), bundle));
+			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource(BotCardController.fxmlPath), bundle));
+			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource(BotCardController.fxmlPath), bundle));
+			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource(BotCardController.fxmlPath), bundle));
+			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource(BotCardController.fxmlPath), bundle));
+			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource(BotCardController.fxmlPath), bundle));
+			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource(BotCardController.fxmlPath), bundle));
+			flowPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource(BotCardController.fxmlPath), bundle));
 		} catch (IOException e) 
 		{
 			e.printStackTrace();

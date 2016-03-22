@@ -21,11 +21,12 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 public class MainWindowController implements Initializable
 {
-	final String resourcePath = "resources.locale.MainWindow.messages";
-	final String fxmlPath = "MainWindow.fxml";
+	final static String resourcePath = "resources.locale.MainWindow.messages";
+	final static String fxmlPath = "MainWindow.fxml";
 	
 	@FXML private AnchorPane root;
 	@FXML private ResourceBundle resources;
@@ -83,6 +84,21 @@ public class MainWindowController implements Initializable
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	@FXML private void onMenuFileAdd() throws IOException
+	{
+		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), LoginWindowController.resourcePath);
+		
+		AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource(LoginWindowController.fxmlPath), bundle);
+		Scene scene = new Scene(root);
+		scene.setRoot(root);
+		
+		Stage loginStage = new Stage();
+		loginStage.setScene(scene);
+		loginStage.setResizable(false);
+		loginStage.setTitle("Add bot");
+		loginStage.show();
 	}
 	
 	@FXML private void onMenuFileClose()

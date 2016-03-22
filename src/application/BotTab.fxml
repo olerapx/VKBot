@@ -3,12 +3,16 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.BotTabController">
    <children>
-      <ListView layoutX="14.0" layoutY="14.0" prefHeight="428.0" prefWidth="140.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0" />
-      <TextArea layoutX="160.0" layoutY="14.0" minHeight="300.0" minWidth="279.0" prefHeight="428.0" prefWidth="416.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="362.0" AnchorPane.topAnchor="14.0" />
+      <ListView layoutX="5.0" layoutY="7.0" prefHeight="435.0" prefWidth="149.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="7.0" />
+      <TextArea editable="false" layoutX="160.0" layoutY="7.0" minHeight="300.0" minWidth="279.0" prefHeight="435.0" prefWidth="416.0" text="Name Surname: Привет!&#10;Me: П..привет&#10;" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="160.0" AnchorPane.rightAnchor="362.0" AnchorPane.topAnchor="7.0">
+         <font>
+            <Font size="14.0" />
+         </font></TextArea>
       <AnchorPane fx:id="botCardPane" layoutX="447.0" layoutY="14.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="350.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="14.0" />
-      <TextArea layoutX="582.0" layoutY="236.0" prefHeight="174.0" prefWidth="350.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+      <TextArea editable="false" layoutX="582.0" layoutY="236.0" prefHeight="174.0" prefWidth="350.0" text="[01.01.1970 00:00] Send message to id342423: &quot;This is a test message&quot;&#10;[01.01.1970 00:10] Check dialogs: 0 unread.&#10;" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
    </children>
 </AnchorPane>

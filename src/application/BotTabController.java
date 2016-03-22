@@ -13,9 +13,8 @@ import javafx.scene.layout.AnchorPane;
 
 public class BotTabController implements Initializable
 {
-	final String resourcePath = "resources.locale.BotTab.messages";
-	final String botCardResourcePath = "resources.locale.BotCard.messages";
-	final String fxmlPath = "BotTab.fxml";
+	final static String resourcePath = "resources.locale.BotTab.messages";
+	final static String fxmlPath = "BotTab.fxml";
 	
 	@FXML private ResourceBundle resources;
 	@FXML private AnchorPane root;
@@ -25,10 +24,10 @@ public class BotTabController implements Initializable
 	{
 		this.resources = resources;
 		
-		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), botCardResourcePath);
+		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), BotCardController.resourcePath);
 		try 
 		{
-			botCardPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("BotCard.fxml"), bundle));				
+			botCardPane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource(BotCardController.fxmlPath), bundle));				
 		} catch (IOException e) 
 		{
 			e.printStackTrace();

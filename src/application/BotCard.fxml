@@ -8,20 +8,61 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.BotCardController">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="350.0" stylesheets="@../resources/css/image-button.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.BotCardController">
    <children>
       <ImageView fitHeight="200.0" fitWidth="150.0" layoutX="160.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="8.0">
          <image>
             <Image url="@../Everlasting%20Summer%202015-04-13%2023-19-59-453.jpg" />
          </image>
       </ImageView>
-      <ToolBar layoutX="2.0" layoutY="6.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="38.0" prefWidth="186.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="6.0">
+      <ToolBar layoutX="2.0" layoutY="6.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="38.0" prefWidth="184.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="6.0">
         <items>
-          <Button mnemonicParsing="false" text="on" />
-            <Button mnemonicParsing="false" text="lo" />
-            <Button mnemonicParsing="false" text="set" />
-            <Button fx:id="buttonRemove" mnemonicParsing="false" text="rm" />
-            <Button mnemonicParsing="false" text="in" />
+          <Button graphicTextGap="0.0" mnemonicParsing="false" onAction="#onAdd" prefWidth="30.0">
+               <graphic>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/pics/add.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <font>
+                  <Font size="1.0" />
+               </font></Button>
+            <Button mnemonicParsing="false" prefWidth="30.0">
+               <graphic>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/pics/load.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button mnemonicParsing="false" prefWidth="30.0" style="-fx-background-color: transparent;">
+               <font>
+                  <Font size="1.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/pics/settings.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button mnemonicParsing="false" prefWidth="30.0">
+               <graphic>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/pics/info.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button fx:id="buttonRemove" mnemonicParsing="false" prefWidth="30.0">
+               <graphic>
+                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/pics/remove.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
         </items>
       </ToolBar>
       <Text layoutX="5.0" layoutY="107.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Райцентр, 18 лет" textAlignment="CENTER" wrappingWidth="183.99999621510506" AnchorPane.leftAnchor="5.0" />

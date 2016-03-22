@@ -18,15 +18,16 @@ public class Main extends Application
 	{
 		try 
 		{
-			bundle = loadLocale (Locale.getDefault(), "resources.locale.MainWindow.messages");
+			bundle = loadLocale (Locale.getDefault(), MainWindowController.resourcePath);
 			
-			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource("MainWindow.fxml"), bundle);
+			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource(MainWindowController.fxmlPath), bundle);
 			Scene scene = new Scene(root);
 			scene.setRoot(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.setMinWidth(1100);
 			primaryStage.setMinHeight(600);
+			primaryStage.setTitle("UChan VKBot");
 			primaryStage.show();
 			test();
 		} catch(Exception e) 
