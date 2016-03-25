@@ -6,6 +6,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -21,6 +23,7 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class MainWindowController implements Initializable
@@ -54,7 +57,7 @@ public class MainWindowController implements Initializable
 		try 
 		{
 			AnchorPane pane = new AnchorPane();
-			pane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource("MainTab.fxml"), resources));
+			pane.getChildren().add((Node) FXMLLoader.load(this.getClass().getResource(MainTabController.fxmlPath), resources));
 			
 			tabPane.getTabs().get(0).setContent(pane);
 			tabPane.getTabs().get(0).setOnClosed(new TabCloseHandler());
@@ -85,7 +88,7 @@ public class MainWindowController implements Initializable
 			e.printStackTrace();
 		}
 	}
-	
+
 	@FXML private void onMenuFileAdd() throws IOException
 	{
 		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), LoginWindowController.resourcePath);
@@ -95,8 +98,19 @@ public class MainWindowController implements Initializable
 		scene.setRoot(root);
 		
 		Stage loginStage = new Stage();
+				
+		GridPane pane =(GridPane)root.lookup("#grid");
+		pane.heightProperty().addListener(new ChangeListener<Number>()
+		{
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
+			{
+				loginStage.setHeight(pane.getHeight()+70);				
+			}			
+		});
+		
 		loginStage.setScene(scene);
-		loginStage.setResizable(false);
+		loginStage.setResizable(false);	
+		
 		loginStage.setTitle("Add bot");
 		loginStage.show();
 	}
@@ -106,13 +120,7 @@ public class MainWindowController implements Initializable
         Platform.exit();
         System.exit(0);
 	}
-	
-	private void reload() throws IOException
-	{
-		Scene scene = root.getScene();
-		scene.setRoot(FXMLLoader.load(getClass().getResource(fxmlPath), resources));
-	}
-	
+		
 	private class LangChangeHandler implements EventHandler<ActionEvent>
 	{
 	    public void handle(ActionEvent evt) 
@@ -120,7 +128,8 @@ public class MainWindowController implements Initializable
 	        if (evt.getSource().equals(menuLangEn)) 
 	        {
 	        	resources = Main.loadLocale(new Locale("en", "US"), resourcePath);
-	        } else if (evt.getSource().equals(menuLangRu)) 
+	        } 
+	        else if (evt.getSource().equals(menuLangRu)) 
 	        {
 	        	resources = Main.loadLocale(new Locale("ru", "RU"), resourcePath);
 	        }	  
@@ -135,9 +144,14 @@ public class MainWindowController implements Initializable
 	    }
 	}
 	
+	private void reload() throws IOException
+	{
+		Scene scene = root.getScene();
+		scene.setRoot(FXMLLoader.load(getClass().getResource(fxmlPath), resources));
+	}
+	
 	private class TabCloseHandler implements EventHandler<Event>
 	{
-
 		public void handle(Event arg0) 
 		{
 			Alert alert = new Alert(AlertType.INFORMATION);

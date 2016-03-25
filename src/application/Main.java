@@ -19,6 +19,7 @@ public class Main extends Application
 		try 
 		{
 			bundle = loadLocale (Locale.getDefault(), MainWindowController.resourcePath);
+			Effects.init();
 			
 			AnchorPane root = (AnchorPane)FXMLLoader.load(getClass().getResource(MainWindowController.fxmlPath), bundle);
 			Scene scene = new Scene(root);

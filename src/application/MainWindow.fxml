@@ -24,14 +24,14 @@
             <items>
                   <MenuItem mnemonicParsing="false" text="%MainWindow.botItemToggle.text" />
                   <MenuItem mnemonicParsing="false" text="%MainWindow.botItemTask.text" />
-                  <MenuItem mnemonicParsing="false" text="%MainWindow.botItemSet.text" />
+                  <MenuItem mnemonicParsing="false" text="%MainWindow.botItemSettings.text" />
                   <MenuItem mnemonicParsing="false" text="%MainWindow.botItemRemove.text" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="%MainWindow.menuSet.text">
+            <Menu mnemonicParsing="false" text="%MainWindow.menuSettings.text">
                <items>
-                  <MenuItem mnemonicParsing="false" text="%MainWindow.setMenuSet.text" />
-                  <Menu mnemonicParsing="false" text="%MainWindow.setMenuLang.text">
+                  <MenuItem mnemonicParsing="false" text="%MainWindow.settingsMenuSettings.text" />
+                  <Menu mnemonicParsing="false" text="%MainWindow.settingsMenuLang.text">
                      <items>
                         <RadioMenuItem id="en_US" fx:id="menuLangEn" mnemonicParsing="false" text="%MainWindow.langItemEn.text">
                            <toggleGroup>
