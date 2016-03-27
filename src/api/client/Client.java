@@ -1,11 +1,7 @@
 package api.client;
-import java.awt.Desktop;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.URL;
 
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
@@ -13,7 +9,6 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
@@ -30,12 +25,34 @@ import org.json.JSONObject;
 import api.exceptions.VKException;
 import api.user.User;
 import api.user.UserWorker;
+import util.sig4j.signal.*;
 
 public class Client 
 {
 	public CloseableHttpClient httpClient;
 	public String token="";
 	public User me;
+	
+	public final Signal1<String> onCaptchaNeeded = new Signal1<>();
+	public final Signal0 onInvalidData = new Signal0();
+	public final Signal2<String, String> onSuspectLogin = new Signal2<>();
+	public final Signal0 onSuccess = new Signal0();
+	
+	public final void receiveCaptcha(String captcha)
+	{
+		this.captchaKey = captcha;
+	}
+	
+	public final void receiveData(String email, String pass)
+	{
+		this.login = email;
+		this.pass = pass;
+	}
+	
+	public final void receiveCode(String code)
+	{
+		this.code = code;
+	}
 	
 	QueryScheduler scheduler;
 	
@@ -54,18 +71,17 @@ public class Client
 	String captchaSid="";
 	String captchaKey="";
 	String captchaURL="";
+	
+	String code = "";
 		
 	CloseableHttpResponse response;
 	String stringResponse;
 		
-	public Client(String email, String pass) throws Exception
+	public Client()
 	{
 		buildClient();
-		 
-		this.login=email;
-		this.pass=pass;
+
 		scheduler = new QueryScheduler(1000, 3);
-		connect();
 	}	
 	
 	private void buildClient()
@@ -77,8 +93,11 @@ public class Client
 		httpClient = HttpClients.custom().setDefaultRequestConfig(globalConfig).setDefaultCookieStore(cookieStore).build();	
 	}
 
-	public void connect() throws Exception
+	public void connect(String email, String pass) throws Exception
 	{	
+		this.login = email;
+		this.pass = pass;
+		
 		authorize();		
 		login();
 		
@@ -89,7 +108,9 @@ public class Client
 			getToken();
 		
 		UserWorker uw = new UserWorker(this);
-		me = uw.getMe();		
+		me = uw.getMe();	
+		
+		onSuccess.emit();
 	}
 
 	private void authorize() throws Exception
@@ -202,11 +223,10 @@ public class Client
 	    
 	    File file = new File("file.jpg");	  
 
-	    downloadCaptcha(file);
+	    captchaKey = "";
+	    onCaptchaNeeded.emit(captchaURL);
 	    	    
-		System.out.println("Input captcha:");
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        captchaKey= input.readLine();
+	    while (captchaKey=="");
         
         sendCaptcha();
 		
@@ -218,18 +238,6 @@ public class Client
 	    captchaURL = getAttributeOfElement(doc, "img", HTML.Attribute.CLASS, "captcha_img", HTML.Attribute.SRC);
 	    captchaSid = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "captcha_sid", HTML.Attribute.VALUE);
 	    lg_h = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "lg_h", HTML.Attribute.VALUE);
-	}
-	
-	private void downloadCaptcha(File file) throws Exception
-	{
-	    FileUtils.copyURLToFile(new URL(captchaURL), file);
-	    
-	    Desktop desktop = null;
-	    if (Desktop.isDesktopSupported()) 
-	    {
-	        desktop = Desktop.getDesktop();
-	        desktop.open(file);
-	    }
 	}
 	
 	private void sendCaptcha() throws Exception
@@ -254,15 +262,11 @@ public class Client
 	{	
 		lg_h = getAttributeOfElement(doc, "input", HTML.Attribute.NAME, "lg_h", HTML.Attribute.VALUE);
 		
-	    System.out.println("Wrong login or password:\nLogin: "+login);
-	    
-		System.out.println("Input login:");
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        login = input.readLine();
-        
-		System.out.println("Input pass:");
-        input = new BufferedReader(new InputStreamReader(System.in));
-        pass = input.readLine();
+		login = "";
+		pass = "";
+		onInvalidData.emit();
+		
+		while (login=="" || pass == "");
 
         login();
 	}
@@ -351,11 +355,10 @@ public class Client
 	    
 	    String hash = getValue(str, "hash: '", '\'');
 	    
-
-	    System.out.println("Need to confirm the phone number:\n"+leftNumber+"********"+rightNumber);
-	  
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        String code = input.readLine();
+	    code = "";
+	    onSuspectLogin.emit(leftNumber, rightNumber);
+	    
+	    while (code=="");
 	    
 	    str = postQuery("https://vk.com/login.php?act=security_check"+
 	    				"hash="+hash+

@@ -14,12 +14,11 @@ public class Bot
 	WorkerInterface workerInterface;
 	User user;
 	ScriptRunner runner;
-	File script;
+	File scriptFile = null;
 
-	public Bot (Client client, File script)
+	public Bot (Client client)
 	{
 		this.client = client;
-		this.script = script;
 		
 		this.workerInterface = new WorkerInterface (client);
 		this.runner = new JythonRunner(workerInterface);
@@ -28,7 +27,7 @@ public class Bot
 	
 	public void setScript(File script)
 	{
-		this.script = script;
+		this.scriptFile = script;
 	}
 	
 	public void start()

@@ -6,8 +6,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -23,8 +21,6 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
 
 public class MainWindowController implements Initializable
 {
@@ -93,26 +89,9 @@ public class MainWindowController implements Initializable
 	{
 		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), LoginWindowController.resourcePath);
 		
-		AnchorPane root = (AnchorPane) FXMLLoader.load(getClass().getResource(LoginWindowController.fxmlPath), bundle);
-		Scene scene = new Scene(root);
-		scene.setRoot(root);
-		
-		Stage loginStage = new Stage();
-				
-		GridPane pane =(GridPane)root.lookup("#grid");
-		pane.heightProperty().addListener(new ChangeListener<Number>()
-		{
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
-			{
-				loginStage.setHeight(pane.getHeight()+70);				
-			}			
-		});
-		
-		loginStage.setScene(scene);
-		loginStage.setResizable(false);	
-		
-		loginStage.setTitle("Add bot");
-		loginStage.show();
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(LoginWindowController.fxmlPath), bundle);
+		@SuppressWarnings("unused")
+		AnchorPane root = (AnchorPane) loader.load();
 	}
 	
 	@FXML private void onMenuFileClose()

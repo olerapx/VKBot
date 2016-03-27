@@ -1,4 +1,4 @@
-package application;
+package util;
 
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.InnerShadow;
