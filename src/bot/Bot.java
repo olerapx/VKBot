@@ -15,7 +15,7 @@ public class Bot
 	User user;
 	ScriptRunner runner;
 	File scriptFile = null;
-
+	
 	public Bot (Client client)
 	{
 		this.client = client;
@@ -24,6 +24,8 @@ public class Bot
 		this.runner = new JythonRunner(workerInterface);
 		this.user = client.me;
 	}
+	
+	public User getUser () {return client.me;}
 	
 	public void setScript(File script)
 	{

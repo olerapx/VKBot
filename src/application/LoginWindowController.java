@@ -1,7 +1,9 @@
 package application;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -29,9 +32,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import util.Stages;
 import util.sig4j.signal.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -70,8 +73,11 @@ public class LoginWindowController implements Initializable
 	
 	@FXML private ImageView loadingImage;
 	
+	Stage taskStage;
+	
+	Runnable clientRunnable;
 	Thread clientThread;
-	Stage loginStage;
+	
 	Client client;
 	
 	File tempImageDir = new File("cache/temp_captcha");
@@ -94,17 +100,15 @@ public class LoginWindowController implements Initializable
 		grid.getRowConstraints().get(0).setPrefHeight(0);
 		grid.getRowConstraints().get(3).setPrefHeight(0);
 		
-		initStage();
 		initClient();
 		initClientThread();
+		initTaskStage();
 	}
 	
-	private void initStage()
+	public void initWindow()
 	{
-		loginStage = new Stage();
-		Scene scene = new Scene(root);
-		scene.setRoot(root);
-		root.requestFocus();
+		Scene scene = root.getScene();
+		Window window = scene.getWindow();
 		
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() 
         {
@@ -126,11 +130,11 @@ public class LoginWindowController implements Initializable
 		{
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) 
 			{
-				loginStage.setHeight(newValue.doubleValue() + 30.0);				
+				window.setHeight(newValue.doubleValue() + 35.0);				
 			}			
 		});
 		
-		loginStage.setOnCloseRequest(new EventHandler<WindowEvent>() 
+		window.setOnCloseRequest(new EventHandler<WindowEvent>() 
 		{
 	          public void handle(WindowEvent we) 
 	          {
@@ -143,17 +147,11 @@ public class LoginWindowController implements Initializable
 		    		sendData.clear();
 		    		sendCode.clear();
 		    		
-		            clientThread.interrupt(); 
+		            clientThread.interrupt();
 		    		
-		    		loginStage.close();        	   
+		            window.hide();        	   
 	          }
 	      });
-		
-		loginStage.setScene(scene);
-		loginStage.setResizable(false);	
-				
-		loginStage.setTitle(resources.getString("LoginWindow.title.text"));
-		loginStage.show();
 	}
 	
 	private void initClient()
@@ -171,24 +169,81 @@ public class LoginWindowController implements Initializable
 	
 	private void initClientThread()
 	{
-		clientThread = new Thread()
+		clientRunnable = new Runnable()
+				{
+					public void run() 
+					{
+						try 
+						{
+							client.connect(loginText.getText(), passText.getText());
+						} 
+						catch (IOException ioe) 
+						{					
+							statusText.setText(resources.getString("LoginWindow.connectionProblem.text"));
+							showWarningAnimation();
+							loadingImage.setVisible(false);
+							
+							reloadThread();
+							
+							state = LoginWindowController.State.NONE;
+						}
+						catch(InterruptedException ie)
+						{
+							
+						}
+						catch (Exception ex)
+						{
+							ex.printStackTrace();
+							
+							statusText.setText("LoginWindow.unknownError.text");
+							showWarningAnimation();
+							loadingImage.setVisible(false);
+							
+							reloadThread();
+							
+							state = LoginWindowController.State.NONE;
+						}
+					}			
+				};
+				
+		 clientThread = new Thread (clientRunnable);
+	}
+	
+	private void initTaskStage()
+	{
+		try
 		{
-			public void run()
-			{
-				try 
-				{
-					client.connect(loginText.getText(), passText.getText());
-				} 
-				catch (Exception e) 
-				{
-					e.printStackTrace();
-				}
-			}
-		};
+			ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), BotTaskWindowController.resourcePath);
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(BotTaskWindowController.fxmlPath), bundle);
+			AnchorPane pane = (AnchorPane) loader.load();
+								
+			taskStage = new Stage();
+							
+			Scene scene = new Scene(pane);
+			scene.setRoot(pane);
+							
+			taskStage.setScene(scene);
+			taskStage.setResizable(false);	
+							
+			BotTaskWindowController ctrl = loader.getController();
+			ctrl.initStage();
+									
+			taskStage.setTitle("Set bot task");
+		}
+		catch (IOException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
+	private void reloadThread()
+	{
+		clientThread.interrupt();
+		clientThread = new Thread (clientRunnable);
 	}
 		
 	@FXML private void onLogin()
-	{			
+	{	
 		switch(state)
 		{
 			case NONE:
@@ -207,10 +262,6 @@ public class LoginWindowController implements Initializable
 			}
 			case LOGGING_IN:
 			{
-				clientThread.interrupt();
-				clientThread.start();
-				
-				loadingImage.setVisible(true);
 				break;
 			}
 			case NEED_CAPTCHA:
@@ -249,15 +300,17 @@ public class LoginWindowController implements Initializable
 			}
 		}
 	}
+
 	
 	
 	private final void onCaptchaNeeded(String captchaURL)
 	{
 		showCaptchaAnimation();
 		hideWarningAnimation();
-		
+				
 		loadingImage.setVisible(false);
 		
+		captchaKey.clear();
 		showCaptchaImage(captchaURL);
 		state = State.NEED_CAPTCHA;
 	}
@@ -267,10 +320,11 @@ public class LoginWindowController implements Initializable
 		try
 		{	
 			captchaImageFile = new File (tempImageDir.getAbsolutePath()+"/"+UUID.nameUUIDFromBytes(captchaURL.getBytes()).toString());
+			captchaImageFile.getParentFile().mkdirs();
 			captchaImageFile.createNewFile();
 			
 			FileUtils.copyURLToFile(new URL(captchaURL), captchaImageFile);
-			captchaImage.setImage(new Image(captchaImageFile.getAbsolutePath(), true));
+			captchaImage.setImage(new Image(captchaImageFile.toURI().toString(), true));
 		}
 		catch (Exception ex)
 		{
@@ -294,10 +348,10 @@ public class LoginWindowController implements Initializable
 		state = State.INVALID_DATA;
 	}
 	
-	private final void onSuspectLogin(String leftSide, String rightSide)
+	private final void onSuspectLogin(String leftNumber, String rightNumber)
 	{
 		statusText.setText(resources.getString("LoginWindow.confirmPhone.text"));
-		loginText.setText(leftSide + "********" + rightSide);
+		loginText.setText(leftNumber + "********" + rightNumber);
 		passText.clear();
 		captchaKey.clear();
 		captchaImage.setImage(null);
@@ -313,17 +367,22 @@ public class LoginWindowController implements Initializable
 	private final void onSuccess()
 	{		
 		state = State.SUCCESS;
-				
-		Bot bot = new Bot(client);
-		
+						
 		hideCaptchaAnimation();
 		hideWarningAnimation();
 		
 		loadingImage.setVisible(false);
 		
-		Stages.close(loginStage);
+		Platform.runLater(new Runnable()
+		{
+			public void run()
+			{
+				taskStage.show();
+				root.getScene().getWindow().hide();
+			}
+		});
 	}
-	
+
 	
 	
 	private void showWarningAnimation()

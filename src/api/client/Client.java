@@ -190,7 +190,7 @@ public class Client
 	private void handleProblem() throws Exception
 	{	    		
 		HTMLDocument doc = stringToHtml(stringResponse);
-		
+
 		if (hasAttributeValue(doc, "input", HTML.Attribute.NAME, "captcha_sid"))
   		  handleCaptcha(doc);
 		else if (hasAttributeValue(doc, "div", HTML.Attribute.CLASS, "oauth_access_header"))
@@ -226,8 +226,11 @@ public class Client
 	    captchaKey = "";
 	    onCaptchaNeeded.emit(captchaURL);
 	    	    
-	    while (captchaKey=="");
-        
+	    while (captchaKey.equals(""))
+	    {
+	    	Thread.sleep(1);
+	    }
+		
         sendCaptcha();
 		
 	    file.delete();
@@ -266,7 +269,10 @@ public class Client
 		pass = "";
 		onInvalidData.emit();
 		
-		while (login=="" || pass == "");
+		while (login.equals("") || pass.equals(""))
+	    {
+			Thread.sleep(1);
+	    }
 
         login();
 	}
@@ -358,7 +364,10 @@ public class Client
 	    code = "";
 	    onSuspectLogin.emit(leftNumber, rightNumber);
 	    
-	    while (code=="");
+	    while (code.equals(""))
+	    {
+	    	Thread.sleep(1);
+	    }
 	    
 	    str = postQuery("https://vk.com/login.php?act=security_check"+
 	    				"hash="+hash+

@@ -21,6 +21,7 @@ import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 public class MainWindowController implements Initializable
 {
@@ -90,8 +91,20 @@ public class MainWindowController implements Initializable
 		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), LoginWindowController.resourcePath);
 		
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(LoginWindowController.fxmlPath), bundle);
-		@SuppressWarnings("unused")
-		AnchorPane root = (AnchorPane) loader.load();
+		AnchorPane root = (AnchorPane)loader.load();
+		
+		Stage loginStage = new Stage();
+		Scene scene = new Scene(root);
+		scene.setRoot(root);
+		root.requestFocus();
+		
+		loginStage.setScene(scene);
+		LoginWindowController ctrl = loader.getController();
+		ctrl.initWindow();
+		loginStage.setResizable(false);	
+				
+		loginStage.setTitle(bundle.getString("LoginWindow.title.text"));
+		loginStage.show();
 	}
 	
 	@FXML private void onMenuFileClose()
