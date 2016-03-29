@@ -6,28 +6,30 @@ import java.io.ObjectInputStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
+import javax.crypto.spec.IvParameterSpec;
 
 public class Decryptor extends Cryptor
 {
-	public Decryptor() throws Exception
-	{
-        fis = null;
-        key = null;
-        cipher = Cipher.getInstance(algorithm);
+	private ObjectInputStream ois;
+	
+	/**
+	 * Open a file to encrypt a data with the key from keyFile.
+	 */
+	public Decryptor (File file, File keyFile) throws Exception
+	{	
+		getKeyFromSpec(keyFile);
+		
+		cipher = Cipher.getInstance(cipherAlgorithm);
+	    cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(salt));
+	    ois = new ObjectInputStream(new CipherInputStream(new FileInputStream(file), cipher));
 	}
 	
 	/**
-	 * Decrypts the data from file with a key from keyFile.
+	 * Read the encrypted object from opened file.
 	 */
-	public String decrypt (File file, File keyFile) throws Exception
+	@SuppressWarnings("unchecked")
+	public <T> T read() throws Exception
 	{
-		getKeyFromSpec(keyFile);
-		
-        cipher.init(Cipher.DECRYPT_MODE, key);
-        ObjectInputStream ois = new ObjectInputStream(new CipherInputStream(new FileInputStream(file), cipher));
-        String output = (String) ois.readObject();
-        ois.close();
-        
-        return output;
+		return (T)ois.readObject(); // invalid cast or end of stream
 	}
 }

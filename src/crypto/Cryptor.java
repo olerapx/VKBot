@@ -2,35 +2,30 @@ package crypto;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESedeKeySpec;
 
 /**
  * Base class for data cryptography.
  */
 public abstract class Cryptor 
-{
-    protected String algorithm = "DESede";  
+{ 
+	protected String cipherAlgorithm = "AES/CTR/NoPadding";
+    protected String keyAlgorithm = "AES";
     protected FileInputStream fis;
 	
     protected SecretKey key;
+    protected final static byte[] salt = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	
     protected Cipher cipher;
     
 	protected void getKeyFromSpec (File keyFile) throws Exception
 	{
         fis = new FileInputStream(keyFile);
-        
-        byte[] keySpecBytes = new byte[fis.available()];
-        fis.read(keySpecBytes);
-        
-        SecretKeyFactory skf = SecretKeyFactory.getInstance(algorithm);
-        DESedeKeySpec keyspec = new DESedeKeySpec(keySpecBytes);
-        key = skf.generateSecret(keyspec);
-        
+
+        key = (SecretKey)(new ObjectInputStream(fis)).readObject();
         fis.close();
 	}
 }
