@@ -51,14 +51,8 @@ public class Encryptor extends Cryptor
 	/**
 	 * Write an encrypted object to opened file.
 	 */
-	public void write (Object data)
+	public void write (Object data) throws IOException
 	{
-        try
-        {
 			oos.writeObject(data);
-		} catch (IOException e) 
-        {
-			
-		}
 	}
 }

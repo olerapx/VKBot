@@ -35,6 +35,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import util.FileSystem;
 import util.sig4j.signal.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -80,7 +81,7 @@ public class LoginWindowController implements Initializable
 	
 	Client client;
 	
-	File tempImageDir = new File("cache/temp_captcha");
+	File tempImageDir = new File(FileSystem.getTempCaptchaPath());
 	File captchaImageFile;
 		
 	private State state = State.NONE;
@@ -335,7 +336,6 @@ public class LoginWindowController implements Initializable
 	private final void onInvalidData()
 	{
 		statusText.setText(resources.getString("LoginWindow.invalidData.text"));
-		loginText.clear();
 		passText.clear();
 		captchaKey.clear();
 		captchaImage.setImage(null);
@@ -372,7 +372,7 @@ public class LoginWindowController implements Initializable
 		hideWarningAnimation();
 		
 		loadingImage.setVisible(false);
-		
+
 		Platform.runLater(new Runnable()
 		{
 			public void run()

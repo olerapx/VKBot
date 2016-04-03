@@ -2,6 +2,7 @@ package crypto;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 
 import javax.crypto.Cipher;
@@ -28,8 +29,8 @@ public class Decryptor extends Cryptor
 	 * Read the encrypted object from opened file.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T read() throws Exception
+	public <T> T read() throws IOException, ClassNotFoundException
 	{
-		return (T)ois.readObject(); // invalid cast or end of stream
+		return (T)ois.readObject();
 	}
 }

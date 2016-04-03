@@ -56,7 +56,7 @@ public class Main extends Application
 	
 	public void test() throws Exception
 	{
-
+		
 	}
 	
 	public static void main(String[] args) 
