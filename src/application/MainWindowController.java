@@ -30,15 +30,16 @@ public class MainWindowController implements Initializable
 	
 	@FXML private AnchorPane root;
 	@FXML private ResourceBundle resources;
+	
 	@FXML private MenuItem menuFileClose;
 	@FXML private RadioMenuItem menuLangEn;
 	@FXML private RadioMenuItem menuLangRu;
 	@FXML private TabPane tabPane;
 	
 	@Override
-	public void initialize(URL arg0, ResourceBundle arg1) 
+	public void initialize(URL location, ResourceBundle resources) 
 	{	
-		resources = arg1;
+		this.resources = resources;
 		
 		menuLangEn.setOnAction(new LangChangeHandler());
 		menuLangRu.setOnAction(new LangChangeHandler());

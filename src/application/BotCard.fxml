@@ -15,7 +15,7 @@
             <Image url="@../Everlasting%20Summer%202015-04-13%2023-19-59-453.jpg" />
          </image>
       </ImageView>
-      <ToolBar layoutX="2.0" layoutY="6.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="38.0" prefWidth="184.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="6.0">
+      <ToolBar focusTraversable="false" layoutX="2.0" layoutY="6.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="38.0" prefWidth="184.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="6.0">
         <items>
           <Button id="button" fx:id="buttonToggle" graphicTextGap="0.0" mnemonicParsing="false" onAction="#onToggle" prefHeight="30.0" prefWidth="30.0">
                <graphic>
@@ -28,15 +28,15 @@
                <font>
                   <Font size="1.0" />
                </font></Button>
-            <Button id="button" fx:id="buttonLoad" minHeight="30.0" mnemonicParsing="false" onAction="#onLoad" prefWidth="30.0">
+            <Button id="button" fx:id="buttonLoad" mnemonicParsing="false" onAction="#onLoad" prefHeight="30.0" prefWidth="30.0">
                <graphic>
-                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../resources/pics/load.png" />
                      </image>
                   </ImageView>
                </graphic></Button>
-            <Button id="button" fx:id="buttonSettings" minHeight="30.0" mnemonicParsing="false" onAction="#onSettings" prefWidth="30.0">
+            <Button id="button" fx:id="buttonSettings" mnemonicParsing="false" onAction="#onSettings" prefHeight="30.0" prefWidth="30.0">
                <font>
                   <Font size="1.0" />
                </font>
@@ -47,7 +47,7 @@
                      </image>
                   </ImageView>
                </graphic></Button>
-            <Button id="button" fx:id="buttonInfo" minHeight="30.0" mnemonicParsing="false" onAction="#onInfo" prefWidth="30.0">
+            <Button id="button" fx:id="buttonInfo" mnemonicParsing="false" onAction="#onInfo" prefHeight="30.0" prefWidth="30.0">
                <graphic>
                   <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -56,7 +56,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button id="button" fx:id="buttonRemove" minHeight="30.0" mnemonicParsing="false" onAction="#onRemove" prefWidth="30.0">
+            <Button id="button" fx:id="buttonRemove" mnemonicParsing="false" onAction="#onRemove" prefHeight="30.0" prefWidth="30.0">
                <graphic>
                   <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                      <image>

@@ -59,7 +59,7 @@ public class LoginWindowController implements Initializable
 	final static String fxmlPath = "LoginWindow.fxml";
 	
 	@FXML private ResourceBundle resources;
-	@FXML private AnchorPane root;
+	@FXML private AnchorPane root;	
 	@FXML private GridPane grid;
 	
 	@FXML private Pane statusPane;

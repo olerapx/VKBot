@@ -68,7 +68,7 @@ public class BotCardController implements Initializable
 	
 	private void setButtonInactive(Button button)
 	{
-		button.setEffect(null);
 		button.setId("button");
+		button.setEffect(null);
 	}
 }

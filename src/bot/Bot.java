@@ -25,8 +25,6 @@ public class Bot
 		this.user = client.me;
 	}
 	
-	public User getUser () {return client.me;}
-	
 	public void setScript(File script)
 	{
 		this.scriptFile = script;
@@ -41,4 +39,6 @@ public class Bot
 	{
 		
 	}
+	
+	public User getUser () {return client.me;}
 }

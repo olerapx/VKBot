@@ -33,7 +33,6 @@ public class Encryptor extends Cryptor
         key = kg.generateKey();
         
         fos = new FileOutputStream(newKeyFilePath);
-
         (new ObjectOutputStream(fos)).writeObject(key);
         fos.close();
         
