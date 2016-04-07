@@ -1,6 +1,7 @@
 package bot;
 
 import java.io.File;
+import java.io.Serializable;
 
 import api.client.Client;
 import api.user.User;
@@ -9,24 +10,34 @@ import javafx.beans.property.*;
 import scripts.JythonRunner;
 import scripts.ScriptRunner;
 
-public class Bot 
-{
+public class Bot
+{	
 	Client client;
 	WorkerInterface workerInterface;
 	User user;
 	ScriptRunner runner;
-	File scriptFile = null;
+	File scriptFile;
 	
-	public SimpleStringProperty firstNameProperty;
-	public SimpleStringProperty lastNameProperty;
-	public SimpleIntegerProperty IDProperty;
+	SimpleStringProperty firstNameProperty;
+	SimpleStringProperty lastNameProperty;
+	SimpleIntegerProperty IDProperty;
+	
+	SimpleStringProperty cityProperty;
+	
+	SimpleBooleanProperty isOnline;
+	SimpleLongProperty lastOnline;
+	
+	SimpleIntegerProperty age;
+	
+	SimpleStringProperty status;
+	//problem
+
 	
 	public Bot (Client client)
 	{
 		this.client = client;
 		
 		this.workerInterface = new WorkerInterface (client);
-		this.runner = new JythonRunner(workerInterface);
 		this.user = client.me;
 		
 		initProperties();
@@ -44,6 +55,8 @@ public class Bot
 	public void setScript(File script)
 	{
 		this.scriptFile = script;
+
+		//this.runner = new JythonRunner(workerInterface); //TODO Jython or Nashorn
 	}
 	
 	public void start()
@@ -54,5 +67,19 @@ public class Bot
 	public void stop()
 	{
 		
+	}
+	
+	public void updateUser()
+	{
+		try
+		{
+			this.user = workerInterface.userWorker().getMe();
+		} 
+		catch (Exception e) 
+		{
+			
+		}
+		
+		//set props
 	}
 }

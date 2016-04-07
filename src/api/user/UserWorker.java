@@ -1,5 +1,5 @@
-
 package api.user;
+
 import java.io.IOException;
 
 import org.apache.http.client.ClientProtocolException;
@@ -27,7 +27,7 @@ public class UserWorker extends Worker
 		this.fields = "&fields=domain,nickname,maiden_name,wall_comments,"
 				+ "can_post,can_see_all_posts,can_see_audio,can_write_private_message,"
 				+ "is_friend,can_send_friend_request,has_photo,photo_id,"
-				+ "photo_max_orig,sex,bdate,city,country,home_town,online,"
+				+ "photo_max_orig,sex,bdate,city,country,home_town,online,last_seen,"
 				+ "followers_count,common_count,education,schools,relation,personal,connections";
 	}
 		
@@ -139,6 +139,12 @@ public class UserWorker extends Worker
 		}
 		else if (data.has("online_mobile"))
 			user.online = Online.MOBILE;
+		
+		if (data.has("last_seen"))
+		{
+			JSONObject last = getObjectFromJSON(data, "last_seen");
+			user.lastOnline = getLongFromJSON(last, "time");
+		}
 		
 		user.followersCount = getIntFromJSON(data, "followers_count");
 		user.commonCount = getIntFromJSON(data, "common_count");
