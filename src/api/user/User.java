@@ -71,6 +71,7 @@ public class User extends VKObject
 	
 	Online online;
 	int onlineAppID;
+	long lastOnline;
 	
 	int followersCount, commonCount;
 	
@@ -116,6 +117,7 @@ public class User extends VKObject
 	
 	public Online online() {return this.online;}
 	public int onlineAppID() {return this.onlineAppID;}
+	public long lastOnline() {return this.lastOnline;}
 	
 	public int followersCount(){return this.followersCount;}
 	public int commonCount() {return this.commonCount;}
