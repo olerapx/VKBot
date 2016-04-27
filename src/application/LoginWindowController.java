@@ -3,6 +3,12 @@ package application;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -179,7 +185,7 @@ public class LoginWindowController implements Initializable
 						} 
 						catch (IOException ioe) 
 						{					
-							statusText.setText(resources.getString("LoginWindow.connectionProblem.text"));
+							statusText.setText(resources.getString("LoginWindow.error.connectionProblem"));
 							showWarningAnimation();
 							loadingImage.setVisible(false);
 							
@@ -195,7 +201,7 @@ public class LoginWindowController implements Initializable
 						{
 							ex.printStackTrace();
 							
-							statusText.setText("LoginWindow.unknownError.text");
+							statusText.setText("LoginWindow.error.unknownError");
 							showWarningAnimation();
 							loadingImage.setVisible(false);
 							
@@ -334,7 +340,7 @@ public class LoginWindowController implements Initializable
 	
 	private final void onInvalidData()
 	{
-		statusText.setText(resources.getString("LoginWindow.invalidData.text"));
+		statusText.setText(resources.getString("LoginWindow.error.invalidData"));
 		passText.clear();
 		captchaKey.clear();
 		captchaImage.setImage(null);
@@ -349,7 +355,7 @@ public class LoginWindowController implements Initializable
 	
 	private final void onSuspectLogin(String leftNumber, String rightNumber)
 	{
-		statusText.setText(resources.getString("LoginWindow.confirmPhone.text"));
+		statusText.setText(resources.getString("LoginWindow.error.confirmPhone"));
 		loginText.setText(leftNumber + "********" + rightNumber);
 		passText.clear();
 		captchaKey.clear();
@@ -371,7 +377,7 @@ public class LoginWindowController implements Initializable
 		hideWarningAnimation();
 		
 		loadingImage.setVisible(false);
-
+		
 		Platform.runLater(new Runnable()
 		{
 			public void run()

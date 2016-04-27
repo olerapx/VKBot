@@ -1,5 +1,10 @@
 package api.user;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+
 import api.object.VKObject;
 
 /**
@@ -114,6 +119,23 @@ public class User extends VKObject
 	
 	public Sex sex() {return this.sex;}
 	public String birthDate() {return this.birthDate;}
+	
+	public long ageInYears()
+	{
+		try
+		{
+			LocalDate now = LocalDate.now();
+			
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.M.yyyy");		
+			LocalDate birth = LocalDate.parse(birthDate, formatter);
+	
+			return ChronoUnit.YEARS.between(birth, now);
+		}
+		catch (DateTimeParseException ex)
+		{
+			return -1L;
+		}
+	}
 	
 	public Online online() {return this.online;}
 	public int onlineAppID() {return this.onlineAppID;}
