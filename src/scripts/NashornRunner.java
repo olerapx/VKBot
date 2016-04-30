@@ -10,6 +10,9 @@ import javax.script.SimpleBindings;
 
 import api.worker.WorkerInterface;
 
+/**
+ * Provides an evaluation and an execution of a javascript file.
+ */
 public class NashornRunner implements ScriptRunner 
 {
 	ScriptEngine en;
@@ -28,6 +31,9 @@ public class NashornRunner implements ScriptRunner
 		setNewEnvironment();
 	}
 
+	/**
+	 * @see ScriptRunner#setNewEnvironment()
+	 */
 	public void setNewEnvironment() 
 	{
 		bindings = new SimpleBindings();

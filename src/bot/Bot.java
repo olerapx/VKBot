@@ -4,12 +4,15 @@ import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.apache.commons.io.FilenameUtils;
+
 import api.client.Client;
 import api.user.User;
 import api.worker.WorkerInterface;
 import application.Main;
 import javafx.beans.property.*;
 import scripts.JythonRunner;
+import scripts.NashornRunner;
 import scripts.ScriptRunner;
 import util.Date;
 
@@ -25,6 +28,9 @@ public class Bot
 	ScriptRunner runner;
 	File scriptFile;
 	
+    boolean hasProblem=false;
+    Problem problemType = Problem.UNKNOWN;
+	
 	SimpleStringProperty firstNameProperty;
 	SimpleStringProperty lastNameProperty;
 	SimpleIntegerProperty IDProperty;
@@ -35,41 +41,30 @@ public class Bot
 
     SimpleStringProperty statusProperty;
 	
-	public SimpleStringProperty getFirstNameProperty() 
-	{
-		return firstNameProperty;
-	}
+	public SimpleStringProperty getFirstNameProperty() {return firstNameProperty;}
 
-	public SimpleStringProperty getLastNameProperty() 
-	{
-		return lastNameProperty;
-	}
+	public SimpleStringProperty getLastNameProperty() {return lastNameProperty;}
 
-	public SimpleIntegerProperty getIDProperty()
-	{
-		return IDProperty;
-	}
-
-	public SimpleStringProperty getCityWithAgeProperty() 
-	{
-		return cityWithAgeProperty;
-	}
-
-	public SimpleStringProperty getOnlineProperty()
-	{
-		return onlineProperty;
-	}
-
-	public SimpleStringProperty getStatusProperty() 
-	{
-		return statusProperty;
-	}    
+	public SimpleIntegerProperty getIDProperty() {return IDProperty;}
 	
-	//TODO: string getters
-    
-    boolean hasProblem=false;
-    Problem problemType = Problem.UNKNOWN;
-    
+	public SimpleStringProperty getCityWithAgeProperty() { return cityWithAgeProperty;}
+	
+	public SimpleStringProperty getOnlineProperty()	{return onlineProperty;}
+	
+	public SimpleStringProperty getStatusProperty() {return statusProperty;}    
+	
+	public String getFirstName () {return firstNameProperty == null? "" : firstNameProperty.get();}
+	
+	public String getLastName () {return lastNameProperty == null? "" : lastNameProperty.get();}
+	
+	public int getID () {return IDProperty == null? -1 : IDProperty.get();}
+	
+	public String getCityWithAge () {return cityWithAgeProperty == null? "" : cityWithAgeProperty.get();}
+	
+	public String getOnline () {return onlineProperty == null? "" : onlineProperty.get();}
+	
+	public String getStatus () {return statusProperty == null? "" : statusProperty.get();}
+        
 	public Bot (Client client)
 	{
 		this.client = client;
@@ -84,7 +79,7 @@ public class Bot
 	{
 		getUserProperties();
 		
-		statusProperty = new SimpleStringProperty("Idle");
+		statusProperty = new SimpleStringProperty(resources.getString("Bot.state.idle"));
 	}
 	
 	private void getUserProperties()
@@ -107,17 +102,33 @@ public class Bot
 	public void setScript(File script)
 	{
 		this.scriptFile = script;
+		
+		String ext = FilenameUtils.getExtension(script.getAbsolutePath());
 
-		//this.runner = new JythonRunner(workerInterface); //TODO Jython or Nashorn
+		switch(ext)
+		{
+		case "py":
+			this.runner = new JythonRunner(workerInterface); 
+			break;
+		case "js":
+			this.runner = new NashornRunner (workerInterface);
+			break;
+		default:
+				throw new IllegalArgumentException(ext);
+		}
 	}
 	
 	public void start()
 	{
+		if (runner == null || scriptFile == null) return;
+		
 		
 	}
 	
 	public void stop()
 	{
+		if (runner == null || scriptFile == null) return;
+		
 		
 	}
 	

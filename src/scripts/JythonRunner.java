@@ -27,7 +27,7 @@ public class JythonRunner implements ScriptRunner
 	}
 	
 	/**
-	 * Creates a new interpreter and initializes his environment.
+	 * @see ScriptRunner#setNewEnvironment()
 	 */
 	public void setNewEnvironment()
 	{

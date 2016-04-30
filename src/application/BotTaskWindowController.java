@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 
 public class BotTaskWindowController implements Initializable
 {
@@ -15,17 +14,15 @@ public class BotTaskWindowController implements Initializable
 	
 	@FXML private ResourceBundle resources;
 	@FXML private AnchorPane root;
-	
-	Stage taskStage;
-	
+		
 	public void initialize(URL location, ResourceBundle resources) 
 	{
 		this.resources = resources;
 		
-		initStage();
+		initWindow();
 	}
 	
-	public void initStage()
+	public void initWindow()
 	{
 		
 	}

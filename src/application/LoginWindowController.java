@@ -3,12 +3,6 @@ package application;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.UUID;
@@ -16,6 +10,7 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 
 import api.client.Client;
+import bot.Bot;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -232,7 +227,7 @@ public class LoginWindowController implements Initializable
 			taskStage.setResizable(false);	
 							
 			BotTaskWindowController ctrl = loader.getController();
-			ctrl.initStage();
+			ctrl.initWindow();
 									
 			taskStage.setTitle("Set bot task");
 		}
@@ -377,6 +372,8 @@ public class LoginWindowController implements Initializable
 		hideWarningAnimation();
 		
 		loadingImage.setVisible(false);
+		
+		Bot bot = new Bot (client);
 		
 		Platform.runLater(new Runnable()
 		{
