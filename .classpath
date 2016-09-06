@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="var" path="LIBS_PATH"/>
-	<classpathentry kind="var" path="LIBS_PATH/commons-codec-1.9.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/commons-io-2.4.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/commons-logging-1.2.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/fluent-hc-4.5.1.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/httpclient-4.5.1.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/httpclient-cache-4.5.1.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/httpclient-win-4.5.1.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/httpcore-4.4.3.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/httpmime-4.5.1.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/java-json.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/jna-4.1.0.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/jna-platform-4.1.0.jar"/>
-	<classpathentry kind="var" path="LIBS_PATH/jython-standalone-2.7.0.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/commons-codec-1.9.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/commons-io-2.4.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/commons-logging-1.2.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/fluent-hc-4.5.1.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/httpclient-4.5.1.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/httpclient-cache-4.5.1.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/httpclient-win-4.5.1.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/httpcore-4.4.3.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/httpmime-4.5.1.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/java-json.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/jna-4.1.0.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/jna-platform-4.1.0.jar"/>
+	<classpathentry exported="true" kind="var" path="LIBS_PATH/jython-standalone-2.7.0.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -22,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -31,6 +32,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -44,7 +47,7 @@ public class LoginWindowController implements Initializable
 {
 	private Signal1<String> sendCaptcha = new Signal1<>();
 	private Signal2<String, String> sendData = new Signal2<>();
-	private Signal1<String> sendCode = new Signal1<>();	
+	private Signal0 sendPhoneConfirmed = new Signal0();	
 	
 	private enum State
 	{
@@ -83,6 +86,9 @@ public class LoginWindowController implements Initializable
 	
 	File tempImageDir = new File(FileSystem.getTempCaptchaPath());
 	File captchaImageFile;
+	
+	private Boolean isBrowserClosed = false;
+	private Boolean isBrowserSucceeded = false;
 		
 	private State state = State.NONE;
 		
@@ -146,7 +152,7 @@ public class LoginWindowController implements Initializable
 		    		
 		    		sendCaptcha.clear();
 		    		sendData.clear();
-		    		sendCode.clear();
+		    		sendPhoneConfirmed.clear();
 		    		
 		            clientThread.interrupt();
 		    		
@@ -165,7 +171,7 @@ public class LoginWindowController implements Initializable
 		
 		sendCaptcha.connect(client::receiveCaptcha);
 		sendData.connect(client::receiveData);
-		sendCode.connect(client::receiveCode);
+		sendPhoneConfirmed.connect(client::receivePhoneConfirmed);
 	}
 	
 	private void initClientThread()
@@ -196,7 +202,7 @@ public class LoginWindowController implements Initializable
 						{
 							ex.printStackTrace();
 							
-							statusText.setText("LoginWindow.error.unknownError");
+							statusText.setText(resources.getString("LoginWindow.error.unknownError"));
 							showWarningAnimation();
 							loadingImage.setVisible(false);
 							
@@ -287,12 +293,6 @@ public class LoginWindowController implements Initializable
 			}
 			case CONFIRM_PHONE:
 			{
-				if (loginText.getText()!="")
-				{
-					sendCode.emit(loginText.getText());
-					loadingImage.setVisible(true);
-					hideWarningAnimation();
-				}
 				break;
 			}
 			case SUCCESS:
@@ -348,20 +348,62 @@ public class LoginWindowController implements Initializable
 		state = State.INVALID_DATA;
 	}
 	
-	private final void onSuspectLogin(String leftNumber, String rightNumber)
+	private final void onSuspectLogin(String URL)
 	{
-		statusText.setText(resources.getString("LoginWindow.error.confirmPhone"));
-		loginText.setText(leftNumber + "********" + rightNumber);
-		passText.clear();
-		captchaKey.clear();
-		captchaImage.setImage(null);
-		
-		loadingImage.setVisible(false);
-		
-		hideCaptchaAnimation();
-		showWarningAnimation();
-		
-		state = State.CONFIRM_PHONE;
+		try
+		{
+			statusText.setText(resources.getString("LoginWindow.error.confirmPhone"));
+				
+			showBrowserDialog(URL);	
+	
+			while (!isBrowserClosed)
+			{
+				Thread.sleep(1);
+			}
+		}
+		catch (Exception ex)
+		{
+			
+		}
+	}
+	
+	private final void receiveBrowserResult(Boolean succeeded)
+	{
+		isBrowserClosed = true;
+		isBrowserSucceeded = succeeded;
+	}
+	
+	private void showBrowserDialog(String URL) throws Exception
+	{
+		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), BrowserDialogWindowController.resourcePath);
+		FXMLLoader loader = new FXMLLoader(getClass().getResource(BrowserDialogWindowController.fxmlPath), bundle);
+		AnchorPane pane;
+	
+		pane = (AnchorPane) loader.load();	
+								
+		Stage browserStage = new Stage();
+							
+		Scene scene = new Scene(pane);
+		scene.setRoot(pane);
+							
+		browserStage.setScene(scene);
+		browserStage.setResizable(false);
+			
+										
+		BrowserDialogWindowController ctrl = loader.getController();
+		ctrl.setURL(URL);
+			
+		ctrl.sendBrowserResult.connect(this::receiveBrowserResult);
+									
+		browserStage.setTitle("Phone Confirmation");
+			
+		Platform.runLater(new Runnable()
+		{
+			public void run()
+			{
+				browserStage.showAndWait();
+			}
+		});
 	}
 	
 	private final void onSuccess()
@@ -383,6 +425,8 @@ public class LoginWindowController implements Initializable
 				root.getScene().getWindow().hide();
 			}
 		});
+		
+		onSuspectLogin("https://vk.com");
 	}
 
 	

@@ -35,7 +35,7 @@ public class Client
 	
 	public final Signal1<String> onCaptchaNeeded = new Signal1<>();
 	public final Signal0 onInvalidData = new Signal0();
-	public final Signal2<String, String> onSuspectLogin = new Signal2<>();
+	public final Signal1<String> onSuspectLogin = new Signal1<>();
 	public final Signal0 onSuccess = new Signal0();
 	
 	public final void receiveCaptcha(String captcha)
@@ -49,18 +49,20 @@ public class Client
 		this.pass = pass;
 	}
 	
-	public final void receiveCode(String code)
+	public final void receivePhoneConfirmed()
 	{
-		this.code = code;
+		this.phoneConfirmed = true;
 	}
 	
 	QueryScheduler scheduler;
 	
-	String ID = "4977827";
-	String scope="friends,photos,audio,video,docs,status,wall,messages,offline";
-	String redirectUri = "https://oauth.vk.com/blank.html";
-	String display = "popup";
-	String responseType = "token";
+	final String apiVersion = "5.53";
+	
+	final String ID = "4977827";
+	final String scope="friends,photos,audio,video,docs,status,wall,messages,offline";
+	final String redirectUri = "https://oauth.vk.com/blank.html";
+	final String display = "popup";
+	final String responseType = "token";
 	String login="";
 	String pass="";
 
@@ -72,7 +74,7 @@ public class Client
 	String captchaKey="";
 	String captchaURL="";
 	
-	String code = "";
+	boolean phoneConfirmed = false;
 		
 	CloseableHttpResponse response;
 	String stringResponse;
@@ -312,7 +314,7 @@ public class Client
 		String str="";
 		
 		command = "https://api.vk.com/method/" + command;
-		command+="&v=5.50";
+		command+="&v=" + apiVersion;
 		command+="&access_token="+token;
 		
 		str = postQuery(command);
@@ -347,45 +349,12 @@ public class Client
 	 */
 	private void handleSuspectLogin(String URL) throws Exception
 	{
-		String str = postQuery(URL);
-		
-		HTMLDocument doc = stringToHtml(str);
-		
-		String name = "https://vk.com"+getAttributeOfElement(doc, "form", HTML.Attribute.ACTION);
-	    str = postQuery(name);
-
-	    String leftNumber = getValue(str, "label ta_r", '<');
-	    String rightNumber = getValue(str, "phone_postfix", '<');
+	    onSuspectLogin.emit(URL);
 	    
-	    rightNumber = rightNumber.substring(rightNumber.indexOf(';')+1, rightNumber.length());
-	    
-	    String hash = getValue(str, "hash: '", '\'');
-	    
-	    code = "";
-	    onSuspectLogin.emit(leftNumber, rightNumber);
-	    
-	    while (code.equals(""))
+	    while (!phoneConfirmed)
 	    {
 	    	Thread.sleep(1);
 	    }
-	    
-	    str = postQuery("https://vk.com/login.php?act=security_check"+
-	    				"hash="+hash+
-	    				"&to="+to+
-	    				"&code="+code);
-	}
-	
-	private String getValue (String str, String startToken, char endToken)
-	{
-	    int index = str.indexOf(startToken) + startToken.length();
-	    String res="";
-	    
-	    while (str.charAt(index)!=endToken)
-	    {
-	    	res += str.charAt(index);
-	    	index++;
-	    }
-	    return res;
 	}
 	
 	/**
