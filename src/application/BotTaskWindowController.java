@@ -18,8 +18,6 @@ public class BotTaskWindowController implements Initializable
 	public void initialize(URL location, ResourceBundle resources) 
 	{
 		this.resources = resources;
-		
-		initWindow();
 	}
 	
 	public void initWindow()

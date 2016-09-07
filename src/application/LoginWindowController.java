@@ -22,7 +22,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -32,8 +31,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -87,8 +85,7 @@ public class LoginWindowController implements Initializable
 	File tempImageDir = new File(FileSystem.getTempCaptchaPath());
 	File captchaImageFile;
 	
-	private Boolean isBrowserClosed = false;
-	private Boolean isBrowserSucceeded = false;
+	private Boolean phoneConfirmationResult = false;
 		
 	private State state = State.NONE;
 		
@@ -112,7 +109,7 @@ public class LoginWindowController implements Initializable
 		initTaskStage();
 	}
 	
-	public void initWindow()
+	void initWindow()
 	{
 		Scene scene = root.getScene();
 		Window window = scene.getWindow();
@@ -128,7 +125,8 @@ public class LoginWindowController implements Initializable
                 	onLogin();
                 	break;
                 }
-                default: break;
+                default: 
+                	break;
                 }
             }
         });
@@ -352,25 +350,28 @@ public class LoginWindowController implements Initializable
 	{
 		try
 		{
-			statusText.setText(resources.getString("LoginWindow.error.confirmPhone"));
-				
+			statusText.setText(resources.getString("LoginWindow.error.confirmPhone"));				
 			showBrowserDialog(URL);	
-	
-			while (!isBrowserClosed)
+			
+			if (phoneConfirmationResult)
 			{
-				Thread.sleep(1);
+				sendPhoneConfirmed.emit();
+			}
+			else
+			{
+				Platform.runLater(new Runnable()
+				{
+					public void run()
+					{
+						root.getScene().getWindow().hide();
+					}
+				});
 			}
 		}
 		catch (Exception ex)
 		{
-			
+
 		}
-	}
-	
-	private final void receiveBrowserResult(Boolean succeeded)
-	{
-		isBrowserClosed = true;
-		isBrowserSucceeded = succeeded;
 	}
 	
 	private void showBrowserDialog(String URL) throws Exception
@@ -385,25 +386,33 @@ public class LoginWindowController implements Initializable
 							
 		Scene scene = new Scene(pane);
 		scene.setRoot(pane);
-							
+									
 		browserStage.setScene(scene);
 		browserStage.setResizable(false);
-			
-										
+		
+		browserStage.initModality(Modality.WINDOW_MODAL);
+		browserStage.initOwner(root.getScene().getWindow());
+													
 		BrowserDialogWindowController ctrl = loader.getController();
+		ctrl.initWindow();
 		ctrl.setURL(URL);
 			
 		ctrl.sendBrowserResult.connect(this::receiveBrowserResult);
 									
-		browserStage.setTitle("Phone Confirmation");
+		browserStage.setTitle(bundle.getString("BrowserDialogWindow.title.text"));
 			
 		Platform.runLater(new Runnable()
 		{
 			public void run()
 			{
-				browserStage.showAndWait();
+				browserStage.show();
 			}
 		});
+	}
+	
+	private final void receiveBrowserResult(Boolean success)
+	{
+		phoneConfirmationResult = success;
 	}
 	
 	private final void onSuccess()
@@ -425,8 +434,6 @@ public class LoginWindowController implements Initializable
 				root.getScene().getWindow().hide();
 			}
 		});
-		
-		onSuspectLogin("https://vk.com");
 	}
 
 	

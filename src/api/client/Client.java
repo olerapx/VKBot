@@ -334,7 +334,7 @@ public class Client
 			obj = obj.getJSONObject("error");			
 			int code = obj.getInt("error_code");
 			
-			if (code==17)
+			if (code == 17)
 			{
 				handleSuspectLogin(obj.getString("redirect_uri"));
 				return executeCommand(command);
