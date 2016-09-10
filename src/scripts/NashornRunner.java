@@ -2,6 +2,9 @@ package scripts;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
@@ -15,7 +18,9 @@ import api.worker.WorkerInterface;
  */
 public class NashornRunner implements ScriptRunner 
 {
-	ScriptEngine en;
+	private static final long serialVersionUID = 3307134212267034370L;
+	
+	transient ScriptEngine en;
 	Bindings bindings;
 	WorkerInterface wi;
 	
@@ -61,4 +66,16 @@ public class NashornRunner implements ScriptRunner
 	
 	public ScriptEngine js() {return this.en;}
 	public Bindings bindings() {return this.bindings;}
+	
+	private void writeObject(ObjectOutputStream oos) throws IOException 
+	{
+		oos.defaultWriteObject();	
+	}
+
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException 
+	{
+		ois.defaultReadObject();
+		
+		en = new ScriptEngineManager().getEngineByName("nashorn");
+	}
 }

@@ -1,5 +1,6 @@
 package api.worker;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -9,8 +10,10 @@ import org.json.JSONObject;
 
 import api.client.Client;
 
-public abstract class Worker 
+public abstract class Worker implements Serializable
 {
+	private static final long serialVersionUID = 1071265962893664433L;
+	
 	protected Client client;
 		
 	public Worker (Client client)

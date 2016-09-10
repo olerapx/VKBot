@@ -14,6 +14,8 @@ import api.media.comment.WallComment;
  */
 public class MediaAttachment extends Attachment
 {
+	private static final long serialVersionUID = 640283601827314822L;
+	
 	MediaID ID;
 	
 	public MediaID ID() {return this.ID;}

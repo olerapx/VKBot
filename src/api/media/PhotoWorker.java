@@ -10,6 +10,8 @@ import api.media.comment.PhotoComment;
 
 public class PhotoWorker extends MediaWorker 
 {
+	private static final long serialVersionUID = 5099481807090545695L;
+
 	public PhotoWorker(Client client) 
 	{
 		super(client);

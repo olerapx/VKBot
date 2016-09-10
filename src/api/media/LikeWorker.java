@@ -11,6 +11,8 @@ import api.worker.Worker;
 
 public class LikeWorker extends Worker 
 {
+	private static final long serialVersionUID = -3606489396444254881L;
+
 	public LikeWorker(Client client) 
 	{
 		super(client);

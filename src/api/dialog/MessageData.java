@@ -9,6 +9,8 @@ import api.object.VKObject;
  */
 public class MessageData extends VKObject 
 {
+	private static final long serialVersionUID = 1666532004532231953L;
+	
 	int userID;
 	long date;
 	

@@ -4,6 +4,8 @@ import api.media.Photo;
 
 public class Link extends Attachment 
 {
+	private static final long serialVersionUID = 3589440176838968500L;
+	
 	String URL;
 	String previewURL;
 	

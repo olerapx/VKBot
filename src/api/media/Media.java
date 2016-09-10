@@ -7,6 +7,7 @@ import api.object.VKObject;
  */
 public abstract class Media extends VKObject
 {	
+	private static final long serialVersionUID = -6505261063656918650L;
 	MediaID ID;
 	
 	public MediaID ID() {return this.ID;} 

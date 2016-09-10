@@ -374,7 +374,7 @@ public class LoginWindowController implements Initializable
 		}
 	}
 	
-	private void showBrowserDialog(String URL) throws Exception
+	private void showBrowserDialog(String URL) throws IOException
 	{
 		ResourceBundle bundle = Main.loadLocale (Locale.getDefault(), BrowserDialogWindowController.resourcePath);
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(BrowserDialogWindowController.fxmlPath), bundle);
@@ -425,6 +425,7 @@ public class LoginWindowController implements Initializable
 		loadingImage.setVisible(false);
 		
 		Bot bot = new Bot (client);
+		FileSystem.writeBotToFile(bot);
 		
 		Platform.runLater(new Runnable()
 		{

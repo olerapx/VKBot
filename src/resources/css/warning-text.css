@@ -3,6 +3,7 @@
 	-fx-border-color: #9F6000;
 	-fx-background-color: #FEEFB3;
 }
+
 .text {
--fx-fill: #9F6000;
+	-fx-fill: #9F6000;
 }

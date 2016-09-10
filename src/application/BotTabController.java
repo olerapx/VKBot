@@ -33,6 +33,4 @@ public class BotTabController implements Initializable
 			e.printStackTrace();
 		}
 	}
-	
-
 }

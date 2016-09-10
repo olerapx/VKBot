@@ -1,6 +1,10 @@
 package bot;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -16,10 +20,11 @@ import scripts.NashornRunner;
 import scripts.ScriptRunner;
 import util.Date;
 
-public class Bot
+public class Bot implements Serializable
 {	
-	final public static String resourcePath = "resources.locale.Bot.messages";
+	private static final long serialVersionUID = -4719943341841483336L;
 	
+	final public static String resourcePath = "resources.locale.Bot.messages";
 	public static ResourceBundle resources = Main.loadLocale(Locale.getDefault(), resourcePath);
 	
 	Client client;
@@ -28,18 +33,18 @@ public class Bot
 	ScriptRunner runner;
 	File scriptFile;
 	
-    boolean hasProblem=false;
+    boolean hasProblem = false;
     Problem problemType = Problem.UNKNOWN;
 	
-	SimpleStringProperty firstNameProperty;
-	SimpleStringProperty lastNameProperty;
-	SimpleIntegerProperty IDProperty;
+	transient SimpleStringProperty firstNameProperty;
+	transient SimpleStringProperty lastNameProperty;
+	transient SimpleIntegerProperty IDProperty;
 	
-	SimpleStringProperty cityWithAgeProperty;
+	transient SimpleStringProperty cityWithAgeProperty;
 	
-	SimpleStringProperty onlineProperty;
+	transient SimpleStringProperty onlineProperty;
 
-    SimpleStringProperty statusProperty;
+	transient SimpleStringProperty statusProperty;
 	
 	public SimpleStringProperty getFirstNameProperty() {return firstNameProperty;}
 
@@ -108,7 +113,7 @@ public class Bot
 		switch(ext)
 		{
 		case "py":
-			this.runner = new JythonRunner(workerInterface); 
+			this.runner = new JythonRunner (workerInterface); 
 			break;
 		case "js":
 			this.runner = new NashornRunner (workerInterface);
@@ -117,6 +122,7 @@ public class Bot
 				throw new IllegalArgumentException(ext);
 		}
 	}
+	
 	
 	public void start()
 	{
@@ -145,5 +151,20 @@ public class Bot
 		{
 			
 		}
+	}
+	
+	private void writeObject(ObjectOutputStream oos) throws IOException 
+	{
+		oos.defaultWriteObject();
+		
+		oos.writeObject(statusProperty.get());
+	}
+
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException 
+	{
+		ois.defaultReadObject();
+		
+		statusProperty = new SimpleStringProperty((String) ois.readObject());
+		getUserProperties();	
 	}
 }

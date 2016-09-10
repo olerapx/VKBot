@@ -2,10 +2,12 @@ package api.media;
 
 public class Photo extends Media 
 {
+	private static final long serialVersionUID = -8273733745791294933L;
+
 	int albumID;
 	
 	/**
-	 * ID of user who uploaded the photo. Applicable only if the photo belongs to group, equals to 100 in other cases.
+	 * ID of user which uploaded the photo. Applicable only if the photo belongs to group, equals to 100 in other case.
 	 */
 	int userID = 100;
 	

@@ -12,6 +12,8 @@ import api.client.Client;
 
 public class AudioWorker extends MediaWorker 
 {
+	private static final long serialVersionUID = -1301713478825710500L;
+	
 	public AudioWorker(Client client) 
 	{
 		super(client);

@@ -2,6 +2,8 @@ package api.media;
 
 public class Video extends Media 
 {
+	private static final long serialVersionUID = 2407478598722060568L;
+	
 	String title;
 	String description;
 	long duration;

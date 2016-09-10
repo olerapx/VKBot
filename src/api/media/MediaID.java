@@ -1,10 +1,14 @@
 package api.media;
 
+import java.io.Serializable;
+
 /**
  * Represents ID of any Media. Contains owner ID, media ID and access key if it exists.
  */
-public class MediaID
+public class MediaID implements Serializable
 {
+	private static final long serialVersionUID = 6880003142943801375L;
+	
 	int ownerID;
 	int mediaID;
 	String accessKey;

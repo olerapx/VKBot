@@ -7,6 +7,8 @@ import api.object.VKObject;
  */
 public class Dialog extends VKObject
 {
+	private static final long serialVersionUID = 4901355272877799949L;
+	
 	long ID;	
 	String title;
 	int unreadMessagesNumber;

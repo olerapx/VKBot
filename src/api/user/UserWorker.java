@@ -18,6 +18,7 @@ import api.worker.Worker;
 
 public class UserWorker extends Worker 
 {	
+	private static final long serialVersionUID = -6185181964142331296L;
 	private String fields;
 	
 	public UserWorker(Client client) 

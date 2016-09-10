@@ -11,6 +11,8 @@ import api.worker.Worker;
  */
 public class DatabaseWorker extends Worker 
 {
+	private static final long serialVersionUID = 1591576383053211624L;
+
 	public DatabaseWorker(Client client) 
 	{
 		super(client);

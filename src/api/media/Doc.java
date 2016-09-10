@@ -2,6 +2,8 @@ package api.media;
 
 public class Doc extends Media 
 {
+	private static final long serialVersionUID = -2008163632808288272L;
+	
 	String title;
 	String extention;
 	int type;

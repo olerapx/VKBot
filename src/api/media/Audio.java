@@ -2,6 +2,8 @@ package api.media;
 
 public class Audio extends Media 
 {
+	private static final long serialVersionUID = -315193787050043233L;
+	
 	String artist;
 	String title;
 	

@@ -14,6 +14,9 @@ import api.worker.Worker;
 
 public class MessageWorker extends Worker
 {
+	private static final long serialVersionUID = -6917930668751777397L;
+	
+
 	public MessageWorker(Client client) 
 	{
 		super(client);
@@ -162,8 +165,8 @@ public class MessageWorker extends Worker
 	{
 		MessageData msg = new MessageData();	
 		
-		msg.userID = getIntFromJSON(data,"user_id");
-		msg.date = getLongFromJSON(data,"date");
+		msg.userID = getIntFromJSON(data, "user_id");
+		msg.date = getLongFromJSON(data, "date");
 		
 		msg.title = getStringFromJSON(data, "title");		
 	    msg.text = getStringFromJSON(data, "body");

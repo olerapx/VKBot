@@ -5,6 +5,8 @@ import api.object.VKObject;
 
 public class Status extends VKObject
 {
+	private static final long serialVersionUID = 5779735789373627264L;
+	
 	String text;
 	Audio audio;
 	

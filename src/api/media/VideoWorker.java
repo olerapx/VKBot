@@ -10,6 +10,8 @@ import api.media.comment.VideoComment;
 
 public class VideoWorker extends MediaWorker 
 {
+	private static final long serialVersionUID = -467839669278688310L;
+
 	public VideoWorker(Client client) 
 	{
 		super(client);

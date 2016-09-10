@@ -12,6 +12,8 @@ import api.object.VKObject;
  */
 public class User extends VKObject
 {
+	private static final long serialVersionUID = 7800011907420924250L;
+	
 	public enum Online
 	{
 		PC,

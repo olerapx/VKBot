@@ -1,5 +1,7 @@
 package api.worker;
 
+import java.io.Serializable;
+
 import api.attachment.AttachmentWorker;
 import api.client.Client;
 import api.database.DatabaseWorker;
@@ -16,8 +18,10 @@ import api.user.UserWorker;
 /**
  * Provides a single-access interface to all API functions.
  */
-public class WorkerInterface 
+public class WorkerInterface implements Serializable
 {
+	private static final long serialVersionUID = -3231232496938595736L;
+	
 	UserWorker userWorker;	
 	MessageWorker messageWorker;
 	AttachmentWorker attachmentWorker;

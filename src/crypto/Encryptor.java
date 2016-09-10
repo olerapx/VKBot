@@ -52,6 +52,6 @@ public class Encryptor extends Cryptor
 	 */
 	public void write (Object data) throws IOException
 	{
-			oos.writeObject(data);
+		oos.writeObject(data);
 	}
 }

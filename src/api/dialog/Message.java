@@ -9,6 +9,8 @@ import api.object.VKObject;
  */
 public class Message extends VKObject
 {
+	private static final long serialVersionUID = 5752254552119841702L;
+	
 	int messageID;
 	boolean isOut;
 	boolean isRead;

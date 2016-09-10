@@ -5,5 +5,5 @@ package api.media.comment;
  */
 public class VideoComment extends Comment
 {
-
+	private static final long serialVersionUID = 8223227381574558189L;
 }

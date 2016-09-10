@@ -8,6 +8,8 @@ import api.client.Client;
 
 public class DocWorker extends MediaWorker 
 {
+	private static final long serialVersionUID = -1518879780046058355L;
+
 	public DocWorker(Client client) 
 	{
 		super(client);

@@ -12,6 +12,8 @@ import api.worker.Worker;
 
 public class AttachmentWorker extends Worker 
 {
+	private static final long serialVersionUID = 880699151738025727L;
+
 	public AttachmentWorker(Client client) 
 	{
 		super(client);

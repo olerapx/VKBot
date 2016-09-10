@@ -17,6 +17,8 @@ import api.worker.Worker;
 
 public class CommentWorker extends Worker 
 {
+	private static final long serialVersionUID = -2838506250392575726L;
+
 	public CommentWorker(Client client) 
 	{
 		super(client);

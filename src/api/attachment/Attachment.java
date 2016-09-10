@@ -7,6 +7,8 @@ import api.object.VKObject;
  */
 public abstract class Attachment extends VKObject
 {
+	private static final long serialVersionUID = 6699121504240728108L;
+
 	public enum Type
 	{
 		ATTACH_PHOTO,

@@ -9,6 +9,8 @@ import api.media.Media;
  */
 public abstract class Comment extends Media
 {
+	private static final long serialVersionUID = 2534779726114047791L;
+
 	int fromID;
 	
 	long date;

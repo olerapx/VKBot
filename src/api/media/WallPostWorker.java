@@ -11,6 +11,8 @@ import api.attachment.AttachmentWorker;
 
 public class WallPostWorker extends MediaWorker 
 {
+	private static final long serialVersionUID = -1183073351885284652L;
+
 	public WallPostWorker(Client client) 
 	{
 		super(client);

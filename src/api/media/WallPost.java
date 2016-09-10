@@ -4,6 +4,8 @@ import api.attachment.Attachment;
 
 public class WallPost extends Media 
 {
+	private static final long serialVersionUID = 32947889374484734L;
+	
 	int fromID;
 	long date;
 	

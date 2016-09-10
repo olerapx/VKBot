@@ -1,10 +1,14 @@
 package api.client;
 
+import java.io.Serializable;
+
 /**
  * Provides a query limitation per time unit.
  */
-public class QueryScheduler
+public class QueryScheduler implements Serializable
 {
+	private static final long serialVersionUID = 1634634484670684511L;
+	
 	private long queryDelayMs;
 	private int allowedQueryCount;
 	

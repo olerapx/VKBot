@@ -23,6 +23,7 @@ public class Date
 		if (userAge==-1L)
 			return "";	
 		else age = String.valueOf(userAge)+" ";
+		
 		if (userAge%10 == 1 && userAge != 11)
 			age += Bot.resources.getString("Bot.age.oneYear");
 		else if (userAge%10 >=2 && userAge%10 <=4 && !(userAge >= 12 && userAge<=14))

@@ -1,8 +1,9 @@
 package scripts;
 
 import java.io.File;
+import java.io.Serializable;
 
-public interface ScriptRunner 
+public interface ScriptRunner extends Serializable
 {
 	/**
 	 * Creates a new interpreter and initializes his environment.

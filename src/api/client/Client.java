@@ -1,6 +1,10 @@
 package api.client;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.StringReader;
 
 import javax.swing.text.Element;
@@ -27,16 +31,18 @@ import api.user.User;
 import api.user.UserWorker;
 import util.sig4j.signal.*;
 
-public class Client 
+public class Client implements Serializable
 {
-	public CloseableHttpClient httpClient;
+	private static final long serialVersionUID = 5840493055914657790L;
+	
+	public transient CloseableHttpClient httpClient;
 	public String token="";
 	public User me;
 	
-	public final Signal1<String> onCaptchaNeeded = new Signal1<>();
-	public final Signal0 onInvalidData = new Signal0();
-	public final Signal1<String> onSuspectLogin = new Signal1<>();
-	public final Signal0 onSuccess = new Signal0();
+	public final transient Signal1<String> onCaptchaNeeded = new Signal1<>();
+	public final transient Signal0 onInvalidData = new Signal0();
+	public final transient Signal1<String> onSuspectLogin = new Signal1<>();
+	public final transient Signal0 onSuccess = new Signal0();
 	
 	public final void receiveCaptcha(String captcha)
 	{
@@ -76,7 +82,7 @@ public class Client
 	
 	boolean phoneConfirmed = false;
 		
-	CloseableHttpResponse response;
+	transient CloseableHttpResponse response;
 	String stringResponse;
 		
 	public Client()
@@ -111,6 +117,8 @@ public class Client
 		
 		UserWorker uw = new UserWorker(this);
 		me = uw.getMe();	
+		
+		pass = "";
 		
 		onSuccess.emit();
 	}
@@ -373,5 +381,17 @@ public class Client
 		post.reset();
 
 		return stringResponse;
+	}
+
+	private void writeObject(ObjectOutputStream oos) throws IOException 
+	{
+		oos.defaultWriteObject();	
+	}
+
+	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException 
+	{
+		ois.defaultReadObject();
+		
+		buildClient(); //TODO: try comment
 	}
 }

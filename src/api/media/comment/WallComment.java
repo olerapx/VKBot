@@ -5,5 +5,5 @@ package api.media.comment;
  */
 public class WallComment extends Comment 
 {
-
+	private static final long serialVersionUID = -2065154840700221582L;
 }
