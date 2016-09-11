@@ -1,7 +1,10 @@
 package scripts;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
+
+import javax.script.ScriptException;
 
 public interface ScriptRunner extends Serializable
 {
@@ -10,7 +13,7 @@ public interface ScriptRunner extends Serializable
 	 */
 	public void setNewEnvironment();
 	
-	public void execFile (File file) throws Exception;
+	public void execFile (File file) throws FileNotFoundException, ScriptException;
 		
 	public void stop();
 }

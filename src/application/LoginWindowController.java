@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.UUID;
-
-import org.apache.commons.io.FileUtils;
 
 import api.client.Client;
 import bot.Bot;
@@ -81,9 +78,6 @@ public class LoginWindowController implements Initializable
 	Thread clientThread;
 	
 	Client client;
-	
-	File tempImageDir = new File(FileSystem.getTempCaptchaPath());
-	File captchaImageFile;
 	
 	private Boolean phoneConfirmationResult = false;
 		
@@ -318,11 +312,7 @@ public class LoginWindowController implements Initializable
 	{
 		try
 		{	
-			captchaImageFile = new File (tempImageDir.getAbsolutePath()+"/"+UUID.nameUUIDFromBytes(captchaURL.getBytes()).toString());
-			captchaImageFile.getParentFile().mkdirs();
-			captchaImageFile.createNewFile();
-			
-			FileUtils.copyURLToFile(new URL(captchaURL), captchaImageFile);
+			File captchaImageFile = FileSystem.downloadCaptchaToFile(captchaURL);
 			captchaImage.setImage(new Image(captchaImageFile.toURI().toString(), true));
 		}
 		catch (Exception ex)
@@ -425,8 +415,7 @@ public class LoginWindowController implements Initializable
 		loadingImage.setVisible(false);
 		
 		Bot bot = new Bot (client);
-		FileSystem.writeBotToFile(bot);
-		
+				
 		Platform.runLater(new Runnable()
 		{
 			public void run()
@@ -504,5 +493,4 @@ public class LoginWindowController implements Initializable
         });
         timeline.play();   
 	}
-
 }

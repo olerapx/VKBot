@@ -5,6 +5,9 @@ import api.worker.Worker;
 
 public abstract class MediaWorker extends Worker 
 {
+	private static final long serialVersionUID = 2986738288724574610L;
+	
+
 	public MediaWorker(Client client) 
 	{
 		super(client);

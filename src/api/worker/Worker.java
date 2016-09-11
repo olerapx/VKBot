@@ -10,6 +10,9 @@ import org.json.JSONObject;
 
 import api.client.Client;
 
+/**
+ * Base class for all VKObject workers.
+ */
 public abstract class Worker implements Serializable
 {
 	private static final long serialVersionUID = 1071265962893664433L;

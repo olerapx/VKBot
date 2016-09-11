@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.python.core.PyObject;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 
@@ -22,7 +21,7 @@ public class JythonRunner implements ScriptRunner
 	WorkerInterface wi;
 	
 	String stopVariableName = "stop";
-	boolean isRun = false;
+	boolean isRunning = false;
 	
 	public JythonRunner(WorkerInterface wi)
 	{
@@ -44,20 +43,19 @@ public class JythonRunner implements ScriptRunner
 	
 	public void execFile (File file)
 	{		
-		this.isRun = true;
+		this.isRunning = true;
 		
 		py.execfile(file.getPath());
 		py.close();
 		
-		this.isRun = false;	
+		this.isRunning = false;	
 	}
 		
 	public void stop()
 	{
-		if (isRun)
+		if (isRunning)
 		{
 			py.set(stopVariableName, true);
-			isRun = false;
 		}
 	}
 	
@@ -66,11 +64,6 @@ public class JythonRunner implements ScriptRunner
 	private void writeObject(ObjectOutputStream oos) throws IOException 
 	{
 		oos.defaultWriteObject();	
-		
-		PyObject localsMap = py.getLocals();
-		PyObject initialState = localsMap.invoke("copy");
-		
-		oos.writeObject(initialState);
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException 
@@ -78,6 +71,6 @@ public class JythonRunner implements ScriptRunner
 		ois.defaultReadObject();
 		
 		PythonInterpreter.initialize(System.getProperties(), System.getProperties(), new String[0]);
-		py.setLocals(((PyObject) ois.readObject()).invoke("copy"));
+		setNewEnvironment();
 	}
 }

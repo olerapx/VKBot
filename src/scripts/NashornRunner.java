@@ -1,6 +1,7 @@
 package scripts;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,6 +10,7 @@ import java.io.ObjectOutputStream;
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
 import api.worker.WorkerInterface;
@@ -21,18 +23,17 @@ public class NashornRunner implements ScriptRunner
 	private static final long serialVersionUID = 3307134212267034370L;
 	
 	transient ScriptEngine en;
-	Bindings bindings;
+	transient Bindings bindings;
 	WorkerInterface wi;
 	
 	String stopVariableName = "stop";
-	boolean isRun = false;
+	boolean isRunning = false;
 	
 	public NashornRunner(WorkerInterface wi) 
 	{
 		this.wi = wi;		
 		
-		en = new ScriptEngineManager().getEngineByName("nashorn");
-		
+		en = new ScriptEngineManager().getEngineByName("nashorn");		
 		setNewEnvironment();
 	}
 
@@ -46,21 +47,20 @@ public class NashornRunner implements ScriptRunner
 		bindings.put(stopVariableName, false);
 	}
 
-	public void execFile(File file) throws Exception
+	public void execFile(File file) throws FileNotFoundException, ScriptException 
 	{
-		this.isRun = true;
+		this.isRunning = true;
 		
 		en.eval(new FileReader(file.getAbsolutePath()), bindings);
 		
-		this.isRun = false;
+		this.isRunning = false;
 	}
 
 	public void stop() 
 	{
-		if (isRun)
+		if (isRunning)
 		{
 			bindings.put(stopVariableName, true);
-			isRun = false;
 		}
 	}
 	
@@ -76,6 +76,7 @@ public class NashornRunner implements ScriptRunner
 	{
 		ois.defaultReadObject();
 		
-		en = new ScriptEngineManager().getEngineByName("nashorn");
+		en = new ScriptEngineManager().getEngineByName("nashorn");		
+		setNewEnvironment();
 	}
 }

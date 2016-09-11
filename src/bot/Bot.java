@@ -1,12 +1,15 @@
 package bot;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import javax.script.ScriptException;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -20,6 +23,9 @@ import scripts.NashornRunner;
 import scripts.ScriptRunner;
 import util.Date;
 
+/**
+ * Represents a single bot.
+ */
 public class Bot implements Serializable
 {	
 	private static final long serialVersionUID = -4719943341841483336L;
@@ -35,6 +41,8 @@ public class Bot implements Serializable
 	
     boolean hasProblem = false;
     Problem problemType = Problem.UNKNOWN;
+    
+    //TODO: avatar property
 	
 	transient SimpleStringProperty firstNameProperty;
 	transient SimpleStringProperty lastNameProperty;
@@ -58,19 +66,20 @@ public class Bot implements Serializable
 	
 	public SimpleStringProperty getStatusProperty() {return statusProperty;}    
 	
-	public String getFirstName () {return firstNameProperty == null? "" : firstNameProperty.get();}
+	public String getFirstName() {return firstNameProperty == null? "" : firstNameProperty.get();}
 	
-	public String getLastName () {return lastNameProperty == null? "" : lastNameProperty.get();}
+	public String getLastName() {return lastNameProperty == null? "" : lastNameProperty.get();}
 	
-	public int getID () {return IDProperty == null? -1 : IDProperty.get();}
+	public int getID() {return IDProperty == null? -1 : IDProperty.get();}
 	
-	public String getCityWithAge () {return cityWithAgeProperty == null? "" : cityWithAgeProperty.get();}
+	public String getCityWithAge() {return cityWithAgeProperty == null? "" : cityWithAgeProperty.get();}
 	
-	public String getOnline () {return onlineProperty == null? "" : onlineProperty.get();}
+	public String getOnline() {return onlineProperty == null? "" : onlineProperty.get();}
 	
-	public String getStatus () {return statusProperty == null? "" : statusProperty.get();}
+	public String getStatus() {return statusProperty == null? "" : statusProperty.get();}
         
-	public Bot (Client client)
+	
+	public Bot(Client client)
 	{
 		this.client = client;
 		
@@ -106,6 +115,8 @@ public class Bot implements Serializable
 	
 	public void setScript(File script)
 	{
+		stop();
+		
 		this.scriptFile = script;
 		
 		String ext = FilenameUtils.getExtension(script.getAbsolutePath());
@@ -122,24 +133,26 @@ public class Bot implements Serializable
 				throw new IllegalArgumentException(ext);
 		}
 	}
-	
-	
-	public void start()
+		
+	public void start() throws FileNotFoundException, ScriptException
 	{
 		if (runner == null || scriptFile == null) return;
 		
-		
+		runner.execFile(scriptFile);
 	}
 	
 	public void stop()
 	{
 		if (runner == null || scriptFile == null) return;
 		
-		
+		runner.stop();
 	}
 	
 	public User getUser () {return client.me;}
 	
+	/**
+	 * Retrieves an up-to-date represented user information.
+	 */
 	public void updateUser()
 	{
 		try

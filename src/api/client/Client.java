@@ -31,6 +31,9 @@ import api.user.User;
 import api.user.UserWorker;
 import util.sig4j.signal.*;
 
+/**
+ * Performs all network operations.
+ */
 public class Client implements Serializable
 {
 	private static final long serialVersionUID = 5840493055914657790L;

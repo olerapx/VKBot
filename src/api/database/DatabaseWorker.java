@@ -199,8 +199,6 @@ public class DatabaseWorker extends Worker
 		return getUniversityID(0, 0, university);
 	}
 
-	
-	
 	public int getSchoolID (int cityID, String school) throws Exception
 	{
 		

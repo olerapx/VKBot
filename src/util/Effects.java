@@ -3,6 +3,10 @@ package util;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
+
+/**
+ * Contains some effects which cannot be represented by CSS.
+ */
 public class Effects 
 {
 	public static InnerShadow imageButtonActive = new InnerShadow();

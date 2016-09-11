@@ -7,6 +7,8 @@ import api.user.User;
  */
 public class ConferenceDialog extends Dialog 
 {
+	private static final long serialVersionUID = -1008421433782672760L;
+	
 	User admin;
 	User [] users;
 	String photoURL;

@@ -26,7 +26,7 @@ public class Decryptor extends Cryptor
 	}
 	
 	/**
-	 * Read the encrypted object from opened file.
+	 * Read the encrypted object from the opened file.
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T read() throws IOException, ClassNotFoundException

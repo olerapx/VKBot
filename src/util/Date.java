@@ -8,6 +8,11 @@ import bot.Bot;
 
 public class Date 
 {
+	/**
+	 * Converts UNIX timestamp to human readable date and time.
+	 * @param unixtime - timestamp.
+	 * @return String representing the date.
+	 */
 	public static String formatTimestamp(long unixtime)
 	{
 		Instant i = Instant.ofEpochSecond(unixtime);			
@@ -16,6 +21,11 @@ public class Date
 		return i.atZone(Calendar.getInstance().getTimeZone().toZoneId()).format(f);
 	}
 	
+	/**
+	 * Adds a word "year" in correct case to user age, e.g. "31 year", "25 years".
+	 * @param userAge - an user's age.
+	 * @return String containing the age and the "year".
+	 */
 	public static String formatYears(long userAge)
 	{
 		String age;

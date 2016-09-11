@@ -3,6 +3,7 @@ package util;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URL;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
@@ -23,7 +24,7 @@ public class FileSystem
 	private static String botDataExt = ".dat";
 	private static String botKeyExt = ".cr";
 	
-	private static String botPath, botDataFile, botKeyFile;
+	private static String botDirectoryPath, botDataFilePath, botKeyFilePath;
 	
 	public static String getTempCaptchaPath () {return tempCaptchaPath;}
 	public static String getBotsPath() {return botsPath;}
@@ -37,13 +38,13 @@ public class FileSystem
 		
 		constructBotPaths(uuid, botID);
 		
-		File botFile = new File (botPath);			
+		File botDirectory = new File (botDirectoryPath);			
 				
-		if (checkFileIntegrity(botFile, uuid))
+		if (checkFileIntegrity(botDirectory, uuid))
 		{
 			try 
 			{
-				Encryptor en = new Encryptor(new File (botDataFile), new File(botKeyFile));				
+				Encryptor en = new Encryptor(new File (botDataFilePath), new File(botKeyFilePath));				
 				en.write(bot);
 			} 
 			catch (Exception e) 
@@ -55,9 +56,9 @@ public class FileSystem
 		{
 			try 
 			{
-				refreshDirectory(botFile);
+				refreshDirectory(botDirectory);
 
-				Encryptor en = new Encryptor(new File (botDataFile), botKeyFile);				
+				Encryptor en = new Encryptor(new File (botDataFilePath), botKeyFilePath);				
 				en.write(bot);
 			} 
 			catch (Exception e) 
@@ -66,46 +67,46 @@ public class FileSystem
 			}	
 		}
 	}
-	
+		
 	private static void constructBotPaths(String uuid, String botID)
 	{
-		botPath = System.getProperty("user.dir") + FilenameUtils.separatorsToSystem(botsPath) + botID;
-		botDataFile = botPath + FilenameUtils.separatorsToSystem("/") + uuid + botDataExt;
-		botKeyFile = botPath + FilenameUtils.separatorsToSystem("/") + uuid + botKeyExt;	
+		botDirectoryPath = System.getProperty("user.dir") + FilenameUtils.separatorsToSystem(botsPath) + botID;
+		botDataFilePath = botDirectoryPath + FilenameUtils.separatorsToSystem("/") + uuid + botDataExt;
+		botKeyFilePath = botDirectoryPath + FilenameUtils.separatorsToSystem("/") + uuid + botKeyExt;	
 	}
 	
-	private static boolean checkFileIntegrity (File botFile, String uuid)
+	private static boolean checkFileIntegrity (File botDirectory, String uuid)
 	{
-		File botDataFile = new File (botFile.getAbsolutePath() + "/" + uuid + botDataExt);
+		File botDataFile = new File (botDirectory.getAbsolutePath() + "/" + uuid + botDataExt);
 		if (!botDataFile.exists() || botDataFile.isDirectory())
 			return false;
 		
-		File botKeyFile = new File (botFile.getAbsolutePath() + "/" + uuid + botKeyExt);
+		File botKeyFile = new File (botDirectory.getAbsolutePath() + "/" + uuid + botKeyExt);
 		if (!botKeyFile.exists() || botKeyFile.isDirectory())
 			return false;
 		
 		return true;
 	}
 	
-	private static void refreshDirectory (File botFile) throws IOException
+	private static void refreshDirectory (File botDirectory) throws IOException
 	{
-		if (botFile.isFile())
-			botFile.delete();
+		if (botDirectory.isFile())
+			botDirectory.delete();
 		else 
 		{
 			try 
 			{
-				FileUtils.deleteDirectory(botFile);
+				FileUtils.deleteDirectory(botDirectory);
 			} catch (IOException e) 
 			{
 				e.printStackTrace();
 			}
 		}
 		
-		botFile.mkdirs();
+		botDirectory.mkdirs();
 		
-		new File (botDataFile).createNewFile();
-		new File (botKeyFile).createNewFile();
+		new File (botDataFilePath).createNewFile();
+		new File (botKeyFilePath).createNewFile();
 	}
 	
 	public static Bot readBotFromFile (int ID) throws IOException
@@ -115,13 +116,13 @@ public class FileSystem
 		
 		constructBotPaths (uuid, botID);
 		
-		File botFile = new File (botPath);			
+		File botFile = new File (botDirectoryPath);			
 
 		if (checkFileIntegrity(botFile, uuid))
 		{
 			try 
 			{
-				Decryptor de = new Decryptor(new File (botDataFile), new File(botKeyFile));				
+				Decryptor de = new Decryptor(new File (botDataFilePath), new File(botKeyFilePath));				
 				Bot bot = (Bot)de.read();
 				
 				return bot;
@@ -137,6 +138,18 @@ public class FileSystem
 		}
 		
 		return null;
+	}
+	
+	public static File downloadCaptchaToFile(String captchaURL) throws IOException
+	{
+		File captchaImageFile = new File (tempCaptchaPath+"/"+UUID.nameUUIDFromBytes(captchaURL.getBytes()).toString());
+		
+		captchaImageFile.getParentFile().mkdirs();
+		captchaImageFile.createNewFile();
+		
+		FileUtils.copyURLToFile(new URL(captchaURL), captchaImageFile);
+		
+		return captchaImageFile;
 	}
 	
 	//TODO: settings
