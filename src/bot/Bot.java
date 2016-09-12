@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.imageio.ImageIO;
 import javax.script.ScriptException;
 
 import org.apache.commons.io.FilenameUtils;
@@ -18,6 +19,8 @@ import api.user.User;
 import api.worker.WorkerInterface;
 import application.Main;
 import javafx.beans.property.*;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
 import scripts.JythonRunner;
 import scripts.NashornRunner;
 import scripts.ScriptRunner;
@@ -54,6 +57,8 @@ public class Bot implements Serializable
 
 	transient SimpleStringProperty statusProperty;
 	
+	transient SimpleObjectProperty<Image> avatarProperty;
+	
 	public SimpleStringProperty getFirstNameProperty() {return firstNameProperty;}
 
 	public SimpleStringProperty getLastNameProperty() {return lastNameProperty;}
@@ -66,17 +71,22 @@ public class Bot implements Serializable
 	
 	public SimpleStringProperty getStatusProperty() {return statusProperty;}    
 	
-	public String getFirstName() {return firstNameProperty == null? "" : firstNameProperty.get();}
+	public SimpleObjectProperty<Image> getAvatarProperty() {return this.avatarProperty;}
 	
-	public String getLastName() {return lastNameProperty == null? "" : lastNameProperty.get();}
+		
+	public String getFirstName() {return firstNameProperty.get();}
 	
-	public int getID() {return IDProperty == null? -1 : IDProperty.get();}
+	public String getLastName() {return lastNameProperty.get();}
 	
-	public String getCityWithAge() {return cityWithAgeProperty == null? "" : cityWithAgeProperty.get();}
+	public int getID() {return IDProperty.get();}
 	
-	public String getOnline() {return onlineProperty == null? "" : onlineProperty.get();}
+	public String getCityWithAge() {return cityWithAgeProperty.get();}
 	
-	public String getStatus() {return statusProperty == null? "" : statusProperty.get();}
+	public String getOnline() {return onlineProperty.get();}
+	
+	public String getStatus() {return statusProperty.get();}
+	
+	public Image getAvatar() {return avatarProperty.get();}
         
 	
 	public Bot(Client client)
@@ -93,6 +103,7 @@ public class Bot implements Serializable
 	{
 		getUserProperties();
 		
+		avatarProperty = new SimpleObjectProperty<Image> (new Image (user.previewPhotoURL(), false));
 		statusProperty = new SimpleStringProperty(resources.getString("Bot.state.idle"));
 	}
 	
@@ -159,6 +170,8 @@ public class Bot implements Serializable
 		{
 			this.user = workerInterface.userWorker().getMe();
 			getUserProperties();
+			
+			avatarProperty = new SimpleObjectProperty<Image> (new Image (user.previewPhotoURL(), true));
 		} 
 		catch (Exception e) 
 		{
@@ -171,6 +184,7 @@ public class Bot implements Serializable
 		oos.defaultWriteObject();
 		
 		oos.writeObject(statusProperty.get());
+		ImageIO.write(SwingFXUtils.fromFXImage(avatarProperty.getValue(), null), "png", oos);
 	}
 
 	private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException 
@@ -178,6 +192,7 @@ public class Bot implements Serializable
 		ois.defaultReadObject();
 		
 		statusProperty = new SimpleStringProperty((String) ois.readObject());
+		avatarProperty = new SimpleObjectProperty<Image> (SwingFXUtils.toFXImage(ImageIO.read(ois), null));
 		getUserProperties();	
 	}
 }

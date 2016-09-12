@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 
+import api.media.MediaID;
 import api.object.VKObject;
 
 /**
@@ -60,6 +61,11 @@ public class User extends VKObject
 	Relation relation;
 	String religion;
 	String skype;
+
+	String about;
+	String activities;
+	String favouriteBooks, favouriteGames, favouriteMovies, favouriteMusic, favouriteQuotes, favouriteShow;
+	String interests;
 	
 	boolean isDeactivated;
 	boolean canComment;
@@ -71,7 +77,8 @@ public class User extends VKObject
 	boolean canAddToFriends;
 	
 	boolean hasPhoto;
-	int photoID;
+	MediaID photoID;
+	String previewPhotoURL;
 	
 	Sex sex;
 	String birthDate;
@@ -82,8 +89,8 @@ public class User extends VKObject
 	
 	int followersCount, commonCount;
 	
-	public int ID(){return this.ID;}
-	public String domain(){return this.domain;}
+	public int ID() {return this.ID;}
+	public String domain() {return this.domain;}
 	public String firstName() {return this.firstName;}
 	public String lastName() {return this.lastName;}
 	public String nickname() {return this.nickname;}
@@ -106,6 +113,16 @@ public class User extends VKObject
 	public Relation relation() {return this.relation;}
 	public String religion () {return this.religion;}
 	public String skype() {return this.skype;}
+	
+	public String about() {return this.about;}
+	public String activities () {return this.activities;}
+	public String favouriteBooks () {return this.favouriteBooks;}
+	public String favouriteGames () {return this.favouriteGames;}
+	public String favouriteMovies () {return this.favouriteMovies;}
+	public String favouriteMusic () {return this.favouriteMusic;}
+	public String favouriteQuotes () {return this.favouriteQuotes;} 
+	public String favouriteShow () {return this.favouriteShow;}
+	public String interests () {return this.interests;}
 
 	public boolean isDeactivated() {return this.isDeactivated;}
 	public boolean canComment() {return this.canComment;}
@@ -117,7 +134,8 @@ public class User extends VKObject
 	public boolean canAddToFriends() {return this.canAddToFriends;}
 	
 	public boolean hasPhoto () {return this.hasPhoto;}
-	public int photoID() {return this.photoID;}
+	public MediaID photoID() {return this.photoID;}
+	public String previewPhotoURL() {return this.previewPhotoURL;}
 	
 	public Sex sex() {return this.sex;}
 	public String birthDate() {return this.birthDate;}

@@ -60,7 +60,7 @@ public class LoginWindowController implements Initializable
 	@FXML private ResourceBundle resources;
 	@FXML private AnchorPane root;	
 	@FXML private GridPane grid;
-	
+
 	@FXML private Pane statusPane;
 	@FXML private Text statusText;
 
@@ -417,7 +417,7 @@ public class LoginWindowController implements Initializable
 		Bot bot = new Bot (client);
 				
 		FileSystem.writeBotToFile(bot);
-				
+								
 		Platform.runLater(new Runnable()
 		{
 			public void run()

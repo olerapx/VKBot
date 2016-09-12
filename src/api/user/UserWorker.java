@@ -27,9 +27,10 @@ public class UserWorker extends Worker
 		
 		this.fields = "&fields=domain,nickname,maiden_name,wall_comments,"
 				+ "can_post,can_see_all_posts,can_see_audio,can_write_private_message,"
-				+ "is_friend,can_send_friend_request,has_photo,photo_id,"
-				+ "photo_max_orig,sex,bdate,city,country,home_town,online,last_seen,"
-				+ "followers_count,common_count,education,schools,relation,personal,connections";
+				+ "is_friend,can_send_friend_request,has_photo,photo_id,photo_200_orig,"
+				+ "sex,bdate,city,country,home_town,online,last_seen,"
+				+ "followers_count,common_count,education,schools,relation,personal,connections,"
+				+ "about,activities,books,games,interests,movies,music,quotes,tv";
 	}
 		
 	private User[] get(String ids) throws Exception
@@ -83,7 +84,10 @@ public class UserWorker extends Worker
 		user.hasPhoto = getBooleanFromJSON(data, "has_photo");
 				
 		if (data.has("photo_id"))
-			user.photoID =Integer.parseInt(getStringFromJSON(data, "photo_id").split("_")[1]);
+			user.photoID = new MediaID(user.ID, Integer.parseInt(getStringFromJSON(data, "photo_id").split("_")[1]));
+		else user.photoID = new MediaID(0, 0);
+		
+		user.previewPhotoURL = getStringFromJSON(data, "photo_200_orig");
 		
 		user.sex = Sex.values()[getIntFromJSON(data, "sex")];
 		
@@ -106,6 +110,18 @@ public class UserWorker extends Worker
 		user.universityID = getIntFromJSON(data, "university");
 		user.universityName = getStringFromJSON(data, "university_name");
 		user.universityGraduationYear = getIntFromJSON(data, "graduation");
+		
+		user.about = getStringFromJSON(data, "about");
+		user.activities = getStringFromJSON(data, "activities");
+		
+		user.favouriteBooks = getStringFromJSON(data, "books");
+		user.favouriteGames = getStringFromJSON(data, "games");
+		user.favouriteMovies = getStringFromJSON(data, "movies");
+		user.favouriteMusic = getStringFromJSON(data, "music");
+		user.favouriteQuotes = getStringFromJSON(data, "quotes");
+		user.favouriteShow = getStringFromJSON(data, "tv");
+		
+		user.interests = getStringFromJSON(data, "interests");
 		
 		if (data.has("schools"))
 		{
