@@ -27,7 +27,7 @@ public abstract class Attachment extends VKObject
 	
 	public boolean canAttach()
 	{
-		if (this instanceof MediaAttachment && this.type != Type.ATTACH_OTHER) return true;
+		if (this instanceof MediaAttachment) return true;
 		return false;
 	}
 	

@@ -20,7 +20,7 @@ public class MediaAttachment extends Attachment
 	
 	public MediaID ID() {return this.ID;}
 		
-	private Type mediaTypeToType(Media media)
+	private Type mediaTypeToType(Media media) throws IllegalArgumentException
 	{
 		if (media instanceof Audio)
 			 return Type.ATTACH_AUDIO;
@@ -34,7 +34,7 @@ public class MediaAttachment extends Attachment
 			return Type.ATTACH_WALL;
 		if (media instanceof WallComment)
 			return Type.ATTACH_COMMENT;
-		return Type.ATTACH_OTHER;	
+		throw new IllegalArgumentException ("Invalid attachment type");
 	}
 	
 	private void fromString(String attachment, String accessKey)

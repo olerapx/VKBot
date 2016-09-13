@@ -414,8 +414,7 @@ public class LoginWindowController implements Initializable
 		
 		loadingImage.setVisible(false);
 		
-		Bot bot = new Bot (client);
-				
+		Bot bot = new Bot (client);			
 		FileSystem.writeBotToFile(bot);
 								
 		Platform.runLater(new Runnable()
