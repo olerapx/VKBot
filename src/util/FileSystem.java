@@ -2,14 +2,13 @@ package util;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URL;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import bot.Bot;
+import bot.BotPath;
 import crypto.Decryptor;
 import crypto.Encryptor;
 
@@ -18,33 +17,29 @@ import crypto.Encryptor;
  */
 public class FileSystem
 {
-	private static String tempCaptchaPath = "/cache/temp_captcha/";
-	private static String botsPath = "/cache/bots/";
+	static String tempCaptchaPath = "/cache/temp_captcha/";
+	static String botsPath = "/cache/bots/";
 	
-	private static String botDataExt = ".dat";
-	private static String botKeyExt = ".cr";
-	
-	private static String botDirectoryPath, botDataFilePath, botKeyFilePath;
+	static String botDataExt = ".dat";
+	static String botKeyExt = ".cr";
 	
 	public static String getTempCaptchaPath () {return tempCaptchaPath;}
 	public static String getBotsPath() {return botsPath;}
+	
+	public static String getBotDataExt() {return botDataExt;}
+	public static String getBotKeyExt() {return botKeyExt;}
 	
 	public static void writeBotToFile (Bot bot)
 	{
 		bot.stop();
 		
-		String uuid = UUID.nameUUIDFromBytes(BigInteger.valueOf(bot.getID()).toByteArray()).toString();	
-		String botID = String.valueOf(bot.getID());
-		
-		constructBotPaths(uuid, botID);
-		
-		File botDirectory = new File (botDirectoryPath);			
+		BotPath path = new BotPath (bot);
 				
-		if (checkFileIntegrity(botDirectory, uuid))
+		if (checkBotFileIntegrity(path))
 		{
 			try 
 			{
-				Encryptor en = new Encryptor(new File (botDataFilePath), new File(botKeyFilePath));				
+				Encryptor en = new Encryptor(new File (path.getBotDataFilePath()), new File(path.getBotKeyFilePath()));				
 				en.write(bot);
 			} 
 			catch (Exception e) 
@@ -56,9 +51,9 @@ public class FileSystem
 		{
 			try 
 			{
-				refreshDirectory(botDirectory);
+				refreshBotDirectory(path);
 
-				Encryptor en = new Encryptor(new File (botDataFilePath), botKeyFilePath);				
+				Encryptor en = new Encryptor(new File (path.getBotDataFilePath()), path.getBotKeyFilePath());		
 				en.write(bot);
 			} 
 			catch (Exception e) 
@@ -68,28 +63,29 @@ public class FileSystem
 		}
 	}
 		
-	private static void constructBotPaths(String uuid, String botID)
+	public static boolean isBotExist(Bot bot)
 	{
-		botDirectoryPath = System.getProperty("user.dir") + FilenameUtils.separatorsToSystem(botsPath) + botID;
-		botDataFilePath = botDirectoryPath + FilenameUtils.separatorsToSystem("/") + uuid + botDataExt;
-		botKeyFilePath = botDirectoryPath + FilenameUtils.separatorsToSystem("/") + uuid + botKeyExt;	
+		BotPath path = new BotPath(bot);
+		
+		return checkBotFileIntegrity(path);
 	}
 	
-	private static boolean checkFileIntegrity (File botDirectory, String uuid)
+	private static boolean checkBotFileIntegrity (BotPath path)
 	{
-		File botDataFile = new File (botDirectory.getAbsolutePath() + "/" + uuid + botDataExt);
+		File botDataFile = new File (path.getBotDataFilePath());
 		if (!botDataFile.exists() || botDataFile.isDirectory())
 			return false;
 		
-		File botKeyFile = new File (botDirectory.getAbsolutePath() + "/" + uuid + botKeyExt);
+		File botKeyFile = new File (path.getBotKeyFilePath());
 		if (!botKeyFile.exists() || botKeyFile.isDirectory())
 			return false;
 		
 		return true;
 	}
 	
-	private static void refreshDirectory (File botDirectory) throws IOException
+	private static void refreshBotDirectory (BotPath path) throws IOException
 	{
+		File botDirectory = new File (path.getBotDirectoryPath());
 		if (botDirectory.isFile())
 			botDirectory.delete();
 		else 
@@ -105,24 +101,19 @@ public class FileSystem
 		
 		botDirectory.mkdirs();
 		
-		new File (botDataFilePath).createNewFile();
-		new File (botKeyFilePath).createNewFile();
+		new File (path.getBotDataFilePath()).createNewFile();
+		new File (path.getBotKeyFilePath()).createNewFile();
 	}
 	
 	public static Bot readBotFromFile (int ID) throws IOException
-	{
-		String uuid = UUID.nameUUIDFromBytes(BigInteger.valueOf(ID).toByteArray()).toString();	
-		String botID = String.valueOf(ID);
-		
-		constructBotPaths (uuid, botID);
-		
-		File botFile = new File (botDirectoryPath);			
+	{	
+		BotPath path = new BotPath(ID);
 
-		if (checkFileIntegrity(botFile, uuid))
+		if (checkBotFileIntegrity(path))
 		{
 			try 
 			{
-				Decryptor de = new Decryptor(new File (botDataFilePath), new File(botKeyFilePath));				
+				Decryptor de = new Decryptor(new File (path.getBotDataFilePath()), new File(path.getBotKeyFilePath()));			
 				Bot bot = (Bot)de.read();
 				
 				return bot;

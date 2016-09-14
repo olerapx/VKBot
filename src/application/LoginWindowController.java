@@ -416,7 +416,7 @@ public class LoginWindowController implements Initializable
 		
 		Bot bot = new Bot (client);			
 		FileSystem.writeBotToFile(bot);
-								
+							
 		Platform.runLater(new Runnable()
 		{
 			public void run()

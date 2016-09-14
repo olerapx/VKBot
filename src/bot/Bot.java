@@ -25,6 +25,7 @@ import scripts.JythonRunner;
 import scripts.NashornRunner;
 import scripts.ScriptRunner;
 import util.Date;
+import util.FileSystem;
 
 /**
  * Represents a single bot.
@@ -122,6 +123,11 @@ public class Bot implements Serializable
 		if (user.online() == User.Online.OFFLINE)			
 			onlineProperty = new SimpleStringProperty(Date.formatTimestamp(user.lastOnline()));
 		else onlineProperty = new SimpleStringProperty(resources.getString("Bot.online.online"));
+	}
+	
+	public boolean isExist()
+	{
+		return FileSystem.isBotExist(this);
 	}
 	
 	public void setScript(File script)
